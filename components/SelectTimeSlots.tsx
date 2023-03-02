@@ -2,22 +2,33 @@ import {
   Timeline,
   ActionIcon,
   ScrollArea,
-  Container, Button, createStyles
+  Container,
+  Button,
+  createStyles
 } from "@mantine/core";
-import React, {FormEvent, useContext, useEffect, useState} from "react";
+import React, {
+  FormEvent,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import {
   IconCalendar,
   IconCircleCheck,
   IconCircleDotted,
   IconCircleX,
-  IconX
+  IconX,
+  IconClock
 } from "@tabler/icons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/navigation";
 import {useForm} from "@mantine/form";
-import {DatePicker} from "@mantine/dates";
+import {
+  DatePicker,
+  TimeRangeInput
+} from "@mantine/dates";
 
 import {BookingContext} from "@/contexts/BookingContext";
 import {
@@ -32,11 +43,9 @@ import {
   Room, SLOT_INTERVAL,
   TIMESLOTS
 } from "@/constants";
-import {
-  populateArray,
-  resetArray
-} from "@/libs/utils";
 import {UserContext} from "@/contexts/UserContext";
+import {BookieDatePicker} from "@/components/DatePicker";
+import {BookieTimeline} from "@/components/Timeline";
 
 dayjs.extend(utc);
 
@@ -49,293 +58,10 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     justifyContent: 'center'
   },
 
-  scrollBarRotated: {
-    width: 600,
-    height: 200
-  },
-
-  timeline: {
-    paddingLeft: '4%',
-    margin: "4%"
-  },
-
-  timelineRotated: {
-    position: 'relative',
-    rotate: '-90deg',
-  },
-
-  timelineItemActive: {
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.teal[5],
-      border: 'solid',
-      borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[3],
-      borderWidth: '1px',
-      borderRadius: '50%',
-      justifyContent: 'center'
-    },
-  },
-
-  timelineItemSelected: {
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.cyan[3],
-      border: 'solid',
-      borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[1],
-      borderWidth: '1px',
-      borderRadius: '50%',
-      justifyContent: 'center'
-    },
-  },
-
-  timelineBulletRotated: {
-    rotate: '-90deg',
-  }
 }));
-
-interface BookieDatePickerProps {
-  selectedDate: dayjs.Dayjs
-  updateDateChanges: (date: Date | dayjs.Dayjs) => void
-}
-
-interface BookieTimelineProps {
-  timeSlots: number[]
-  availableTimeSlots: number[]
-  selectedTimeSlots: number[]
-  setSelectedTimeSlots: (selectedTimeSlots: number[]) => void
-}
 
 interface SelectTimeSlotProps {
   room: Room
-}
-
-interface TimelineState {
-  slotStr: string
-  slot: number
-  hidden: boolean
-  active: boolean
-  selected: boolean
-  setHidden: (hidden: boolean) => void
-  setActive: (active: boolean) => void
-  setSelected: (selected: boolean) => void
-}
-
-export function handleDateChanges(
-  dateToSet: Date | dayjs.Dayjs,
-  selectedDate: dayjs.Dayjs,
-  setDate: (date: dayjs.Dayjs) => void
-): dayjs.Dayjs {
-  let newDate: dayjs.Dayjs;
-  if (
-    dateToSet === null ||
-    dayjs(dateToSet).isSame(selectedDate, 'day')
-  ) {
-    newDate = dayjs.utc().local();
-  } else {
-    newDate = dayjs(dateToSet).utc().local();
-  }
-  setDate(newDate);
-  return newDate;
-}
-
-export function BookieDatePicker(
-  {
-    selectedDate,
-    updateDateChanges,
-  }: BookieDatePickerProps
-) {
-  return (
-    <DatePicker
-      label={"Select Booking Date"}
-      description={"View available slots for chosen date"}
-      placeholder={selectedDate.utc(true).local().toString()}
-      variant={'filled'}
-      withAsterisk
-      value={selectedDate}
-      onChange={updateDateChanges}
-      clearable
-      dropdownPosition={"bottom-start"}
-      dropdownType={'popover'}
-      icon={<IconCalendar />}
-      transition={'slide-down'}
-      transitionDuration={200}
-      excludeDate={(date: Date) => dayjs(date).isBefore(dayjs(), 'day')}
-    />
-  );
-}
-
-export function BookieTimeline(
-  {
-    timeSlots,
-    availableTimeSlots,
-    selectedTimeSlots,
-    setSelectedTimeSlots,
-  }: BookieTimelineProps
-) {
-  const { classes, theme, cx } = useStyles();
-
-  let timelineStates: TimelineState[] = TIMESLOTS.map(
-    (slot: number) => {
-      const [hidden, setHidden] = useState<boolean>(!timeSlots.includes(slot))
-      const [active, setActive] = useState<boolean>(availableTimeSlots.includes(slot));
-      const [selected, setSelected] = useState<boolean>(selectedTimeSlots.includes(slot));
-      return {
-        slotStr: slotToString(slot),
-        slot: slot,
-        hidden,
-        active,
-        selected,
-        setHidden,
-        setActive,
-        setSelected
-      }
-    }
-  );
-
-  function handleSelected() {
-    console.log("Is called")
-    timelineStates.forEach(
-      (state: TimelineState) => {
-        state.setSelected(selectedTimeSlots.includes(state.slot));
-      }
-    );
-  }
-
-  function updateTimeSlots() {
-    timelineStates.forEach(
-      (state: TimelineState) => {
-        state.setHidden(!timeSlots.includes(state.slot));
-        state.setActive(availableTimeSlots.includes(state.slot));
-      }
-    )
-  }
-
-  function handleSelectedSlot(slot: number): number[] {
-    let newSelectedSlots: number[];
-    if (selectedTimeSlots.length === 0) {
-      newSelectedSlots = [slot];
-    } else {
-      let earlierSlot: number = selectedTimeSlots[0] > slot ? slot : selectedTimeSlots[0];
-      let laterSlot: number = selectedTimeSlots[0] < slot ? slot : selectedTimeSlots[0];
-      newSelectedSlots = timeSlots.slice(
-        timeSlots.indexOf(earlierSlot),
-        timeSlots.indexOf(laterSlot) + 1
-      ).sort();
-    }
-    if (
-      newSelectedSlots.some(
-        (slot: number) => !availableTimeSlots.includes(slot)
-      )
-    ) {
-      showNotification({
-        message: "Attempting to add an invalid set of slot(s)",
-        icon: <IconCircleX />,
-        color: 'red',
-        autoClose: 5000,
-      });
-      return selectedTimeSlots;
-    }
-    setSelectedTimeSlots(populateArray(selectedTimeSlots, newSelectedSlots));
-    handleSelected();
-    showNotification({
-      message: `Successfully selected 
-        ${slotToString(selectedTimeSlots[0])} - 
-        ${slotToString(selectedTimeSlots[selectedTimeSlots.length - 1] + SLOT_INTERVAL)}
-      `,
-      icon: <IconCircleCheck />,
-      color: 'green',
-      autoClose: 5000,
-    });
-    return selectedTimeSlots;
-  }
-
-  function handleClearedSlot(slot: number): number[] {
-    let newSelectedSlots: number[] = selectedTimeSlots.length > 0 ?
-      selectedTimeSlots.splice(0, selectedTimeSlots.indexOf(slot)) : [];
-
-    setSelectedTimeSlots(populateArray(selectedTimeSlots, newSelectedSlots));
-    handleSelected();
-    showNotification({
-      message: selectedTimeSlots.length >= 1 ?
-        `Successfully updated selected slots to 
-          ${slotToString(selectedTimeSlots[0])} - 
-          ${slotToString(selectedTimeSlots[selectedTimeSlots.length - 1] + SLOT_INTERVAL)}
-        ` : `Successfully cleared all slots`,
-      icon: <IconCircleCheck />,
-      color: 'green',
-      autoClose: 5000,
-    });
-    return selectedTimeSlots;
-  }
-
-  useEffect(
-    () => handleSelected(),
-    [JSON.stringify(selectedTimeSlots)]
-  )
-
-  useEffect(
-    () => updateTimeSlots(),
-    [timeSlots.length, availableTimeSlots.length]
-  )
-
-  return (
-    <Timeline>
-      {
-        timelineStates.filter(
-          (state: TimelineState) => {
-            return !state.hidden
-          }
-        ).map((state: TimelineState) => {
-          return (
-            <Timeline.Item
-              key={state.slotStr}
-              title={
-                state.selected ? `${state.slotStr} is selected` :
-                  state.active ? `${state.slotStr} slot is available` :
-                    `${state.slotStr} is booked`
-              }
-              active={state.active || state.selected}
-              color={state.selected ? 'cyan' : state.active ? 'teal' : 'gray'}
-              lineActive={state.active || state.selected}
-              lineVariant={state.selected ? 'dashed' : state.active ? "dotted" : 'solid'}
-              bullet={
-                state.selected ?
-                  <ActionIcon
-                    className={classes.timelineItemSelected}
-                    variant={"transparent"}
-                    onClick={
-                      () => {
-                        state.setSelected(!state.selected);
-                        handleClearedSlot(state.slot);
-                      }
-                    }
-                  >
-                    <IconCircleCheck />
-                  </ActionIcon> :
-                  state.active ?
-                    <ActionIcon
-                      className={classes.timelineItemActive}
-                      variant={'transparent'}
-                      onClick={
-                        () => {
-                          state.setSelected(true);
-                          handleSelectedSlot(state.slot);
-                        }
-                      }
-                    >
-                      <IconCircleDotted />
-                    </ActionIcon> :
-                    <ActionIcon
-                      disabled={!state.active}
-                      variant={"transparent"}
-                    >
-                      <IconCircleX />
-                    </ActionIcon>
-              }
-            />
-          )
-        })
-      }
-    </Timeline>
-  );
 }
 
 export default function SelectTimeSlots(
@@ -345,14 +71,15 @@ export default function SelectTimeSlots(
 ) {
   const router = useRouter();
   const { user } = useContext(UserContext);
-  const { bookings, retrieveBookings } = useContext(BookingContext);
+  const {
+    bookings, retrieveBookings,
+    selectedDate, setDate,
+    currentBookings, setCurrentBookings,
+    timeSlots, setTimeSlots,
+    availableTimeSlots, setAvailableTimeSlots,
+    selectedTimeSlots, setSelectedTimeSlots
+  } = useContext(BookingContext);
   const { classes, theme, cx } = useStyles();
-
-  const [ selectedDate, setDate ] = useState<dayjs.Dayjs>(dayjs());
-  const [ currentBookings, setCurrentBookings ] = useState<Booking[]>(getDateBookings(selectedDate, bookings));
-  const [ timeSlots, setTimeSlots ] = useState<number[]>(getCurrentTimeSlots(selectedDate, TIMESLOTS));
-  const [ availableTimeSlots, setAvailableTimeSlots ] = useState<number[]>(getTimeline(currentBookings, timeSlots));
-  const [ selectedTimeSlots, setSelectedTimeSlots ] = useState<number[]>([]);
 
   function handleClearAllSlots(message?: string) {
     showNotification({
@@ -362,22 +89,31 @@ export default function SelectTimeSlots(
       autoClose: 5000,
     });
 
-    setSelectedTimeSlots(resetArray(selectedTimeSlots));
+    setSelectedTimeSlots([]);
+  }
+
+  function handleDateChanges(
+    dateToSet: Date | dayjs.Dayjs | null,
+    selectedDate: dayjs.Dayjs,
+    setDate: (date: dayjs.Dayjs) => void
+  ): dayjs.Dayjs {
+    let newDate: dayjs.Dayjs;
+    if (
+      dateToSet === null ||
+      dayjs(dateToSet).isSame(selectedDate, 'day')
+    ) {
+      newDate = dayjs.utc().local();
+    } else {
+      newDate = dayjs(dateToSet).utc().local();
+    }
+    setDate(newDate);
+    return newDate;
   }
 
   function handleTimeSlotChanges(newBookings: Booking[]) {
-    setTimeSlots(
-      populateArray(
-        timeSlots,
-        getCurrentTimeSlots(selectedDate, TIMESLOTS)
-      )
-    );
-    setAvailableTimeSlots(
-      populateArray(
-        availableTimeSlots,
-        getTimeline(newBookings, timeSlots)
-      )
-    );
+
+    setTimeSlots(getCurrentTimeSlots(selectedDate, TIMESLOTS));
+    setAvailableTimeSlots(getTimeline(newBookings, timeSlots));
     if (
       selectedTimeSlots.some(
         (slot: number) => !availableTimeSlots.includes(slot)
@@ -388,13 +124,16 @@ export default function SelectTimeSlots(
   }
 
   function handleCurrentBookingChanges(newBookings: Booking[]): Booking[] {
-    setCurrentBookings(populateArray(currentBookings, newBookings));
+    setCurrentBookings(newBookings);
     handleTimeSlotChanges(newBookings);
     return newBookings;
   }
 
   function handleBookingChanges(): Booking[] {
-    let roomBookings: Booking[] = getRoomBookings(room.id, retrieveBookings());
+    let roomBookings: Booking[] = getDateBookings(
+      selectedDate,
+      getRoomBookings(room.id, retrieveBookings())
+    );
     return handleCurrentBookingChanges(roomBookings);
   }
 
@@ -456,13 +195,16 @@ export default function SelectTimeSlots(
   }
 
   useEffect(() => {
-    const id = setInterval(() => {handleBookingChanges()}, 300000);
+    const id: NodeJS.Timer = setInterval(() => {handleBookingChanges()}, 300000);
     return () => clearInterval(id)
   },[]);
 
   useEffect(
     () => {
-      handleTimeSlotChanges(currentBookings);
+      console.log(`Selected Date changed to ${selectedDate.utc(true).local().toString()}`)
+      console.log("Updating timeslots and setting forms")
+      handleBookingChanges();
+      form.setFieldValue('start', selectedDate.utc().toISOString());
     },
     [selectedDate]
   );
@@ -470,6 +212,7 @@ export default function SelectTimeSlots(
   useEffect(
     () => {
       if (!user) {
+        console.log("User has logged out, redirecting to login page")
         router.push('/login')
       }
     },
@@ -479,12 +222,16 @@ export default function SelectTimeSlots(
   useEffect(
     () => {
       if (selectedTimeSlots.length === 0) {
+        console.log("Selected time slots have been cleared, updating form")
         form.setFieldValue('duration', 0);
+        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString())
       } else {
+        console.log("Selected time slots have been updated, updating form")
         form.setFieldValue(
           'duration',
           selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL
         );
+        form.setFieldValue('start', selectedDate.add(selectedTimeSlots[0], 'hour').utc().toISOString())
       }
     },
     [JSON.stringify(selectedTimeSlots)]
@@ -501,12 +248,7 @@ export default function SelectTimeSlots(
         type={'hover'}
         offsetScrollbars
       >
-        <BookieTimeline
-          timeSlots={timeSlots}
-          availableTimeSlots={availableTimeSlots}
-          selectedTimeSlots={selectedTimeSlots}
-          setSelectedTimeSlots={setSelectedTimeSlots}
-        />
+        <BookieTimeline />
       </ScrollArea>
       <Button.Group>
         <form

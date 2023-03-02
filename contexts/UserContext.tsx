@@ -1,22 +1,27 @@
 "use client";
 
-import React, {createContext, useState} from 'react';
+import React, {
+  createContext,
+  useState
+} from 'react';
+
 import {User} from "@/constants";
 import {useRouter} from "next/navigation";
 
 const UserContext = createContext({});
 
 function UserContextProvider({ children }) {
-  let prevUser: string | null = window.sessionStorage.getItem('USER')
-  const [user, setUser] = useState(prevUser !== null ? JSON.parse(prevUser) : undefined);
   const router = useRouter();
+
+  let prevUser: string | null = sessionStorage.getItem('USER');
+  const [user, setUser] = useState<User | undefined>(prevUser !== null ? JSON.parse(prevUser) : undefined);
 
   function updateUser(user: User | undefined) {
     if (!user) {
-      window.sessionStorage.removeItem('USER');
+      sessionStorage.removeItem('USER');
       router.push('/');
     } else {
-      window.sessionStorage.setItem('USER', JSON.stringify(user));
+      sessionStorage.setItem('USER', JSON.stringify(user));
       router.push('/rooms');
     }
     setUser(user);
