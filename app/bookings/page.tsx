@@ -1,15 +1,15 @@
 "use client";
 
 import {
-  ActionIcon,
   Box,
   Text,
   Avatar,
-  createStyles, Tooltip
+  createStyles,
+  Button
 } from "@mantine/core";
 import {
-  IconCircleX, IconDeviceFloppy,
-  IconEditCircle
+  IconCircleX,
+  IconClock
 } from "@tabler/icons";
 import React, {
   useContext,
@@ -20,13 +20,12 @@ import React, {
 import {
   MantineReactTable,
   MantineReactTableProps,
-  MRT_ColumnDef
+  MRT_ColumnDef, MRT_RowSelectionState
 } from "mantine-react-table";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import {openConfirmModal} from "@mantine/modals";
 
 import {RoomContext} from "@/contexts/RoomContext";
 import {
@@ -35,10 +34,16 @@ import {
   UserBooking
 } from "@/constants";
 import {BookingContext} from "@/contexts/BookingContext";
-import {getUserBookings} from "@/libs/bookings";
+import {
+  getDateBookings,
+  getRoomBookings,
+  getUserBookings
+} from "@/libs/bookings";
 import {UserContext} from "@/contexts/UserContext";
-import {populateArray} from "@/libs/utils";
 import {NavBar} from "@/components/NavBar";
+import {TimeRangeInput} from "@mantine/dates";
+import {BookieDatePicker} from "@/components/DatePicker";
+import {openConfirmModal} from "@mantine/modals";
 
 dayjs.extend(utc);
 
@@ -60,22 +65,109 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   }
 }));
 
+interface ModifyStartDateProps {
+  userBooking: UserBooking
+}
+
+export function ModifyStartDate(
+  {
+    userBooking,
+  }: ModifyStartDateProps
+) {
+
+  const { selectedDate, setDate } = useContext(BookingContext);
+
+  useEffect(
+    () => setDate(dayjs(userBooking.start).utc(true).local()),
+    []
+  );
+
+  return (
+    <BookieDatePicker
+      selectedDate={selectedDate}
+      updateDateChanges={setDate}
+    />
+  )
+}
+
+interface ModifyDurationProps {
+  userBooking: UserBooking
+}
+
+export function ModifyDuration(
+  {
+    userBooking,
+  }: ModifyDurationProps
+) {
+
+  const {
+    currentBookings,
+    selectedDate, setSelectedDate,
+    duration, setDuration
+  } = useContext(BookingContext);
+
+  function updateDuration() {
+    let first: Date = duration[0] ? duration[0] : dayjs(selectedDate).toDate();
+    let second: Date = duration[1] ? duration[1] : dayjs(selectedDate).add(userBooking.duration, 'hour').toDate();
+
+    console.log([first, second]);
+    setDuration([first, second]);
+    console.log(duration)
+  }
+
+  function handleBookingChanges(newDate: dayjs.Dayjs, newBookings: Booking[]) {
+    setRoomBookings(getRoomBookings(userBooking.room.id, getDateBookings(selectedDate, newBookings)));
+  }
+
+  useEffect(
+    () => {
+
+      setSelectedDate(
+        !selectedDate.isSame(dayjs(userBooking.start), 'minute') ?
+          dayjs(selectedDate) :
+          dayjs(userBooking.start).utc(true).local()
+      );
+      updateDuration();
+    },
+    []
+  );
+
+  useEffect(
+    () => {console.log(duration)},
+    [JSON.stringify(duration)]
+  );
+
+  return (
+    <TimeRangeInput
+      label={"Select Booking Duration"}
+      error={"Invalid time selection, the time slots have either been taken or elapsed"}
+      value={duration}
+      defaultValue={duration}
+      onChange={setDuration}
+      icon={<IconClock />}
+      required
+    />
+  )
+}
+
 export default function UserBookingsPage() {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
 
-  const { rooms } = useContext(RoomContext);
+  const { rooms, roomsMap } = useContext(RoomContext);
   const { user } = useContext(UserContext);
-  const { bookings, retrieveBookings } = useContext(BookingContext);
+  const {
+    bookings, retrieveBookings,
+    setCurrentBookings,
+    selectedDate, setDate,
+    selectedDuration, setSelectedDuration
+  } = useContext(BookingContext);
 
-  const [opened, setOpened] = useState<boolean>(false);
-  const [modifyBooking, setModifyBooking] = useState<UserBooking>(undefined);
-  const [roomsMap, setRoomsMap] = useState<{[id: string]: Room}>(
-    Object.fromEntries(rooms.map((item: Room) => [item.id, item]))
-  );
   const [userBookings, setUserBookings] = useState<UserBooking[]>(
     transformUserBookings(getUserBookings(user ? user.id : "default", bookings))
   );
+
+  const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
   function transformUserBookings(toTransform: Booking[]): UserBooking[] {
     let transformedBookings: UserBooking[] = [];
@@ -97,38 +189,51 @@ export default function UserBookingsPage() {
       return [];
     }
 
-    let newBookings: UserBooking[] = transformUserBookings(
-      getUserBookings(user.id, retrieveBookings())
-    );
-    setUserBookings(populateArray(userBookings, newBookings));
-    return newBookings;
+    let newBookings: Booking[] = getUserBookings(user.id, retrieveBookings());
+    setCurrentBookings(newBookings);
+
+    let newUserBookings: UserBooking[] = transformUserBookings(newBookings);
+    setUserBookings(newUserBookings);
+    return newUserBookings;
   }
 
-  function handleBookingCancellation(booking: UserBooking) {
-    console.log(`Cancelling booking ${booking.id}`)
+  function handleBookingCancellation(
+    rowSelection: MRT_RowSelectionState
+  ) {
+    console.log(`Cancelling bookings ${rowSelection}`)
+    setUserBookings(userBookings.filter((booking: UserBooking) => !(booking.id in rowSelection)));
     // TODO: API call to cancel changes
-    handleBookingChanges();
+    // handleBookingChanges();
   }
 
   const handleSaveRow: MantineReactTableProps<UserBooking>['onEditingRowSave'] =
-    async ({ exitEditingMode, row,  }) => {
+    async ({ exitEditingMode, row, values}) => {
+      let first: dayjs.Dayjs = dayjs(selectedDuration[0]).utc();
+      let second: dayjs.Dayjs = dayjs(selectedDuration[1]).utc();
+      userBookings[row.index]["start"] = selectedDate?.toISOString()
+      userBookings[row.index]["duration"] = second.diff(first, 'minute');
+      setUserBookings([...userBookings]);
       // TODO: send/receive api updates here
-      handleBookingChanges()
-      setOpened(false);
-      setModifyBooking(undefined);
+      // handleBookingChanges()
       exitEditingMode();
     }
 
-  function handleEditRowCancel({ row, table }) {
-    setModifyBooking(undefined);
-    setOpened(false);
+  function handleEditRowCancel() {
+    setDate(undefined);
+    setSelectedDuration([null, null]);
   }
+
+  useEffect(() => {
+    //do something when the row selection changes...
+    console.info({ rowSelection });
+  }, [rowSelection]);
 
   useEffect(
     () => {
       if (!user) {
         router.push('/')
       }
+      handleBookingChanges();
     },
     []
   )
@@ -170,15 +275,17 @@ export default function UserBookingsPage() {
         Cell: ({ cell }) => (
           <span>{cell.getValue<dayjs.Dayjs>().utc(true).local().toString()}</span>
         ),
+        Edit: ({cell, row, table}) => <ModifyStartDate userBooking={row.original} />,
       },
       {
         accessorKey: 'duration',
         id: "duration",
         header: 'Duration (Hours)',
+        Edit: ({cell, row, table}) => <ModifyDuration userBooking={row.original} />,
       },
       {
         accessorFn: (row:  UserBooking) =>
-          dayjs(row.start).hour(row.duration).utc(true).local(),
+          dayjs(row.start).add(row.duration, 'hour').utc(true).local(),
         id: "end",
         header: 'End Date Time',
         Cell: ({ cell }) => (
@@ -215,83 +322,37 @@ export default function UserBookingsPage() {
             header: 'Edit',
           },
         }}
-        renderRowActions={
-          ({row, table}) => (
-            <Box
-              className={classes.cellBox}
-            >
-              {
-                opened ? <>
-                    <Tooltip label={"Save edits"}>
-                      <ActionIcon
-                        className={classes.cellBoxActionIcon}
-                        onClick={
-                          () => {
-                            table.options.onEditingRowSave?.({
-                              exitEditingMode: () => table.setEditingRow(null),
-                              row: row,
-                              table,
-                              values: row._valuesCache ?? { ...row.original }
-                            });
-                          }
-                        }
-                      >
-                        <IconDeviceFloppy />
-                      </ActionIcon>
-                    </Tooltip>
-                    <Tooltip label={"Cancel edits"}>
-                      <ActionIcon
-                        className={classes.cellBoxActionIcon}
-                        onClick={
-                          () => {
-                            table.options.onEditingRowCancel?.({ row, table });
-                            table.setEditingRow(null);
-                          }
-                        }
-                      >
-                        <IconCircleX />
-                      </ActionIcon>
-                    </Tooltip>
-                  </>
-                  : <ActionIcon
-                    className={classes.cellBoxActionIcon}
-                    disabled={dayjs().isAfter(dayjs(row.original.start))}
-                    onClick={
-                      () => {
-                        setOpened(true);
-                        setModifyBooking(row.original);
-                        table.setEditingRow(row);
-                      }
-                    }
-                  >
-                    <IconEditCircle/>
-                  </ActionIcon>
-              }
-              {/*<ActionIcon*/}
-              {/*  className={classes.cellBoxActionIcon}*/}
-              {/*  disabled={dayjs().isAfter(dayjs(row.original.start))}*/}
-              {/*  onClick={*/}
-              {/*    () => openConfirmModal({*/}
-              {/*      title: 'Cancel Booking',*/}
-              {/*      children: (*/}
-              {/*        <Text size="sm">*/}
-              {/*          Click confirm to cancel the booking*/}
-              {/*        </Text>*/}
-              {/*      ),*/}
-              {/*      labels: { confirm: 'Confirm', cancel: 'Cancel' },*/}
-              {/*      closeOnConfirm: true,*/}
-              {/*      closeOnCancel: true,*/}
-              {/*      onConfirm: () => handleBookingCancellation(row.original),*/}
-              {/*    })*/}
-              {/*  }*/}
-              {/*>*/}
-              {/*  <IconCircleX />*/}
-              {/*</ActionIcon>*/}
-            </Box>
-          )
-        }
         onEditingRowSave={handleSaveRow}
         onEditingRowCancel={handleEditRowCancel}
+
+        enableRowSelection
+        enableSelectAll
+        enableMultiRowSelection
+
+        renderTopToolbarCustomActions={() => (
+          <Button
+            onClick={
+              () => openConfirmModal({
+                title: 'Cancel Booking',
+                children: (
+                <Text size="sm">
+                  Confirm to cancel the selected bookings
+                </Text>
+                ),
+                labels: { confirm: 'Confirm', cancel: 'Cancel' },
+                closeOnConfirm: true,
+                closeOnCancel: true,
+                onConfirm: () => handleBookingCancellation(rowSelection)
+              })
+            }
+            leftIcon={<IconCircleX />}
+          >
+            Cancel Bookings
+          </Button>
+        )}
+        onRowSelectionChange={setRowSelection}
+        state={{ rowSelection }}
+        getRowId={(originalRow) => originalRow.id}
         // state={{ isLoading: true }}
       />
     </main>
