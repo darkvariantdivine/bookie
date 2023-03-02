@@ -44,11 +44,10 @@ interface PhotoCarouselProps {
 
 export default function PhotoCarousel(
   {
-    imagesToDisplay=["/LogoBlack.png"],
+    imagesToDisplay=["/Logo.png"],
     imageDescription="Meeting room image",
     maxWidth=450,
     slideSize="80%",
-    autoplayDuration=3000,
   }: PhotoCarouselProps
 ): React.ReactElement {
   const { classes } = useStyles();
@@ -82,7 +81,7 @@ export default function PhotoCarousel(
 
 export function PhotoCarouselWithAutoplay(
   {
-    imagesToDisplay=["/LogoBlack.png"],
+    imagesToDisplay=["/Logo.png"],
     imageDescription="Meeting room image",
     maxWidth=450,
     slideSize="80%",

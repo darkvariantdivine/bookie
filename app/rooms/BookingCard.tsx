@@ -62,7 +62,7 @@ export default function BookingCard({ room }: BookingCardProps): React.ReactElem
           imagesToDisplay={
           room.images.length > 0 ?
             room.images :
-            ['/favicon.ico']
+            ['/Logo.png']
           }
         />
       </Card.Section>

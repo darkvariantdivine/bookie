@@ -12,7 +12,6 @@ import {
   Group,
   Paper,
 } from "@mantine/core";
-import {Carousel} from "@mantine/carousel";
 import React, {useContext} from "react";
 import {
   IconArrowBackUp
@@ -28,6 +27,7 @@ import {RoomContext} from "@/contexts/RoomContext";
 
 import ROOMS from "@/mocks/rooms.json"
 import {NavBar} from "@/components/NavBar";
+import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
 dayjs.extend(utc);
 dayjs.extend(ObjectSupport);
@@ -37,31 +37,24 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "apart",
-    alignItems: "center"
+    alignItems: "center",
+    width: "100%",
   },
 
-  carousel: {
-    '&:hover': {
-      [`& .${getRef('carouselControls')}`]: {
-        opacity: 1,
-      },
-    },
+  wrapper: {
+    width: "100%",
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
   },
 
-  carouselControls: {
-    ref: getRef('carouselControls'),
-    transition: 'opacity 150ms ease',
-    opacity: 0,
-  },
-
-  carouselIndicator: {
-    width: 4,
-    height: 4,
-    transition: 'width 250ms ease',
-
-    '&[data-active]': {
-      width: 16,
-    },
+  inner: {
+    minHeight: "50px",
+    maxWidth: "80%",
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
+    gap: "md",
+    justifyContent: "center",
+    alignContent: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 }));
 
@@ -76,16 +69,6 @@ export default function RoomPage({ params }: RoomPageProps) {
   const { rooms } = useContext(RoomContext);
   const room: Room = rooms.filter((room: Room) => {return params.id === room.id})[0];
 
-  const images = room.images.map((image) => (
-    <Carousel.Slide key={image}>
-      <Image
-        width={450}
-        src={image}
-        alt={"Meeting room image"}
-      />
-    </Carousel.Slide>
-  ));
-
   function createBooking(form: unknown) {
     // TODO: API call to create Booking
   }
@@ -93,7 +76,9 @@ export default function RoomPage({ params }: RoomPageProps) {
   return (
     <main className={classes.main}>
       <NavBar />
-      <Paper>
+      <Paper
+        className={classes.wrapper}
+      >
         <ActionIcon onClick={router.back}>
           <IconArrowBackUp />
         </ActionIcon>
@@ -102,14 +87,7 @@ export default function RoomPage({ params }: RoomPageProps) {
           size={"lg"}
         >
           <Flex
-            mih={50}
-            maw={"80%"}
-            bg={"rgba(0, 0, 0, .3)"}
-            gap={"md"}
-            justify={"flex-start"}
-            align={"flex-start"}
-            direction={"row"}
-            wrap={"wrap"}
+            className={classes.inner}
           >
             <Stack
               sx={{maxWidth: 450}}
@@ -118,29 +96,13 @@ export default function RoomPage({ params }: RoomPageProps) {
                 <Title order={1}>{room.name}</Title>
                 <Text>{room.description}</Text>
               </Group>
-              {
-                images.length !== 0 ? (
-                  <Carousel
-                    sx={{maxWidth: 450}}
-                    slideSize={"80.0%"}
-                    withIndicators
-                    loop
-                    classNames={{
-                      root: classes.carousel,
-                      controls: classes.carouselControls,
-                      indicator: classes.carouselIndicator
-                    }}
-                  >
-                    {images}
-                  </Carousel>
-                ) : (
-                  <Image
-                    sx={{maxWidth: 300}}
-                    src={"/Logo.png"}
-                    alt={"Meeting Room Image"}
-                  />
-                )
-              }
+              <PhotoCarouselWithAutoplay
+                imagesToDisplay={
+                  room.images.length > 0 ?
+                    room.images :
+                    ["/Logo.png"]
+                }
+              />
             </Stack>
             <SelectTimeSlots room={room}/>
           </Flex>

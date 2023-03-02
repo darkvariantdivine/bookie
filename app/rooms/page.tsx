@@ -19,7 +19,7 @@ const useStyle = createStyles({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100vh"
+    width: "100%"
   }
 });
 
