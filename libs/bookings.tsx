@@ -60,7 +60,7 @@ export function getTimeSlotsFromDuration(
   }
   let slots: number = duration / SLOT_INTERVAL
   return Array.from(Array(slots).keys()).map(
-    (i: number) => {return i + start - (i * SLOT_INTERVAL)}
+    (i: number) => {return start + (i * SLOT_INTERVAL)}
   )
 }
 
@@ -76,9 +76,7 @@ export function getTimeline(
       );
     }
   ).sort();
-  return timeSlots.filter((slot: number) => {
-    return !takenTimeslots.includes(slot)
-  })
+  return timeSlots.filter((slot: number) => !takenTimeslots.includes(slot))
 }
 
 export function getCurrentTimeSlots(

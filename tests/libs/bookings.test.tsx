@@ -35,10 +35,7 @@ test('Room has bookings', () => {
         "room": "3fa85f64-5717-4562-b3fc-2c963f66",
         "start": "2023-02-23T05:30:00Z",
         "duration": 1,
-        "lastModified": {
-          "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-          "timestamp": "2023-02-23T05:04:29Z"
-        }
+        "lastModified": "2023-02-23T05:04:29Z"
       },
       {
         "id": "3fa85f64-5717-4562-b3fc-2c963f68",
@@ -46,10 +43,7 @@ test('Room has bookings', () => {
         "room": "3fa85f64-5717-4562-b3fc-2c963f66",
         "start": "2023-02-23T07:30:00Z",
         "duration": 0.5,
-        "lastModified": {
-          "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-          "timestamp": "2023-02-23T05:04:29Z"
-        }
+        "lastModified": "2023-02-23T05:04:29Z"
       },
       {
         "id": "3fa85f64-5717-4562-b3fc-2c963f69",
@@ -57,10 +51,7 @@ test('Room has bookings', () => {
         "room": "3fa85f64-5717-4562-b3fc-2c963f66",
         "start": "2023-02-23T09:00:00Z",
         "duration": 1,
-        "lastModified": {
-          "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-          "timestamp": "2023-02-23T05:04:29Z"
-        }
+        "lastModified": "2023-02-23T05:04:29Z"
       }
     ]
   );
@@ -82,10 +73,7 @@ test('Bookings on selected date', () => {
       "room": "3fa85f64-5717-4562-b3fc-2c963f67",
       "start": "2023-02-25T09:00:00Z",
       "duration": 1,
-      "lastModified": {
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "timestamp": "2023-02-24T05:04:29Z"
-      }
+      "lastModified": "2023-02-24T05:04:29Z"
     }
   ]);
   expect(getDateBookings(dayjs.utc({y: 2023, M: 1, d: 23}), BOOKINGS)).toStrictEqual([
@@ -95,10 +83,7 @@ test('Bookings on selected date', () => {
       "room": "3fa85f64-5717-4562-b3fc-2c963f66",
       "start": "2023-02-23T05:30:00Z",
       "duration": 1,
-      "lastModified": {
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "timestamp": "2023-02-23T05:04:29Z"
-      }
+      "lastModified": "2023-02-23T05:04:29Z"
     },
     {
       "id": "3fa85f64-5717-4562-b3fc-2c963f67",
@@ -106,10 +91,7 @@ test('Bookings on selected date', () => {
       "room": "3fa85f64-5717-4562-b3fc-2c963f67",
       "start": "2023-02-23T05:30:00Z",
       "duration": 1.5,
-      "lastModified": {
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "timestamp": "2023-02-23T05:04:29Z"
-      }
+      "lastModified": "2023-02-23T05:04:29Z"
     },
     {
       "id": "3fa85f64-5717-4562-b3fc-2c963f68",
@@ -117,10 +99,7 @@ test('Bookings on selected date', () => {
       "room": "3fa85f64-5717-4562-b3fc-2c963f66",
       "start": "2023-02-23T07:30:00Z",
       "duration": 0.5,
-      "lastModified": {
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "timestamp": "2023-02-23T05:04:29Z"
-      }
+      "lastModified": "2023-02-23T05:04:29Z"
     },
     {
       "id": "3fa85f64-5717-4562-b3fc-2c963f69",
@@ -128,10 +107,7 @@ test('Bookings on selected date', () => {
       "room": "3fa85f64-5717-4562-b3fc-2c963f66",
       "start": "2023-02-23T09:00:00Z",
       "duration": 1,
-      "lastModified": {
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "timestamp": "2023-02-23T05:04:29Z"
-      }
+      "lastModified": "2023-02-23T05:04:29Z"
     }
   ]);
 });
@@ -141,8 +117,9 @@ test('No bookings, all timeslots available', () => {
 });
 
 test('Timeslots available with bookings removed', () => {
-  BOOKINGS.splice(1, 1)
-  expect(getTimeline(BOOKINGS, TIMESLOTS)).toStrictEqual([
+  let bookings = [ ...BOOKINGS]
+  bookings.splice(1, 1)
+  expect(getTimeline(bookings, TIMESLOTS)).toStrictEqual([
     0,
     0.5,
     1,
@@ -192,7 +169,9 @@ test('Timeslots available with bookings removed', () => {
 test('Quarterly timeslots with bookings removed', async () => {
   const constants = await import("@/constants");
   constants.SLOT_INTERVAL = 0.25;
-  BOOKINGS.splice(1, 1)
+  let bookings = [...BOOKINGS]
+  bookings.splice(1, 1)
+  bookings.splice(3, 1)
   let timeslots = [
     12,
     12.25,
@@ -223,7 +202,7 @@ test('Quarterly timeslots with bookings removed', async () => {
     18.5,
     18.75
   ];
-  expect(getTimeline(BOOKINGS, timeslots)).toStrictEqual([
+  expect(getTimeline(bookings, timeslots)).toStrictEqual([
     12,
     12.25,
     12.5,
@@ -242,6 +221,204 @@ test('Quarterly timeslots with bookings removed', async () => {
     18.25,
     18.5,
     18.75
+  ]);
+  constants.SLOT_INTERVAL = 0.5;
+});
+
+test('Quarterly timeslots with more bookings removed', async () => {
+  const constants = await import("@/constants");
+  constants.SLOT_INTERVAL = 0.25;
+  let bookings = [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "start": "2023-03-02T20:30:00Z",
+      "duration": 1,
+      "lastModified": "2023-02-24T05:04:29Z"
+    },
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f68",
+      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "start": "2023-03-02T22:30:00Z",
+      "duration": 0.5,
+      "lastModified": "2023-02-24T05:04:29Z"
+    },
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f69",
+      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "start": "2023-03-03T00:00:00Z",
+      "duration": 1,
+      "lastModified": "2023-02-24T05:04:29Z"
+    },
+  ]
+  let timeslots = [
+    2.5,
+    2.75,
+    3,
+    3.25,
+    3.5,
+    3.75,
+    4,
+    4.25,
+    4.5,
+    4.75,
+    5,
+    5.25,
+    5.5,
+    5.75,
+    6,
+    6.25,
+    6.5,
+    6.75,
+    7,
+    7.25,
+    7.5,
+    7.75,
+    8,
+    8.25,
+    8.5,
+    8.75,
+    9,
+    9.25,
+    9.5,
+    9.75,
+    10,
+    10.25,
+    10.5,
+    10.75,
+    11,
+    11.25,
+    11.5,
+    11.75,
+    12,
+    12.25,
+    12.5,
+    12.75,
+    13,
+    13.25,
+    13.5,
+    13.75,
+    14,
+    14.25,
+    14.5,
+    14.75,
+    15,
+    15.25,
+    15.5,
+    15.75,
+    16,
+    16.25,
+    16.5,
+    16.75,
+    17,
+    17.25,
+    17.5,
+    17.75,
+    18,
+    18.25,
+    18.5,
+    18.75,
+    19,
+    19.25,
+    19.5,
+    19.75,
+    20,
+    20.25,
+    20.5,
+    20.75,
+    21,
+    21.25,
+    21.5,
+    21.75,
+    22,
+    22.25,
+    22.5,
+    22.75,
+    23,
+    23.25,
+    23.5,
+    23.75
+  ];
+  expect(getTimeline(bookings, timeslots)).toStrictEqual([
+    2.5,
+    2.75,
+    3,
+    3.25,
+    3.5,
+    3.75,
+    4,
+    4.25,
+    5.5,
+    5.75,
+    6,
+    6.25,
+    7,
+    7.25,
+    7.5,
+    7.75,
+    9,
+    9.25,
+    9.5,
+    9.75,
+    10,
+    10.25,
+    10.5,
+    10.75,
+    11,
+    11.25,
+    11.5,
+    11.75,
+    12,
+    12.25,
+    12.5,
+    12.75,
+    13,
+    13.25,
+    13.5,
+    13.75,
+    14,
+    14.25,
+    14.5,
+    14.75,
+    15,
+    15.25,
+    15.5,
+    15.75,
+    16,
+    16.25,
+    16.5,
+    16.75,
+    17,
+    17.25,
+    17.5,
+    17.75,
+    18,
+    18.25,
+    18.5,
+    18.75,
+    19,
+    19.25,
+    19.5,
+    19.75,
+    20,
+    20.25,
+    20.5,
+    20.75,
+    21,
+    21.25,
+    21.5,
+    21.75,
+    22,
+    22.25,
+    22.5,
+    22.75,
+    23,
+    23.25,
+    23.5,
+    23.75
   ]);
   constants.SLOT_INTERVAL = 0.5;
 });
