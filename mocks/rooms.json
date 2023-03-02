@@ -1,0 +1,54 @@
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66",
+    "name": "Meeting Room 1",
+    "description": "This is a meeting room",
+    "capacity": 10,
+    "images": [
+      "/3fa85f64-5717-4562-b3fc-2c963f66.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f67.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f68.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f69.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f70.jpeg"
+    ]
+  },
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f67",
+    "name": "Meeting Room 2",
+    "description": "This is a meeting room",
+    "capacity": 10,
+    "images": [
+      "/3fa85f64-5717-4562-b3fc-2c963f66.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f67.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f68.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f69.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f70.jpeg"
+    ]
+  },
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f68",
+    "name": "Meeting Room 3",
+    "description": "This is a meeting room",
+    "capacity": 10,
+    "images": [
+      "/3fa85f64-5717-4562-b3fc-2c963f66.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f67.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f68.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f69.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f70.jpeg"
+    ]
+  },
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f69",
+    "name": "Meeting Room 4",
+    "description": "This is a meeting room",
+    "capacity": 10,
+    "images": [
+      "/3fa85f64-5717-4562-b3fc-2c963f66.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f67.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f68.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f69.jpeg",
+      "/3fa85f64-5717-4562-b3fc-2c963f70.jpeg"
+    ]
+  }
+]

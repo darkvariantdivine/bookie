@@ -1,0 +1,14 @@
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66",
+  "name": "Test User 1",
+  "image": "/LogoWhite.png",
+  "description": "This is a test user",
+  "rooms": [
+    "3fa85f64-5717-4562-b3fc-2c963f66",
+    "3fa85f64-5717-4562-b3fc-2c963f67",
+    "3fa85f64-5717-4562-b3fc-2c963f68",
+    "3fa85f64-5717-4562-b3fc-2c963f69",
+    "3fa85f64-5717-4562-b3fc-2c963f70",
+    "3fa85f64-5717-4562-b3fc-2c963f71"
+  ]
+}
