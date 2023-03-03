@@ -102,9 +102,9 @@ export default function SelectTimeSlots(
       dateToSet === null ||
       dayjs(dateToSet).isSame(selectedDate, 'day')
     ) {
-      newDate = dayjs.utc().local();
+      newDate = dayjs().utc(true).local();
     } else {
-      newDate = dayjs(dateToSet).utc().local();
+      newDate = dayjs(dateToSet).utc(true).local();
     }
     setDate(newDate);
     return newDate;
@@ -141,14 +141,14 @@ export default function SelectTimeSlots(
     let newDate: dayjs.Dayjs = handleDateChanges(date, selectedDate, setDate);
     handleBookingChanges();
     handleClearAllSlots("Selected date has changed, clearing all selected slots");
-    form.setFieldValue('start', newDate.utc().toISOString());
+    form.setFieldValue('start', newDate.utc(true).toISOString());
   }
 
   const form = useForm<Booking>({
     initialValues: {
       user: user.id,
       room: room.id,
-      start: selectedDate.utc().toISOString(),
+      start: selectedDate.utc(true).toISOString(),
       duration: 0,
     },
     validate: {
@@ -204,7 +204,7 @@ export default function SelectTimeSlots(
       console.log(`Selected Date changed to ${selectedDate.utc(true).local().toString()}`)
       console.log("Updating timeslots and setting forms")
       handleBookingChanges();
-      form.setFieldValue('start', selectedDate.utc().toISOString());
+      form.setFieldValue('start', selectedDate.utc(true).toISOString());
     },
     [selectedDate]
   );
@@ -224,14 +224,14 @@ export default function SelectTimeSlots(
       if (selectedTimeSlots.length === 0) {
         console.log("Selected time slots have been cleared, updating form")
         form.setFieldValue('duration', 0);
-        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString())
+        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc(true).toISOString())
       } else {
         console.log("Selected time slots have been updated, updating form")
         form.setFieldValue(
           'duration',
           selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL
         );
-        form.setFieldValue('start', selectedDate.add(selectedTimeSlots[0], 'hour').utc().toISOString())
+        form.setFieldValue('start', selectedDate.add(selectedTimeSlots[0], 'hour').utc(true).toISOString())
       }
     },
     [JSON.stringify(selectedTimeSlots)]

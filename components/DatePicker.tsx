@@ -9,7 +9,6 @@ dayjs.extend(utc);
 interface BookieDatePickerProps {
   selectedDate: dayjs.Dayjs
   updateDateChanges: (date: Date | dayjs.Dayjs) => void
-  size?: string
 }
 
 export function BookieDatePicker(
