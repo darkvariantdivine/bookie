@@ -8,7 +8,7 @@ dayjs.extend(utc);
 export function isDateEqual(
   date1: dayjs.Dayjs, date2: dayjs.Dayjs
 ): boolean {
-  return date1.utc(true).isSame(date2.utc(true), 'day')
+  return date1.utc().isSame(date2.utc(), 'day')
 }
 
 export function getUserBookings(
@@ -44,9 +44,9 @@ export function getDateBookings(
 export function getTimeSlotsFromDuration(
   date: dayjs.Dayjs, duration: number
 ): number[] {
-  let start: number = date.utc(true).local().hour();
-  if (date.utc(true).local().minute() > 0) {
-    start += date.utc(true).local().minute() / 60;
+  let start: number = date.utc().local().hour();
+  if (date.utc().local().minute() > 0) {
+    start += date.utc().local().minute() / 60;
   }
   let slots: number = duration / SLOT_INTERVAL
   return Array.from(Array(slots).keys()).map(
@@ -72,7 +72,7 @@ export function getTimeline(
 export function getCurrentTimeSlots(
   date: dayjs.Dayjs, timeslots: number[]
 ): number[] {
-  let currentDateTime: dayjs.Dayjs = dayjs().utc(true).local().second(0).millisecond(0)
+  let currentDateTime: dayjs.Dayjs = dayjs.utc().local().second(0).millisecond(0)
   return timeslots.filter(
     (slot) => {
       return (
