@@ -78,14 +78,21 @@ export function ModifyStartDate(
   const { selectedDate, setDate } = useContext(BookingContext);
 
   useEffect(
-    () => setDate(dayjs(userBooking.start).utc(true).local()),
+    () => {
+      console.log(dayjs(userBooking.start))
+      setDate(dayjs(userBooking.start).utc(true).local())
+    },
     []
   );
+
+  function handleSelectedDate(date: Date | dayjs.Dayjs) {
+    setDate(dayjs(date))
+  }
 
   return (
     <BookieDatePicker
       selectedDate={selectedDate}
-      updateDateChanges={setDate}
+      updateDateChanges={handleSelectedDate}
     />
   )
 }
@@ -101,28 +108,21 @@ export function ModifyDuration(
 ) {
 
   const {
-    currentBookings,
-    selectedDate, setSelectedDate,
+    selectedDate, setDate,
     duration, setDuration
   } = useContext(BookingContext);
 
   function updateDuration() {
-    let first: Date = duration[0] ? duration[0] : dayjs(selectedDate).toDate();
-    let second: Date = duration[1] ? duration[1] : dayjs(selectedDate).add(userBooking.duration, 'hour').toDate();
+    let first: Date = dayjs(selectedDate).toDate();
+    let second: Date = dayjs(selectedDate).add(userBooking.duration, 'hour').toDate();
 
-    console.log([first, second]);
     setDuration([first, second]);
-    console.log(duration)
-  }
-
-  function handleBookingChanges(newDate: dayjs.Dayjs, newBookings: Booking[]) {
-    setRoomBookings(getRoomBookings(userBooking.room.id, getDateBookings(selectedDate, newBookings)));
   }
 
   useEffect(
     () => {
 
-      setSelectedDate(
+      setDate(
         !selectedDate.isSame(dayjs(userBooking.start), 'minute') ?
           dayjs(selectedDate) :
           dayjs(userBooking.start).utc(true).local()
@@ -133,14 +133,13 @@ export function ModifyDuration(
   );
 
   useEffect(
-    () => {console.log(duration)},
-    [JSON.stringify(duration)]
-  );
+    () => updateDuration(),
+    [selectedDate]
+  )
 
   return (
     <TimeRangeInput
       label={"Select Booking Duration"}
-      error={"Invalid time selection, the time slots have either been taken or elapsed"}
       value={duration}
       defaultValue={duration}
       onChange={setDuration}
@@ -160,7 +159,7 @@ export default function UserBookingsPage() {
     bookings, retrieveBookings,
     setCurrentBookings,
     selectedDate, setDate,
-    selectedDuration, setSelectedDuration
+    selectedDuration, setDuration
   } = useContext(BookingContext);
 
   const [userBookings, setUserBookings] = useState<UserBooking[]>(
@@ -208,25 +207,22 @@ export default function UserBookingsPage() {
 
   const handleSaveRow: MantineReactTableProps<UserBooking>['onEditingRowSave'] =
     async ({ exitEditingMode, row, values}) => {
-      let first: dayjs.Dayjs = dayjs(selectedDuration[0]).utc();
-      let second: dayjs.Dayjs = dayjs(selectedDuration[1]).utc();
+      let first: dayjs.Dayjs = dayjs(selectedDuration[0]).utc(true);
+      let second: dayjs.Dayjs = dayjs(selectedDuration[1]).utc(true);
       userBookings[row.index]["start"] = selectedDate?.toISOString()
       userBookings[row.index]["duration"] = second.diff(first, 'minute');
+      userBookings[row.index]["end"] = second.toISOString();
       setUserBookings([...userBookings]);
+
       // TODO: send/receive api updates here
       // handleBookingChanges()
       exitEditingMode();
     }
 
-  function handleEditRowCancel() {
-    setDate(undefined);
-    setSelectedDuration([null, null]);
+  function handleEditCancel({ row }) {
+    setDate(dayjs(row.original.start).utc(true).local());
+    setDuration([null, null])
   }
-
-  useEffect(() => {
-    //do something when the row selection changes...
-    console.info({ rowSelection });
-  }, [rowSelection]);
 
   useEffect(
     () => {
@@ -240,7 +236,7 @@ export default function UserBookingsPage() {
 
   useEffect(
     () => {handleBookingChanges()},
-    [bookings]
+    [bookings.length]
   )
 
   const columns = useMemo<MRT_ColumnDef<UserBooking>[]>(
@@ -323,7 +319,7 @@ export default function UserBookingsPage() {
           },
         }}
         onEditingRowSave={handleSaveRow}
-        onEditingRowCancel={handleEditRowCancel}
+        onEditingRowCancel={handleEditCancel}
 
         enableRowSelection
         enableSelectAll
