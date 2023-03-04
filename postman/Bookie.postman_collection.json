@@ -1,0 +1,3296 @@
+{
+	"info": {
+		"_postman_id": "65e98a4d-151f-4f37-bb26-d08fb7d1fb67",
+		"name": "Bookie",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24929997"
+	},
+	"item": [
+		{
+			"name": "CRUD Users",
+			"item": [
+				{
+					"name": "Retrieve Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"3 default Users retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(3);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/users",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Users",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/users",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:09 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "803"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n        \"password\": \"958b262e3b559ea13abf15a1d77f1e075f9c63ad7fa69d239672f78ccfb1af08\",\n        \"salt\": \"9347e591cbe15dc9\",\n        \"email\": \"test1@bookie.org\",\n        \"name\": \"Test User 1\",\n        \"image\": \"/TestUser1.png\",\n        \"description\": \"This is test user 1\",\n        \"rooms\": []\n    },\n    {\n        \"id\": \"2f5575ba0b1a48c896fcc82e9dcf6f3e\",\n        \"password\": \"5728d7b7934a554bc5a5df9d75bd2723b3847227674f6cc603ca5770d484d4e5\",\n        \"salt\": \"2f436f2bd4ac735a\",\n        \"email\": \"test2@bookie.org\",\n        \"name\": \"Test User 2\",\n        \"image\": \"/TestUser2.png\",\n        \"description\": \"This is test user 2\",\n        \"rooms\": []\n    },\n    {\n        \"id\": \"ee77f20983f8470d9ccaf094c3e46325\",\n        \"password\": \"3ae9178f23dd6d90c1763c5ab163d8b014a346cf0c197db6f865cf99eb631bf6\",\n        \"salt\": \"351fd337b988319b\",\n        \"email\": \"admin1@bookie.org\",\n        \"name\": \"Admin User 1\",\n        \"image\": \"/AdminUser1.png\",\n        \"description\": \"This is admin user 1\",\n        \"rooms\": []\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Retrieve non-existent user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Attempting to retrieve non-existent user\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(404);",
+									"    pm.expect(jsonData.message).to.eql(\"Requesting user does not exist\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/users/:user",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"users",
+								":user"
+							],
+							"variable": [
+								{
+									"key": "user",
+									"value": "non-existent"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve non-existent user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/users/:user",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"users",
+										":user"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "non-existent"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:15 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "510"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 404,\n    \"message\": \"Requesting user does not exist\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/users/non-existent\",\n        \"headers\": {\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"b79993ea-fa3d-4942-b435-b9745e20a112\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\"\n        },\n        \"path_params\": {\n            \"user_id\": \"non-existent\"\n        },\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 42218\n        },\n        \"body\": \"\"\n    },\n    \"details\": {\n        \"user\": {\n            \"id\": \"non-existent\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Retrieve Test User 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Test User 1 retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"Test User 1\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/users/:user",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"users",
+								":user"
+							],
+							"variable": [
+								{
+									"key": "user",
+									"value": "b4811bbb0de74ca0b6c8feb541896746"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Test User 1",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/users/:user",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"users",
+										":user"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "b4811bbb0de74ca0b6c8feb541896746"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:19 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "265"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"password\": \"958b262e3b559ea13abf15a1d77f1e075f9c63ad7fa69d239672f78ccfb1af08\",\n    \"salt\": \"9347e591cbe15dc9\",\n    \"email\": \"test1@bookie.org\",\n    \"name\": \"Test User 1\",\n    \"image\": \"/TestUser1.png\",\n    \"description\": \"This is test user 1\",\n    \"rooms\": []\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CRUD Rooms",
+			"item": [
+				{
+					"name": "Retrieve Rooms",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"11 default Rooms retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(11);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/rooms",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"rooms"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Rooms",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/rooms",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"rooms"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:23 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "5821"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n        \"name\": \"Meeting Room 1\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 1,\n        \"images\": [\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\"\n        ]\n    },\n    {\n        \"id\": \"7e1ad2e0a6d04be797176dd1bcdfc729\",\n        \"name\": \"Meeting Room 2\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 5,\n        \"images\": [\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\"\n        ]\n    },\n    {\n        \"id\": \"9b5b442460cd46a9a51a62b0d2ed52d8\",\n        \"name\": \"Meeting Room 3\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 5,\n        \"images\": [\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\"\n        ]\n    },\n    {\n        \"id\": \"e780777314124951bf42a97e7da89101\",\n        \"name\": \"Meeting Room 4\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 10,\n        \"images\": [\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\"\n        ]\n    },\n    {\n        \"id\": \"4905ea67430c4167a287536157f87c00\",\n        \"name\": \"Meeting Room 5\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 10,\n        \"images\": [\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\"\n        ]\n    },\n    {\n        \"id\": \"7aa668c3af294b82b84a4c0160db7c6a\",\n        \"name\": \"Meeting Room 6\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 20,\n        \"images\": [\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\"\n        ]\n    },\n    {\n        \"id\": \"7fc5eadc5e954bfd97058866c91d32f9\",\n        \"name\": \"Meeting Room 7\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 20,\n        \"images\": [\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\"\n        ]\n    },\n    {\n        \"id\": \"ace5281c531a44b38fa685359c502acc\",\n        \"name\": \"Meeting Room 8\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 20,\n        \"images\": [\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\"\n        ]\n    },\n    {\n        \"id\": \"1fea3515b1f9476ba773b290ddd4ce1d\",\n        \"name\": \"Meeting Room 9\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 15,\n        \"images\": [\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\"\n        ]\n    },\n    {\n        \"id\": \"c521b2a3c4164b6fa731e47780706f57\",\n        \"name\": \"Meeting Room 10\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 10,\n        \"images\": [\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\"\n        ]\n    },\n    {\n        \"id\": \"043bad134585485393ff29dcfc644d38\",\n        \"name\": \"Meeting Room 11\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 15,\n        \"images\": []\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Retrieve non-existent room",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Attempting to retrieve non-existent user\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(404);",
+									"    pm.expect(jsonData.message).to.eql(\"Requesting user does not exist\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/rooms/:user",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"rooms",
+								":user"
+							],
+							"variable": [
+								{
+									"key": "user",
+									"value": "non-existent"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve non-existent room",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/rooms/:user",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"rooms",
+										":user"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "non-existent"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:28 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "499"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 404,\n    \"message\": \"Room does not exist\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/rooms/non-existent\",\n        \"headers\": {\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"f1ab75b1-436a-4ff6-9a4a-b01e3da659bd\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\"\n        },\n        \"path_params\": {\n            \"room_id\": \"non-existent\"\n        },\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 42218\n        },\n        \"body\": \"\"\n    },\n    \"details\": {\n        \"room\": {\n            \"id\": \"non-existent\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Retrieve Meeting Room 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"11 default Rooms retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(11);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/rooms",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"rooms"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Meeting Room 1",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/rooms",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"rooms"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:32 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "5821"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n        \"name\": \"Meeting Room 1\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 1,\n        \"images\": [\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\",\n            \"/MeetingRoom1.jpeg\"\n        ]\n    },\n    {\n        \"id\": \"7e1ad2e0a6d04be797176dd1bcdfc729\",\n        \"name\": \"Meeting Room 2\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 5,\n        \"images\": [\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\",\n            \"/MeetingRoom2.jpg\"\n        ]\n    },\n    {\n        \"id\": \"9b5b442460cd46a9a51a62b0d2ed52d8\",\n        \"name\": \"Meeting Room 3\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 5,\n        \"images\": [\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\",\n            \"/MeetingRoom3.jpg\"\n        ]\n    },\n    {\n        \"id\": \"e780777314124951bf42a97e7da89101\",\n        \"name\": \"Meeting Room 4\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 10,\n        \"images\": [\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\",\n            \"/MeetingRoom1.jpg\"\n        ]\n    },\n    {\n        \"id\": \"4905ea67430c4167a287536157f87c00\",\n        \"name\": \"Meeting Room 5\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 10,\n        \"images\": [\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\",\n            \"/MeetingRoom5.jpeg\"\n        ]\n    },\n    {\n        \"id\": \"7aa668c3af294b82b84a4c0160db7c6a\",\n        \"name\": \"Meeting Room 6\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 20,\n        \"images\": [\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\",\n            \"/MeetingRoom6.jpeg\"\n        ]\n    },\n    {\n        \"id\": \"7fc5eadc5e954bfd97058866c91d32f9\",\n        \"name\": \"Meeting Room 7\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 20,\n        \"images\": [\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\",\n            \"/MeetingRoom7.jpg\"\n        ]\n    },\n    {\n        \"id\": \"ace5281c531a44b38fa685359c502acc\",\n        \"name\": \"Meeting Room 8\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 20,\n        \"images\": [\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\",\n            \"/MeetingRoom8.jpg\"\n        ]\n    },\n    {\n        \"id\": \"1fea3515b1f9476ba773b290ddd4ce1d\",\n        \"name\": \"Meeting Room 9\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 15,\n        \"images\": [\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\",\n            \"/MeetingRoom9.jpg\"\n        ]\n    },\n    {\n        \"id\": \"c521b2a3c4164b6fa731e47780706f57\",\n        \"name\": \"Meeting Room 10\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 10,\n        \"images\": [\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\",\n            \"/MeetingRoom10.jpg\"\n        ]\n    },\n    {\n        \"id\": \"043bad134585485393ff29dcfc644d38\",\n        \"name\": \"Meeting Room 11\",\n        \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id porta nibh venenatis cras sed felis eget. Rhoncus urna neque viverra justo nec ultrices dui sapien. Erat imperdiet sed euismod nisi porta lorem. Mi bibendum neque egestas congue quisque egestas.\",\n        \"capacity\": 15,\n        \"images\": []\n    }\n]"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login with non-existent User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Attempt to login with non-existent user\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(404);",
+									"    pm.expect(jsonData.message).to.eql(\"Requesting user does not exist\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"hello@bookie.com\",\n    \"password\": \"hello-world\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/login",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Login with non-existent User",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"hello@bookie.com\",\n    \"password\": \"hello-world\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/login",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:36 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "618"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 404,\n    \"message\": \"Requesting user does not exist\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/login\",\n        \"headers\": {\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"7e5d8aaf-23f5-473b-a43b-47098e0f9a87\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"69\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 42218\n        },\n        \"body\": {\n            \"username\": \"hello@bookie.com\",\n            \"password\": \"hello-world\"\n        }\n    },\n    \"details\": {\n        \"login\": {\n            \"username\": \"hello@bookie.com\",\n            \"password\": \"**********\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Login with invalid password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test(\"Attempt to login with invalid password\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(401);",
+									"    pm.expect(jsonData.message).to.eql(\"Requesting user is not authenticated\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/login",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Login with invalid password",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/login",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:40 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "625"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 401,\n    \"message\": \"Requesting user is not authenticated\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/login\",\n        \"headers\": {\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"3f3c6793-5fac-4141-8303-f15e5e675b9e\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"70\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 42218\n        },\n        \"body\": {\n            \"username\": \"test1@bookie.org\",\n            \"password\": \"Hello_world2\"\n        }\n    },\n    \"details\": {\n        \"login\": {\n            \"username\": \"test1@bookie.org\",\n            \"password\": \"**********\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Successful Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"pm.test(\"Retrieved login token\", function () {",
+									"    pm.response.to.have.header(\"authorization\");",
+									"});",
+									"pm.environment.set('token', pm.response.headers.get('authorization').split(' ')[1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/login",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/login",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:45 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "authorization",
+									"value": "Bearer 4448fdf20043d0a8bc5d4383ebac1a64"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Successful Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"pm.test(\"Retrieved login token\", function () {",
+									"    pm.expect( pm.response.headers.get(\"authorization\")).to.eql(undefined);",
+									"});",
+									"pm.environment.set('token', null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/login",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Logout",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/login",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:49 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Logout second time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test(\"Attempting to log out after logging out\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(401);",
+									"    pm.expect(jsonData.message).to.eql(\"Requesting user is not authenticated\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/login",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Logout second time",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/login",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:54 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "603"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 401,\n    \"message\": \"Requesting user is not authenticated\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/login\",\n        \"headers\": {\n            \"authorization\": \"Bearer null\",\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"a5e50209-7f91-4bf9-a111-a14c98d4ac55\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"70\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 53242\n        },\n        \"body\": {\n            \"username\": \"test1@bookie.org\",\n            \"password\": \"Hello_world1\"\n        }\n    },\n    \"details\": {\n        \"user\": null\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CRUD Bookings",
+			"item": [
+				{
+					"name": "Retrieve Empty Bookings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"No bookings retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Empty Bookings",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:47:00 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "2"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[]"
+						}
+					]
+				},
+				{
+					"name": "Retrieve non-existent Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"No bookings retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(404);",
+									"    pm.expect(jsonData.message).to.eql(\"Booking does not exist\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "non-existent"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve non-existent Booking",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "non-existent"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:47:04 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "511"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 404,\n    \"message\": \"Booking does not exist\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings/non-existent\",\n        \"headers\": {\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"c26dbb04-1de7-4c3f-9f7e-23d1508170f7\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\"\n        },\n        \"path_params\": {\n            \"booking_id\": \"non-existent\"\n        },\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 58060\n        },\n        \"body\": \"\"\n    },\n    \"details\": {\n        \"booking\": {\n            \"id\": \"non-existent\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Booking without logging in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test(\"Attempt to create booking without signing in\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(401);",
+									"    pm.expect(jsonData.message).to.eql(\"Invalid authentication method used\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set('current_time', new Date().toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Booking without logging in",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:48:21 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "627"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 401,\n    \"message\": \"Invalid authentication method used\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings\",\n        \"headers\": {\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"94b5e8b6-5573-4425-89e6-0f4112081404\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"158\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 47922\n        },\n        \"body\": {\n            \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n            \"start\": \"2023-03-04T10:48:21.409Z\",\n            \"duration\": 1\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Bookings without logging in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test(\"Attempt to create booking without signing in\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(401);",
+									"    pm.expect(jsonData.message).to.eql(\"Invalid authentication method used\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set('current_time', new Date().toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings?booking=12345&booking=23456",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "booking",
+									"value": "12345"
+								},
+								{
+									"key": "booking",
+									"value": "23456"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete Bookings without logging in",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings?booking=12345&booking=23456",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									],
+									"query": [
+										{
+											"key": "booking",
+											"value": "12345"
+										},
+										{
+											"key": "booking",
+											"value": "23456"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:19:58 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "672"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 401,\n    \"message\": \"Invalid authentication method used\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings?booking=12345&booking=23456\",\n        \"headers\": {\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"a4285a72-c084-431e-a13b-3b5d462dba02\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"158\"\n        },\n        \"path_params\": {},\n        \"query_params\": {\n            \"booking\": \"23456\"\n        },\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 48202\n        },\n        \"body\": {\n            \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n            \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n            \"start\": \"2023-03-04T15:19:58.821Z\",\n            \"duration\": 1\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Booking without logging in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test(\"Attempt to create booking without signing in\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(401);",
+									"    pm.expect(jsonData.message).to.eql(\"Invalid authentication method used\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set('current_time', new Date().toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "non-existent"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update Booking without logging in",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "non-existent"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:20:10 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "582"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 401,\n    \"message\": \"Invalid authentication method used\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings/non-existent\",\n        \"headers\": {\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"db2d6e67-ae3f-45d7-ae50-48945f5594de\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"62\"\n        },\n        \"path_params\": {\n            \"booking_id\": \"non-existent\"\n        },\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 58746\n        },\n        \"body\": {\n            \"start\": \"2023-03-04T15:20:10.998Z\",\n            \"duration\": 1\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Booking without logging in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test(\"Attempt to create booking without signing in\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(401);",
+									"    pm.expect(jsonData.message).to.eql(\"Invalid authentication method used\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set('current_time', new Date().toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "non-existent"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete Booking without logging in",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "non-existent"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:20:21 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "479"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 401,\n    \"message\": \"Invalid authentication method used\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings/non-existent\",\n        \"headers\": {\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"473fe817-0fab-4dee-85ef-4188342db20a\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\"\n        },\n        \"path_params\": {\n            \"booking_id\": \"non-existent\"\n        },\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 60726\n        },\n        \"body\": \"\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Successful Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"pm.test(\"Retrieved login token\", function () {",
+									"    pm.response.to.have.header(\"authorization\");",
+									"});",
+									"pm.environment.set('token', pm.response.headers.get('authorization').split(' ')[1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/login",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"test1@bookie.org\",\n    \"password\": \"Hello_world1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/login",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 10:46:45 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "authorization",
+									"value": "Bearer 4448fdf20043d0a8bc5d4383ebac1a64"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Create Booking with non-existent room",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Attempt to create booking with non-existent room\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(404);",
+									"    pm.expect(jsonData.message).to.eql(\"Room does not exist\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 1);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"non-existentnon-existentnon-exis\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Booking with non-existent room",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"non-existentnon-existentnon-exis\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:31:40 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "750"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 404,\n    \"message\": \"Room does not exist\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings\",\n        \"headers\": {\n            \"authorization\": \"Bearer 130db7ef366e09ddda56322b9b9e59c5\",\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"da18a87c-c29d-4dcd-8d8c-a71f3a99d9a7\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"110\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 60930\n        },\n        \"body\": {\n            \"room\": \"non-existentnon-existentnon-exis\",\n            \"start\": \"2023-03-04T16:31:40.931Z\",\n            \"duration\": 1\n        }\n    },\n    \"details\": {\n        \"booking\": {\n            \"room\": \"non-existentnon-existentnon-exis\",\n            \"start\": \"2023-03-04T16:31:40.931000+00:00\",\n            \"duration\": 1\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Booking with expired start time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Attempt to create booking with expired timestamp\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(400);",
+									"    pm.expect(jsonData.message).to.eql(\"Validation error\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() - 1);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"non-existentnon-existentnon-exis\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Booking with expired start time",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"non-existentnon-existentnon-exis\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:33:00 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "707"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 400,\n    \"message\": \"Validation error\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings\",\n        \"headers\": {\n            \"authorization\": \"Bearer 130db7ef366e09ddda56322b9b9e59c5\",\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"a4c78b12-3a3d-4fe9-a9a5-c5325bc78f0b\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"110\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 35342\n        },\n        \"body\": {\n            \"room\": \"non-existentnon-existentnon-exis\",\n            \"start\": \"2023-03-04T14:33:01.401Z\",\n            \"duration\": 1\n        }\n    },\n    \"details\": {\n        \"errors\": [\n            {\n                \"loc\": [\n                    \"body\",\n                    \"start\"\n                ],\n                \"msg\": \"\",\n                \"type\": \"assertion_error\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Create Booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 3);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Booking",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:38:23 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "41"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"a01f6d50b4cd4258b0d6e60545904abb\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Create Booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 4);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Booking",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:40:01 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "41"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"0eb8e66a63f1497f87e85cf2ebf2f975\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Create Booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 5);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Booking",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:40:08 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "41"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"83279a35d3444c3d92da2320bcfadf89\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create overlapping Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Create overlapping Booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(400);",
+									"    pm.expect(jsonData.message).to.eql(\"Booking overlaps with other Bookings\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setMinutes(today.getMinutes() + 20);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create overlapping Booking",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"{{current_time}}\",\n    \"duration\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:51:59 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "767"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 400,\n    \"message\": \"Booking overlaps with other Bookings\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings\",\n        \"headers\": {\n            \"authorization\": \"Bearer db675db4f2c1483f3b9e43a7c2d00819\",\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"240befb6-5d12-498a-b71a-e4593b7c8fcf\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"110\"\n        },\n        \"path_params\": {},\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 51294\n        },\n        \"body\": {\n            \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n            \"start\": \"2023-03-04T16:12:00.183Z\",\n            \"duration\": 1\n        }\n    },\n    \"details\": {\n        \"booking\": {\n            \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n            \"start\": \"2023-03-04T16:12:00.183000+00:00\",\n            \"duration\": 1\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Retrieve Bookings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Retrieved 3 bookings\", function () {",
+									"    pm.expect(jsonData.length).to.eql(3);",
+									"});",
+									"pm.environment.set('booking1', jsonData[0].id);",
+									"pm.environment.set('booking2', jsonData[1].id);",
+									"pm.environment.set('booking3', jsonData[2].id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Bookings",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:54:32 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "697"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"c76b46354b6f4381b9b51a35b45cb875\",\n        \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n        \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n        \"start\": \"2023-03-04T16:51:07.106000+00:00\",\n        \"duration\": 1,\n        \"lastModified\": \"2023-03-04T15:51:07.147000+00:00\"\n    },\n    {\n        \"id\": \"df27a79001864cc28e8dd0efa2980150\",\n        \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n        \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n        \"start\": \"2023-03-04T17:51:09.699000+00:00\",\n        \"duration\": 1,\n        \"lastModified\": \"2023-03-04T15:51:09.734000+00:00\"\n    },\n    {\n        \"id\": \"dd32f01e16704ffd9a124d2117161f07\",\n        \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n        \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n        \"start\": \"2023-03-04T18:51:11.953000+00:00\",\n        \"duration\": 1,\n        \"lastModified\": \"2023-03-04T15:51:11.964000+00:00\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Retrieve Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Retrieved booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.user).to.eql(\"b4811bbb0de74ca0b6c8feb541896746\");",
+									"    pm.expect(jsonData.room).to.eql(\"8af9ab04f6ea4d64b25358781c92e07b\");",
+									"    pm.expect(jsonData.duration).to.eql(1);",
+									"    pm.expect(jsonData).to.have.all.keys('id', 'user', 'room', 'start', 'duration', 'lastModified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "{{booking1}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Booking",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "{{booking1}}"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 15:59:27 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "231"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"c76b46354b6f4381b9b51a35b45cb875\",\n    \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"2023-03-04T16:51:07.106000+00:00\",\n    \"duration\": 1,\n    \"lastModified\": \"2023-03-04T15:51:07.147000+00:00\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Booking start",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 1);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start\": \"{{current_time}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "{{booking1}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update Booking start",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"start\": \"{{current_time}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "{{booking1}}"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:21:35 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update Booking duration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 1);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"duration\": 0.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "{{booking1}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update Booking duration",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"duration\": 0.5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "{{booking1}}"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:35:03 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Retrieve Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Retrieved booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.user).to.eql(\"b4811bbb0de74ca0b6c8feb541896746\");",
+									"    pm.expect(jsonData.room).to.eql(\"8af9ab04f6ea4d64b25358781c92e07b\");",
+									"    pm.expect(jsonData.duration).to.eql(0.5);",
+									"    pm.expect(jsonData).to.have.all.keys('id', 'user', 'room', 'start', 'duration', 'lastModified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "{{booking1}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Booking",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "{{booking1}}"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:35:26 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "233"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"b0c44d81c56943dea7b1454f9b917337\",\n    \"user\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"room\": \"8af9ab04f6ea4d64b25358781c92e07b\",\n    \"start\": \"2023-03-04T17:35:01.739000+00:00\",\n    \"duration\": 0.5,\n    \"lastModified\": \"2023-03-04T16:34:17.036000+00:00\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update overlapping Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Update overlapping Booking\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.code).to.eql(400);",
+									"    pm.expect(jsonData.message).to.eql(\"Booking overlaps with other Bookings\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var today = new Date();",
+									"today.setHours(today.getHours() + 2);",
+									"pm.environment.set('current_time', today.toISOString());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "{{booking1}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update overlapping Booking",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 2\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "{{booking1}}"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:36:33 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "746"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"code\": 400,\n    \"message\": \"Booking overlaps with other Bookings\",\n    \"request\": {\n        \"url\": \"http://localhost:20000/v1.0/bookings/b0c44d81c56943dea7b1454f9b917337\",\n        \"headers\": {\n            \"authorization\": \"Bearer 1da679797ce346be676ffd555449163c\",\n            \"content-type\": \"application/json\",\n            \"user-agent\": \"PostmanRuntime/7.31.1\",\n            \"accept\": \"*/*\",\n            \"cache-control\": \"no-cache\",\n            \"postman-token\": \"24736c76-e503-4ecb-8dfd-99d5c7f77ad7\",\n            \"host\": \"localhost:20000\",\n            \"accept-encoding\": \"gzip, deflate, br\",\n            \"connection\": \"keep-alive\",\n            \"content-length\": \"62\"\n        },\n        \"path_params\": {\n            \"booking_id\": \"b0c44d81c56943dea7b1454f9b917337\"\n        },\n        \"query_params\": {},\n        \"client\": {\n            \"host\": \"127.0.0.1\",\n            \"port\": 56792\n        },\n        \"body\": {\n            \"start\": \"2023-03-04T18:36:33.476Z\",\n            \"duration\": 2\n        }\n    },\n    \"details\": {\n        \"booking\": {\n            \"id\": \"b0c44d81c56943dea7b1454f9b917337\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings/:booking",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings",
+								":booking"
+							],
+							"variable": [
+								{
+									"key": "booking",
+									"value": "{{booking1}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete Booking",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 2\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings/:booking",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings",
+										":booking"
+									],
+									"variable": [
+										{
+											"key": "booking",
+											"value": "{{booking1}}"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:38:12 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Delete Bookings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bookie_url}}/bookings?booking={{booking2}}&booking={{booking3}}",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "booking",
+									"value": "{{booking2}}"
+								},
+								{
+									"key": "booking",
+									"value": "{{booking3}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete Bookings",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"start\": \"{{current_time}}\",\n    \"duration\": 2\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bookie_url}}/bookings?booking={{booking2}}&booking={{booking3}}",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									],
+									"query": [
+										{
+											"key": "booking",
+											"value": "{{booking2}}"
+										},
+										{
+											"key": "booking",
+											"value": "{{booking3}}"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:38:57 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Retrieve Bookings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Retrieved 3 bookings\", function () {",
+									"    pm.expect(jsonData.length).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bookie_url}}/bookings",
+							"host": [
+								"{{bookie_url}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Retrieve Bookings",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{bookie_url}}/bookings",
+									"host": [
+										"{{bookie_url}}"
+									],
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Mar 2023 16:39:44 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "2"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[]"
+						}
+					]
+				}
+			]
+		}
+	]
+}
