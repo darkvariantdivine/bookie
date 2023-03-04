@@ -1,5 +1,5 @@
 from logging import Logger, getLogger
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Set
 
 from fastapi import APIRouter, status
 
@@ -45,16 +45,21 @@ router: APIRouter = APIRouter(
 )
 
 
+EXCLUDES: Set[str] = {'password', 'salt'}
+
+
 @router.get(
     '/',
     status_code=status.HTTP_200_OK,
     response_model=List[User],
+    response_model_exclude=EXCLUDES,
     include_in_schema=False
 )
 @router.get(
     '',
     status_code=status.HTTP_200_OK,
     response_model=List[User],
+    response_model_exclude=EXCLUDES,
     responses={
         status.HTTP_200_OK: {
             'description': OpenAPIDescriptions.USER_GET_200_SUCCESS_DESCRIPTION,
@@ -80,12 +85,14 @@ async def get_users() -> List[Dict[str, Any]]:
     '/{user_id}/',
     status_code=status.HTTP_200_OK,
     response_model=User,
+    response_model_exclude=EXCLUDES,
     include_in_schema=False
 )
 @router.get(
     '/{user_id}',
     status_code=status.HTTP_200_OK,
     response_model=User,
+    response_model_exclude=EXCLUDES,
     responses={
         status.HTTP_200_OK: {
             'description': OpenAPIDescriptions.USER_ID_GET_200_SUCCESS_DESCRIPTION,
