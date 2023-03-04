@@ -1,0 +1,739 @@
+openapi: "3.0.3"
+info:
+  title: Bookie API
+  description: >-
+    This document describes the full API for Bookie, a facilities and booking
+    management system
+  version: 1.0.0
+  contact:
+    name: Lee Tat Wai David
+    email: ltw_david@hotmail.com 
+servers:
+  - url: https://localhost:3000/v{Major}.{Minor}
+    description: Local address
+    variables:
+      Major:
+        default: "1"
+        description: Major API Version
+      Minor:
+        default: "0"
+        description: Minor API Version
+  - url: https://bookie.free.beeceptor.com/v{Major}.{Minor}
+    description: Mock server address hosted on cloud
+    variables:
+      Major:
+        default: "1"
+        description: Major API Version
+      Minor:
+        default: "0"
+        description: Minor API Version
+tags:
+  - name: Users
+    description: API for managing and authenticating users
+  - name: Facilities
+    description: API for managing facilities 
+  - name: Bookings
+    description: API for managing bookings
+
+paths:
+  /login:
+    post:
+      tags:
+        - Users
+      summary: Logs users in to Bookie
+      description: >-
+        Authenticates and logs users into Bookie, allowing them to utilise 
+        the booking facilities. This is an authorised call.
+      operationId: login_user
+      requestBody:
+        description: User credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuth'
+      responses:
+        '204':
+          description: Successfully logged into Bookie
+          headers:
+            Authorization: 
+              description: Authentication token
+              schema:
+                type: string
+                example: Bearer 1TZ3pLjtZRVzH5X29iyui_Gu8qWwR-pPD8cwUcmXvLE
+        '400':
+          $ref: '#/components/responses/InvalidBodyError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Users
+      summary: Logs users out of Bookie 
+      description: >-
+        Authenticates and logs users out of Bookie, allowing them to utilise 
+        the booking facilities. This is an authorised call.
+      operationId: logout_user
+      responses:
+        '204':
+          description: Successfully logged out of Bookie
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Retrieves all registered users 
+      description: >-
+        Retrieves a brief description of all registered users. This is an
+        authorised call.
+      operationId: get_users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved a brief description of all users
+          content:
+            application/json:
+              schema:
+                description: Brief description of all registered users
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+                example:
+                  - id: 
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{user}:
+    parameters:
+      - $ref: '#/components/parameters/User'
+    get:
+      tags:
+        - Users
+      summary: Retrieves a registered user
+      description: >-
+        Retrieves all details associated with a registered user. This is an
+        authorised call.
+      operationId: get_user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved a registered user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /rooms:
+    get:
+      tags:
+        - Facilities
+      summary: Retrieves all registered rooms 
+      description: >-
+        Retrieves a brief description of all registered rooms. This is an
+        authorised call.
+      operationId: get_rooms
+      responses:
+        '200':
+          description: Successfully retrieved a brief description of all rooms
+          content:
+            application/json:
+              schema:
+                description: Brief description of all registered rooms
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /rooms/{room}:
+    parameters:
+      - $ref: '#/components/parameters/Room'
+    get:
+      tags:
+        - Facilities
+      summary: Retrieves a registered room
+      description: >-
+        Retrieves all details associated with a registered room. This is an
+        authorised call.
+      operationId: get_room
+      responses:
+        '200':
+          description: Successfully retrieved a registered room
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  
+  /bookings:
+    post:
+      tags:
+        - Bookings
+      summary: Creates a booking
+      description: >-
+        Users submit bookings via this API. This is an authorised call.
+      operationId: create_booking
+      requestBody:
+        description: Booking details
+        content:
+          application/json:
+            schema:
+              description: Booking details
+              type: object
+              properties:
+                user:
+                  description: Unique user ID
+                  type: string
+                  format: uuid
+                  minLength: 32
+                  maxLength: 32
+                room:
+                  description: Unique room ID
+                  type: string
+                  format: uuid
+                  minLength: 32
+                  maxLength: 32
+                start:
+                  description: Start datetime of the booking
+                  type: string
+                  format: date-time
+                duration:
+                  description: Duration of the booking
+                  type: number
+                  format: float32
+                  minimum: 0.25
+              required:
+                - user
+                - room
+                - start
+                - duration
+            example:
+              user: c2414cd157ca407c996a82e403bef0de
+              room: c2414cd157ca407c996a82e403bef0d1
+              start: 2023-03-03T16:30:44Z
+              duration: 1
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Successfully created a Booking
+          content:
+            application/json:
+              schema:
+                description: Booking ID
+                type: string
+                format: uuid
+                minLength: 32
+                maxLength: 32
+        '400':
+          $ref: '#/components/responses/InvalidBodyError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Bookings
+      summary: Retrieves all complete bookings
+      description: >-
+        Retrieves all pending and partially complete bookings.
+        This is an authorised call.
+      operationId: get_bookings
+      parameters:
+        - description: Specifies the start datetime to search for bookings
+          name: from
+          required: false
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - description: Specifies the end datetime to search for bookings
+          name: to
+          required: false
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - description: Specifies all bookings related to a group of users
+          name: user
+          required: false
+          in: query
+          schema:
+            description: Specified users
+            type: array
+            format: csv
+            items:
+              description: Unique user ID
+              type: string
+              format: uuid
+              minLength: 32
+              maxLength: 32
+        - description: Specifies all bookings related to a set of rooms
+          name: room
+          required: false
+          in: query
+          schema:
+            description: Specified rooms
+            type: array
+            format: csv
+            items:
+              description: Unique room ID
+              type: string
+              format: uuid
+              minLength: 32
+              maxLength: 32
+      responses:
+        '200':
+          description: Successfully retrieved all bookings
+          content:
+            application/json:
+              schema:
+                description: List of bookings
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Bookings
+      summary: Deletes a list of bookings
+      description: >-
+        Users cancel a list of bookings via this API. 
+        This is an authorised call.
+      operationId: cancel_bookings
+      parameters:
+        - description: Unique booking IDs
+          name: booking
+          in: query
+          required: true
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
+              minLength: 32
+              maxLength: 32
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Successfully cancelled Bookings
+        '400':
+          $ref: '#/components/responses/InvalidBodyError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /bookings/{booking}:
+    parameters:
+      - $ref: '#/components/parameters/Booking'
+    put:
+      tags:
+        - Bookings
+      summary: Modifies a booking
+      description: >-
+        Users edit bookings via this API. This is an authorised call.
+      operationId: update_booking
+      requestBody:
+        description: Booking details to be updated
+        content:
+          application/json:
+            schema:
+              description: Booking details
+              type: object
+              properties:
+                start:
+                  description: Start datetime of the booking
+                  type: string
+                  format: date-time
+                  nullable: true
+                duration:
+                  description: Duration of the booking
+                  type: number
+                  format: float32
+                  minimum: 0.25
+                  nullable: true
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Successfully modified a Booking
+        '400':
+          $ref: '#/components/responses/InvalidBodyError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Bookings
+      summary: Retrieves a booking
+      description: >-
+        Retrieves a specified booking
+      operationId: get_booking
+      responses:
+        '200':
+          description: Successfully retrieved all bookings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Bookings
+      summary: Deletes a booking
+      description: >-
+        Users cancel a bookings via this API. This is an authorised call.
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Successfully cancelled Bookings
+        '400':
+          $ref: '#/components/responses/InvalidBodyError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/PermissionsError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+
+    APIError:
+      type: object
+      properties:
+        code:
+          description: API Error code assoiated with the error 
+          type: integer
+          format: int32
+        message:
+          description: Error message associated with the error
+          type: string
+        request:
+          description: Request details associated with the error
+          type: object
+        details:
+          description: Other details associated with the error
+          type: object
+      required:
+        - code
+        - message
+        
+    UserAuth:
+      description: User authentication structure
+      type: object
+      properties:
+        username:
+          description: Email of the user
+          type: string
+          format: email
+        password:
+          description: User's password
+          type: string
+          maxLength: 50
+      required:
+        - username
+        - password
+      example:
+        user: c2414cd157ca407c996a82e403bef0de
+        password: hello_world1
+    
+    User:
+      description: User details
+      type: object
+      properties:
+        id:
+          description: Unique user ID
+          type: string
+          format: uuid
+          minLength: 32
+          maxLength: 32
+        email:
+          description: Email of the user
+          type: string
+          format: uuid
+          minLength: 32
+          maxLength: 32
+        name:
+          description: Name of the user
+          type: string
+          maxLength: 100
+        image:
+          description: User profile image
+          type: string
+        description:
+          description: Brief description of the user
+          type: string
+          maxLength: 200
+        rooms:
+          description: A list of rooms that the user is able to book
+          type: array
+          items:
+            description: Unique room ID
+            type: string
+            format: uuid
+            minLength: 32
+            maxLength: 32
+      required:
+        - id
+        - email
+        - name
+        - description
+      example:
+        id: c2414cd157ca407c996a82e403bef0de
+        name: Test User 1
+        image: /c2414cd157ca407c996a82e403bef0de.png
+        description: This is a test user
+        rooms:
+          - c2414cd157ca407c996a82e403bef0de
+          - c2414cd157ca407c996a82e403bef0d1
+          - c2414cd157ca407c996a82e403bef0d2
+          - c2414cd157ca407c996a82e403bef0d3
+          - c2414cd157ca407c996a82e403bef0d4
+          - c2414cd157ca407c996a82e403bef0d5
+    
+    Room:
+      description: Room details
+      type: object
+      properties:
+        id:
+          description: Unique room ID
+          type: string
+          format: uuid
+          minLength: 32
+          maxLength: 32
+        name:
+          description: Name of the room
+          type: string
+          maxLength: 100
+        description: 
+          description: Brief description of the room
+          type: string
+          maxLength: 500
+        capacity:
+          description: Maximum capacity of the room
+          type: integer
+          format: int32
+          minimum: 1
+        images:
+          description: Images of the room
+          type: array
+          items:
+            description: Image path
+            type: string
+      required:
+        - id
+        - name
+        - description
+        - capacity
+      example:
+        id: c2414cd157ca407c996a82e403bef0de
+        name: Meeting Room 1
+        description: This is a meeting room
+        capacity: 10
+        images:
+          - /images/c2414cd157ca407c996a82e403bef0de.png
+          - /images/c2414cd157ca407c996a82e403bef0d1.png
+          - /images/c2414cd157ca407c996a82e403bef0d2.png
+          - /images/c2414cd157ca407c996a82e403bef0d3.png
+          - /images/c2414cd157ca407c996a82e403bef0d4.png
+    
+    Booking:
+      description: Facility booking details
+      type: object
+      properties:
+        id:
+          description: Unique booking ID
+          type: string
+          format: uuid
+          minLength: 32
+          maxLength: 32
+        user:
+          description: Unique user ID
+          type: string
+          format: uuid
+          minLength: 32
+          maxLength: 32
+        room:
+          description: Unique room ID
+          type: string
+          format: uuid
+          minLength: 32
+          maxLength: 32
+        start:
+          description: Start datetime of the booking
+          type: string
+          format: date-time
+        duration:
+          description: Duration of the booking
+          type: number
+          format: float32
+          minimum: 0.25
+        lastModified:
+          description: Last modified timestamp of the booking
+          type: string
+          format: date-time
+      required:
+        - id
+        - user
+        - facility
+        - start
+        - duration
+        - lastModified
+  
+  parameters:
+    User:
+      description: Unique user ID
+      name: user
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        minLength: 32
+        maxLength: 32
+    Room:
+      description: Unique room ID
+      name: room
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        minLength: 32
+        maxLength: 32
+    Booking:
+      description: Unique booking ID
+      name: booking
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        minLength: 32
+        maxLength: 32
+        
+  responses:
+    InvalidBodyError:
+      description: Invalid details provided
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 400
+            message: Invalid details provided during CRUD operations
+    AuthenticationError:
+      description: Authentication error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 401
+            message: Invalid authentication method used
+    PermissionsError:
+      description: Permissions error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 403
+            message: User does not have sufficient permissions
+    NotFoundError:
+      description: Resource ID specified was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 404
+            message: Resource does not exist or was not found
+    DuplicateEntryError:
+      description: Resource ID has been created 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 409
+            message: Resource already exist
+    UnsupportedMediaTypeError:
+      description: Unsupported media content was uploaded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 400
+            message: Unsupported media content was uploaded to the server
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/APIError'
+          example:
+            code: 500
+            message: Internal server error
+
+  securitySchemes:
+    BearerAuth:
+      description: JWT token for authentication
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+        
