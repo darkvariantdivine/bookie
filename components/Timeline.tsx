@@ -71,14 +71,14 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface TimelineState {
-  slotStr: string
-  slot: number
-  hidden: boolean
-  active: boolean
-  selected: boolean
-  setHidden: (hidden: boolean) => void
-  setActive: (active: boolean) => void
-  setSelected: (selected: boolean) => void
+  slotStr: string;
+  slot: number;
+  hidden: boolean;
+  active: boolean;
+  selected: boolean;
+  setHidden: (hidden: boolean) => void;
+  setActive: (active: boolean) => void;
+  setSelected: (selected: boolean) => void;
 }
 
 export function BookieTimeline() {

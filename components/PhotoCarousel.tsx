@@ -35,11 +35,11 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface PhotoCarouselProps {
-  imagesToDisplay: string[]
-  imageDescription?: string
-  maxWidth?: number
-  slideSize?: string
-  autoplayDuration?: number
+  imagesToDisplay: string[];
+  imageDescription?: string;
+  maxWidth?: number;
+  slideSize?: string;
+  autoplayDuration?: number;
 }
 
 export default function PhotoCarousel(

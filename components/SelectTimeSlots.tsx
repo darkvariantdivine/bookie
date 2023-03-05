@@ -1,6 +1,4 @@
 import {
-  Timeline,
-  ActionIcon,
   ScrollArea,
   Container,
   Button,
@@ -10,25 +8,16 @@ import React, {
   FormEvent,
   useContext,
   useEffect,
-  useState
 } from "react";
 import {
-  IconCalendar,
   IconCircleCheck,
-  IconCircleDotted,
-  IconCircleX,
   IconX,
-  IconClock
 } from "@tabler/icons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/navigation";
 import {useForm} from "@mantine/form";
-import {
-  DatePicker,
-  TimeRangeInput
-} from "@mantine/dates";
 
 import {BookingContext} from "@/contexts/BookingContext";
 import {
@@ -36,7 +25,6 @@ import {
   getDateBookings,
   getRoomBookings,
   getTimeline,
-  slotToString
 } from "@/libs/bookings";
 import {
   Booking,
@@ -61,7 +49,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface SelectTimeSlotProps {
-  room: Room
+  room: Room;
 }
 
 export default function SelectTimeSlots(

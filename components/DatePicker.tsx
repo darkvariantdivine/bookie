@@ -7,8 +7,8 @@ import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
 
 interface BookieDatePickerProps {
-  selectedDate: dayjs.Dayjs
-  updateDateChanges: (date: Date | dayjs.Dayjs) => void
+  selectedDate: dayjs.Dayjs;
+  updateDateChanges: (date: Date | dayjs.Dayjs) => void;
 }
 
 export function BookieDatePicker(

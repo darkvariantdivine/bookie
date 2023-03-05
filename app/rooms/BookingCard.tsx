@@ -41,7 +41,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface BookingCardProps {
-  room: Room
+  room: Room;
 }
 
 export default function BookingCard({ room }: BookingCardProps): React.ReactElement {
