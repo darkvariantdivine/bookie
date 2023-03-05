@@ -2,7 +2,6 @@
 
 import React, {
   useContext,
-  useState
 } from 'react';
 import {
   createStyles,
@@ -11,17 +10,11 @@ import {
   Image,
   Button
 } from '@mantine/core';
-import {useDisclosure} from '@mantine/hooks';
 import Link from "next/link";
 import {MantineTheme} from "@mantine/styles/lib/theme";
-import {
-  usePathname,
-  useRouter
-} from "next/navigation";
 
 import ProfileMenu from "@/components/ProfileMenu";
 import {UserContext} from "@/contexts/UserContext";
-import {getActiveTab} from "@/libs/utils";
 import {HeaderTabs} from "@/components/HeaderTabs";
 import {MobileHeaderTabs} from "@/components/MobileHeaderTabs";
 
@@ -93,12 +86,8 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 }));
 
 export function NavBar(): React.ReactElement {
-  const router = useRouter();
   const { classes, theme, cx } = useStyles();
   const { user } = useContext(UserContext);
-
-  const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(getActiveTab(usePathname()));
 
   return (
     <div className={classes.header}>

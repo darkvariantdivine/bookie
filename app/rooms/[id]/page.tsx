@@ -3,7 +3,6 @@
 import {
   createStyles,
   Flex,
-  Image,
   Stack,
   Title,
   Text,
@@ -115,7 +114,7 @@ export default function RoomPage({ params }: RoomPageProps) {
 export async function getStaticPaths() {
   // TODO: API query to retrieve room paths
   return {
-    paths: ROOMS.map((room: Room) => {
+    paths: ROOMS.map((room: IRoom) => {
       return {params: {id: room.id}}
     }),
     fallback: false

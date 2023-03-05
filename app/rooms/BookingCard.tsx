@@ -11,7 +11,6 @@ import {
   Text
 } from "@mantine/core";
 import {UserContext} from "@/contexts/UserContext";
-import Link from "next/link";
 import PhotoCarousel from "@/components/PhotoCarousel";
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -62,12 +61,14 @@ export default function BookingCard({ room }: BookingCardProps): React.ReactElem
         {room.description}
       </Text>
         <Button
+          component={'a'}
+          href={`/rooms/${room.id}`}
           fullWidth
           disabled={!user}
         >
           { !user ?
             "Sign in to Book" :
-            <Link href={`/rooms/${room.id}`}>Book Now</Link>
+            "Book Now"
           }
         </Button>
     </Card>

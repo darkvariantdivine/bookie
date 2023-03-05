@@ -29,8 +29,8 @@ import React, {
 import {showNotification} from "@mantine/notifications";
 import {UserContext} from "@/contexts/UserContext";
 import {
-  User,
-  UserAuth
+  IUser,
+  IUserAuth
 } from "@/constants";
 import {useRouter} from "next/navigation";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
@@ -70,7 +70,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 }));
 
 export default function SignInMenu(): React.ReactElement {
-  const form = useForm<UserAuth>({
+  const form = useForm<IUserAuth>({
     initialValues: {
       username: '',
       password: ''

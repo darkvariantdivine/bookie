@@ -100,7 +100,7 @@ export default function Home(): React.ReactElement {
         <Container size={700} className={classes.inner}>
           <Group>
             <Title className={classes.title}>
-              A{' '}
+              Bookie: A{' '}
               <Text component="span" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }} inherit>
                 fully featured
               </Text>{' '}
