@@ -79,7 +79,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "[\n    {\n        \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n        \"password\": \"958b262e3b559ea13abf15a1d77f1e075f9c63ad7fa69d239672f78ccfb1af08\",\n        \"salt\": \"9347e591cbe15dc9\",\n        \"email\": \"test1@bookie.org\",\n        \"name\": \"Test User 1\",\n        \"image\": \"/TestUser1.png\",\n        \"description\": \"This is test user 1\",\n        \"rooms\": []\n    },\n    {\n        \"id\": \"2f5575ba0b1a48c896fcc82e9dcf6f3e\",\n        \"password\": \"5728d7b7934a554bc5a5df9d75bd2723b3847227674f6cc603ca5770d484d4e5\",\n        \"salt\": \"2f436f2bd4ac735a\",\n        \"email\": \"test2@bookie.org\",\n        \"name\": \"Test User 2\",\n        \"image\": \"/TestUser2.png\",\n        \"description\": \"This is test user 2\",\n        \"rooms\": []\n    },\n    {\n        \"id\": \"ee77f20983f8470d9ccaf094c3e46325\",\n        \"password\": \"3ae9178f23dd6d90c1763c5ab163d8b014a346cf0c197db6f865cf99eb631bf6\",\n        \"salt\": \"351fd337b988319b\",\n        \"email\": \"admin1@bookie.org\",\n        \"name\": \"Admin User 1\",\n        \"image\": \"/AdminUser1.png\",\n        \"description\": \"This is admin user 1\",\n        \"rooms\": []\n    }\n]"
+							"body": "[\n    {\n        \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n        \"email\": \"test1@bookie.org\",\n        \"name\": \"Test User 1\",\n        \"image\": \"/TestUser1.png\",\n        \"description\": \"This is test user 1\",\n        \"rooms\": []\n    },\n    {\n        \"id\": \"2f5575ba0b1a48c896fcc82e9dcf6f3e\",\n        \"email\": \"test2@bookie.org\",\n        \"name\": \"Test User 2\",\n        \"image\": \"/TestUser2.png\",\n        \"description\": \"This is test user 2\",\n        \"rooms\": []\n    },\n    {\n        \"id\": \"ee77f20983f8470d9ccaf094c3e46325\",\n        \"email\": \"admin1@bookie.org\",\n        \"name\": \"Admin User 1\",\n        \"image\": \"/AdminUser1.png\",\n        \"description\": \"This is admin user 1\",\n        \"rooms\": []\n    }\n]"
 						}
 					]
 				},
@@ -256,7 +256,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"password\": \"958b262e3b559ea13abf15a1d77f1e075f9c63ad7fa69d239672f78ccfb1af08\",\n    \"salt\": \"9347e591cbe15dc9\",\n    \"email\": \"test1@bookie.org\",\n    \"name\": \"Test User 1\",\n    \"image\": \"/TestUser1.png\",\n    \"description\": \"This is test user 1\",\n    \"rooms\": []\n}"
+							"body": "{\n    \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"email\": \"test1@bookie.org\",\n    \"name\": \"Test User 1\",\n    \"image\": \"/TestUser1.png\",\n    \"description\": \"This is test user 1\",\n    \"rooms\": []\n}"
 						}
 					]
 				}
@@ -700,11 +700,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
 									"});",
 									"pm.test(\"Retrieved login token\", function () {",
 									"    pm.response.to.have.header(\"authorization\");",
+									"});",
+									"pm.test(\"Test User 1 retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"Test User 1\");",
 									"});",
 									"pm.environment.set('token', pm.response.headers.get('authorization').split(' ')[1]);"
 								],
@@ -759,13 +763,13 @@
 									]
 								}
 							},
-							"status": "No Content",
-							"code": 204,
-							"_postman_previewlanguage": "plain",
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "date",
-									"value": "Sat, 04 Mar 2023 10:46:45 GMT"
+									"value": "Sun, 05 Mar 2023 11:30:28 GMT"
 								},
 								{
 									"key": "server",
@@ -773,11 +777,19 @@
 								},
 								{
 									"key": "authorization",
-									"value": "Bearer 4448fdf20043d0a8bc5d4383ebac1a64"
+									"value": "Bearer 53db4bceda1814c6c05c246d50bdca8f"
+								},
+								{
+									"key": "content-length",
+									"value": "265"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
 								}
 							],
 							"cookie": [],
-							"body": null
+							"body": "{\n    \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"password\": \"958b262e3b559ea13abf15a1d77f1e075f9c63ad7fa69d239672f78ccfb1af08\",\n    \"salt\": \"9347e591cbe15dc9\",\n    \"email\": \"test1@bookie.org\",\n    \"name\": \"Test User 1\",\n    \"image\": \"/TestUser1.png\",\n    \"description\": \"This is test user 1\",\n    \"rooms\": []\n}"
 						}
 					]
 				},
@@ -1591,11 +1603,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
 									"});",
 									"pm.test(\"Retrieved login token\", function () {",
 									"    pm.response.to.have.header(\"authorization\");",
+									"});",
+									"pm.test(\"Test User 1 retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"Test User 1\");",
 									"});",
 									"pm.environment.set('token', pm.response.headers.get('authorization').split(' ')[1]);"
 								],
@@ -1660,13 +1676,13 @@
 									]
 								}
 							},
-							"status": "No Content",
-							"code": 204,
-							"_postman_previewlanguage": "plain",
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
 							"header": [
 								{
 									"key": "date",
-									"value": "Sat, 04 Mar 2023 10:46:45 GMT"
+									"value": "Sun, 05 Mar 2023 11:41:47 GMT"
 								},
 								{
 									"key": "server",
@@ -1674,11 +1690,19 @@
 								},
 								{
 									"key": "authorization",
-									"value": "Bearer 4448fdf20043d0a8bc5d4383ebac1a64"
+									"value": "Bearer cce09ac79aeb93015b82adc7b845540b"
+								},
+								{
+									"key": "content-length",
+									"value": "265"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
 								}
 							],
 							"cookie": [],
-							"body": null
+							"body": "{\n    \"id\": \"b4811bbb0de74ca0b6c8feb541896746\",\n    \"password\": \"958b262e3b559ea13abf15a1d77f1e075f9c63ad7fa69d239672f78ccfb1af08\",\n    \"salt\": \"9347e591cbe15dc9\",\n    \"email\": \"test1@bookie.org\",\n    \"name\": \"Test User 1\",\n    \"image\": \"/TestUser1.png\",\n    \"description\": \"This is test user 1\",\n    \"rooms\": []\n}"
 						}
 					]
 				},
