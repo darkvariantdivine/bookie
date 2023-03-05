@@ -6,18 +6,18 @@ import React, {
 } from 'react';
 import dayjs from "dayjs";
 
-import {Booking, TIMESLOTS} from "@/constants";
-import BOOKINGS from "@/mocks/bookingsTimeSensitive.json"
+import {Booking, RestApiResponse, TIMESLOTS} from "@/constants";
 import {
   getCurrentTimeSlots,
   getDateBookings,
   getTimeline
 } from "@/libs/bookings";
+import {fetchBookings} from "@/libs/rest";
 
 const BookingContext = createContext([]);
 
 function BookingContextProvider({ children }) {
-  const [ bookings, setBookings ] = useState<Booking[]>(BOOKINGS);
+  const [ bookings, setBookings ] = useState<Booking[]>([]);
 
   const [ selectedDate, setDate ] = useState<dayjs.Dayjs | undefined>(dayjs());
   const [ currentBookings, setCurrentBookings ] = useState<Booking[]>(getDateBookings(selectedDate, bookings));
@@ -28,11 +28,12 @@ function BookingContextProvider({ children }) {
 
   const [ duration, setDuration ] = useState<[Date | null, Date | null]>([null, null]);
 
-  function retrieveBookings(): Booking[] {
-    // TODO: API call to retrieve new bookings
-    let bookings: Booking[] = BOOKINGS;
-    setBookings(bookings);
-    return bookings;
+  const retrieveBookings = async () => {
+    let data: RestApiResponse = await fetchBookings();
+    if (data.status < 300) {
+      setBookings(data['data']);
+    }
+    return data['data'];
   }
 
   return (

@@ -20,7 +20,8 @@ import React, {
 import {
   MantineReactTable,
   MantineReactTableProps,
-  MRT_ColumnDef, MRT_RowSelectionState
+  MRT_ColumnDef,
+  MRT_RowSelectionState
 } from "mantine-react-table";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
@@ -35,8 +36,6 @@ import {
 } from "@/constants";
 import {BookingContext} from "@/contexts/BookingContext";
 import {
-  getDateBookings,
-  getRoomBookings,
   getUserBookings
 } from "@/libs/bookings";
 import {UserContext} from "@/contexts/UserContext";
@@ -153,7 +152,7 @@ export default function UserBookingsPage() {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
 
-  const { rooms, roomsMap } = useContext(RoomContext);
+  const { roomsMap } = useContext(RoomContext);
   const { user } = useContext(UserContext);
   const {
     bookings, retrieveBookings,
@@ -165,7 +164,6 @@ export default function UserBookingsPage() {
   const [userBookings, setUserBookings] = useState<UserBooking[]>(
     transformUserBookings(getUserBookings(user ? user.id : "default", bookings))
   );
-
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
   function transformUserBookings(toTransform: Booking[]): UserBooking[] {
