@@ -74,7 +74,7 @@
           }
         },
         "responses": {
-          "204": {
+          "201": {
             "description": "Successfully logged into Bookie",
             "headers": {
               "Authorization": {
@@ -82,6 +82,13 @@
                 "schema": {
                   "type": "string",
                   "example": "Bearer 1TZ3pLjtZRVzH5X29iyui_Gu8qWwR-pPD8cwUcmXvLE"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
