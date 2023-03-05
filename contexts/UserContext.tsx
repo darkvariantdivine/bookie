@@ -2,7 +2,6 @@
 
 import React, {
   createContext,
-  useEffect,
   useState
 } from 'react';
 
@@ -12,7 +11,10 @@ import {
   IUserAuth
 } from "@/constants";
 import {useRouter} from "next/navigation";
-import {loginUser, logoutUser} from "@/libs/rest";
+import {
+  loginUser,
+  logoutUser
+} from "@/libs/rest";
 
 const UserContext = createContext({});
 
@@ -25,29 +27,26 @@ function UserContextProvider({ children }) {
     prevUser !== null ? JSON.parse(prevUser) : undefined
   );
   const [token, setToken] = useState<string | undefined>(
-    prevToken !== null ? JSON.parse(prevToken) : undefined
+    prevToken !== null ? prevToken : undefined
   );
 
-  const handleLogin = async (auth: UserAuth) => {
-    let data: RestApiResponse = await loginUser(auth);
-    if (data.status < 300) {
-      sessionStorage.setItem('USER', JSON.stringify(data['data']['user']));
-      sessionStorage.setItem('TOKEN', data['data']['token']);
-      setUser(user);
-      setToken(token);
-      router.push('/rooms');
-    }
+  const handleLogin: Promise<IUser> = async (auth: IUserAuth) => {
+    let data: IRestApiResponse = await loginUser(auth);
+    sessionStorage.setItem('USER', JSON.stringify(data['data']['user']));
+    sessionStorage.setItem('TOKEN', data['data']['token']);
+    setUser(data['data']['user']);
+    setToken(data['data']['token']);
+    router.push('/rooms');
+    return data['data']['user'];
   }
 
   const handleLogout = async () => {
-    let data: RestApiResponse = await logoutUser(token as string);
-    if (data.status < 300) {
-      sessionStorage.removeItem('USER');
-      sessionStorage.removeItem('TOKEN');
-      setUser(undefined);
-      setToken(undefined);
-      router.push('/');
-    }
+    await logoutUser(token as string);
+    sessionStorage.removeItem('USER');
+    sessionStorage.removeItem('TOKEN');
+    setUser(undefined);
+    setToken(undefined);
+    router.push('/');
   }
 
   return (

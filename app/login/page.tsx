@@ -28,11 +28,9 @@ import React, {
 } from "react";
 import {showNotification} from "@mantine/notifications";
 import {UserContext} from "@/contexts/UserContext";
-import {
-  IUser,
-  IUserAuth
-} from "@/constants";
+import {IUser, IUserAuth} from "@/constants";
 import {useRouter} from "next/navigation";
+import {RestApiError} from "@/libs/rest";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
@@ -100,15 +98,27 @@ export default function SignInMenu(): React.ReactElement {
 
   const handleSubmit = async (values: typeof form.values, event: FormEvent) => {
     console.log(`Signing in user ${values.username}`)
-    await handleLogin(values)
-    event.preventDefault();
-    showNotification({
-      icon: <IconLogin color={'teal'} />,
-      message: `${user.name} successfully logged in`,
-      color: 'teal'
-    })
-    form.reset();
-    setOpened(false);
+    try {
+      let loginUser: IUser = await handleLogin(values)
+      event.preventDefault();
+      showNotification({
+        icon: <IconLogin color={'teal'} />,
+        message: `${loginUser.name} successfully logged in`,
+        color: 'teal'
+      })
+      form.reset();
+      setOpened(false);
+    } catch (e) {
+      let message: string;
+      if (e instanceof RestApiError) message = e.message;
+      else message = String(e);
+      showNotification({
+        icon: <IconX />,
+        message: message,
+        color: 'red'
+      });
+      form.reset();
+    }
   };
 
   return (
