@@ -5,21 +5,32 @@ import React, {
 } from 'react';
 
 import ROOMS from "@/mocks/rooms.json"
-import {Room} from "@/constants";
+import {RestApiResponse, Room} from "@/constants";
+import {fetchRooms} from "@/libs/rest";
 
 const RoomContext = createContext([]);
 
 function RoomContextProvider({ children }) {
-  const [rooms, setRooms] = useState<Room[]>(ROOMS);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [roomsMap, setRoomsMap] = useState<{[id: string]: Room}>(
-    Object.fromEntries(rooms.map((item: Room) => [item.id, item]))
+    generateRoomsMap(rooms)
   );
 
-  // TODO: Fetch all room data here
+  function generateRoomsMap(toUpdate: Room[]): {[id: string]: Room} {
+    return Object.fromEntries(toUpdate.map((item: Room) => [item.id, item]))
+  }
+
+  const retrieveRooms = async () => {
+    let data: RestApiResponse = await fetchRooms();
+    if (data.status < 300) {
+      setRooms(data['data']);
+      setRoomsMap(generateRoomsMap(data['data']));
+    }
+  }
 
   return (
     <RoomContext.Provider value={{
-      rooms, roomsMap, setRooms,
+      rooms, roomsMap, retrieveRooms,
     }}>
       {children}
     </RoomContext.Provider>

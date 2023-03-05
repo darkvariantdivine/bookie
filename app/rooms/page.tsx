@@ -6,7 +6,7 @@ import {
   Flex,
   Title
 } from "@mantine/core";
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 
 import {Room} from "@/constants";
 import BookingCard from "@/app/rooms/BookingCard";
@@ -25,7 +25,9 @@ const useStyle = createStyles({
 
 export default function RoomsLandingPage(): React.ReactElement {
   const {classes, theme, cx} = useStyle();
-  const { rooms } = useContext(RoomContext);
+  const { rooms, retrieveRooms } = useContext(RoomContext);
+
+  useEffect(() => {retrieveRooms();},[]);
 
   return (
     <main className={classes.main}>
