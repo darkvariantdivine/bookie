@@ -37,7 +37,8 @@ def create_app() -> FastAPI:
             allow_origins=["*"],
             allow_credentials=True,
             allow_methods=["*"],
-            allow_headers=["*"]
+            allow_headers=["*"],
+            expose_headers=['authorization']
         )
         app.on_event('startup')(logging.init)
         app.on_event('startup')(mongo.init)

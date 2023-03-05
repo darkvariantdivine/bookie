@@ -123,7 +123,7 @@ async def login_user(
         )
 
     return JSONResponse(
-        content=user.dict(),
+        content=user.dict(exclude=USER_EXCLUDES),
         status_code=status.HTTP_201_CREATED,
         headers={'Authorization': f'Bearer {login.token}'}
     )
