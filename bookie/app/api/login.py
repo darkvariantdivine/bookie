@@ -3,11 +3,12 @@ import secrets
 from logging import Logger, getLogger
 
 from fastapi import APIRouter, status, Response, Depends
+from fastapi.responses import JSONResponse
 
 from bookie.app import mongo
 from bookie.app.models import APIError, UserAuth, User
 from bookie.app.utils import get_hash
-from bookie.constants import LOGGERS
+from bookie.constants import LOGGERS, USER_EXCLUDES
 from bookie.exceptions import BookieAPIException
 from bookie.messages import ErrorMessage, Message
 from bookie.openapi import OpenAPIDescriptions, OpenAPIExamples
@@ -50,15 +51,24 @@ router: APIRouter = APIRouter(
 
 @router.post(
     '/',
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_201_CREATED,
+    response_model=User,
+    response_model_exclude=USER_EXCLUDES,
     include_in_schema=False
 )
 @router.post(
     '',
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_201_CREATED,
+    response_model=User,
+    response_model_exclude=USER_EXCLUDES,
     responses={
-        status.HTTP_204_NO_CONTENT: {
-            'description': OpenAPIDescriptions.LOGIN_POST_204_SUCCESS_DESCRIPTION,
+        status.HTTP_201_CREATED: {
+            'description': OpenAPIDescriptions.LOGIN_POST_201_SUCCESS_DESCRIPTION,
+            'content': {
+                'application/json': {
+                    'example': OpenAPIExamples.USER_ID_GET_EXAMPLE
+                }
+            }
         },
         status.HTTP_400_BAD_REQUEST: {
             'description': OpenAPIDescriptions.GENERIC_400_VALIDATION_ERROR_DESCRIPTION,
@@ -76,17 +86,15 @@ router: APIRouter = APIRouter(
 )
 async def login_user(
         login: UserAuth,
-        response: Response = Response
-) -> Response:
+) -> JSONResponse:
     """
     Authenticates and logs in a user
 
     Args:
         login (UserAuth): User details to authenticate
-        response (Response): FastAPI Response
 
     Returns:
-        Response: FastAPI Response
+        JSONResponse: FastAPI Response
     """
     try:
         user: User = User(**(await mongo.get_user_email(login.username)))
@@ -114,9 +122,11 @@ async def login_user(
             details={'login': json.loads(login.json(exclude_unset=True))}
         )
 
-    response.headers['Authorization'] = f"Bearer {login.token}"
-    response.status_code = status.HTTP_204_NO_CONTENT
-    return response
+    return JSONResponse(
+        content=user.dict(),
+        status_code=status.HTTP_201_CREATED,
+        headers={'Authorization': f'Bearer {login.token}'}
+    )
 
 
 @router.delete(

@@ -21,12 +21,12 @@ import BOOKINGS from '@/mocks/bookings.json';
 
 describe("Mocking Login API calls", () => {
 
-  test('Retrieves the token of the user', async () => {
+  test('Login user', async () => {
     let token: string = '4448fdf20043d0a8bc5d4383ebac1a64';
     let testInput = {username: 'test', password: 'hello_world'};
     API.post = jest.fn();
     (API.post as jest.Mock).mockResolvedValue({
-      data: {},
+      data: USER,
       status: 204,
       headers: {
         Authorization: `Bearer ${token}`
@@ -35,6 +35,7 @@ describe("Mocking Login API calls", () => {
 
     const output = await loginUser(testInput);
     expect(output['data']['token']).toEqual(token);
+    expect(output['data']['user']).toEqual(USER);
     expect(output['status']).toEqual(204);
     expect((API.post as jest.Mock).mock.calls).toHaveLength(1);
     expect((API.post as jest.Mock).mock.calls[0][0]).toEqual(`/login`);

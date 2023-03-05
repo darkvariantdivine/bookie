@@ -20,7 +20,7 @@ class OpenAPIDescriptions(object):
     USER_GET_200_SUCCESS_DESCRIPTION: str = 'Successfully retrieved all users'
     USER_ID_GET_200_SUCCESS_DESCRIPTION: str = 'Successfully retrieved user'
 
-    LOGIN_POST_204_SUCCESS_DESCRIPTION: str = "Successfully logged in"
+    LOGIN_POST_201_SUCCESS_DESCRIPTION: str = "Successfully logged in"
     LOGIN_DELETE_204_SUCCESS_DESCRIPTION: str = "Successfully logged out"
 
 

@@ -1,10 +1,10 @@
 from logging import getLevelName
 from os import environ
 from os.path import abspath, join
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 
 __all__ = [
-    'HOST', 'PORT', 'VERSION_FORMAT', 'NUM_ITERATIONS',
+    'HOST', 'PORT', 'USER_EXCLUDES', 'VERSION_FORMAT', 'NUM_ITERATIONS',
 
     'DATABASE_NAME', 'DATABASE_HOST', 'BOOKIE_COLLECTIONS',
 
@@ -18,6 +18,7 @@ __all__ = [
 
 HOST = environ.get('HOST', '127.0.0.1')
 PORT: int = int(environ.get('PORT', 20000))
+USER_EXCLUDES: Set[str] = {'password', 'salt'}
 VERSION_FORMAT: str = '/v{major}.{minor}'
 NUM_ITERATIONS: int = 10000
 

@@ -35,7 +35,7 @@ export async function loginUser(
       let token: string = headers['Authorization'].split(' ')[1];
       console.log(`Retrieved token ${token}`);
       response = {
-        data: {'token': token},
+        data: {'token': token, 'user': data},
         'status': status
       };
     } else {

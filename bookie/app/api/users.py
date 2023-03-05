@@ -1,11 +1,11 @@
 from logging import Logger, getLogger
-from typing import Dict, List, Any, Set
+from typing import Dict, List, Any
 
 from fastapi import APIRouter, status
 
 from bookie.app import mongo
 from bookie.app.models import APIError, User
-from bookie.constants import LOGGERS
+from bookie.constants import LOGGERS, USER_EXCLUDES
 from bookie.exceptions import BookieAPIException
 from bookie.messages import ErrorMessage
 from bookie.openapi import OpenAPIDescriptions, OpenAPIExamples
@@ -45,21 +45,20 @@ router: APIRouter = APIRouter(
 )
 
 
-EXCLUDES: Set[str] = {'password', 'salt'}
 
 
 @router.get(
     '/',
     status_code=status.HTTP_200_OK,
     response_model=List[User],
-    response_model_exclude=EXCLUDES,
+    response_model_exclude=USER_EXCLUDES,
     include_in_schema=False
 )
 @router.get(
     '',
     status_code=status.HTTP_200_OK,
     response_model=List[User],
-    response_model_exclude=EXCLUDES,
+    response_model_exclude=USER_EXCLUDES,
     responses={
         status.HTTP_200_OK: {
             'description': OpenAPIDescriptions.USER_GET_200_SUCCESS_DESCRIPTION,
@@ -85,14 +84,14 @@ async def get_users() -> List[Dict[str, Any]]:
     '/{user_id}/',
     status_code=status.HTTP_200_OK,
     response_model=User,
-    response_model_exclude=EXCLUDES,
+    response_model_exclude=USER_EXCLUDES,
     include_in_schema=False
 )
 @router.get(
     '/{user_id}',
     status_code=status.HTTP_200_OK,
     response_model=User,
-    response_model_exclude=EXCLUDES,
+    response_model_exclude=USER_EXCLUDES,
     responses={
         status.HTTP_200_OK: {
             'description': OpenAPIDescriptions.USER_ID_GET_200_SUCCESS_DESCRIPTION,
