@@ -21,11 +21,17 @@ import {
   IconX
 } from "@tabler/icons";
 import {MantineTheme} from "@mantine/styles/lib/theme";
-import React, {FormEvent, useContext, useState} from "react";
+import React, {
+  FormEvent,
+  useContext,
+  useState
+} from "react";
 import {showNotification} from "@mantine/notifications";
 import {UserContext} from "@/contexts/UserContext";
-import {User} from "@/constants";
-import USER from "@/mocks/user.json"
+import {
+  User,
+  UserAuth
+} from "@/constants";
 import {useRouter} from "next/navigation";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
@@ -63,13 +69,8 @@ const useStyles = createStyles((theme: MantineTheme) => ({
   },
 }));
 
-interface Username {
-  username: string;
-  password: string;
-}
-
 export default function SignInMenu(): React.ReactElement {
-  const form = useForm<Username>({
+  const form = useForm<UserAuth>({
     initialValues: {
       username: '',
       password: ''
@@ -82,7 +83,7 @@ export default function SignInMenu(): React.ReactElement {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
   const [opened, setOpened] = useState(true);
-  const { user, updateUser } = useContext(UserContext);
+  const { user, handleLogin } = useContext(UserContext);
 
   const handleErrors = (errors: typeof form.errors, values: typeof form.values) => {
     console.log(`Errors ${JSON.stringify(errors)} occurred when 
@@ -97,11 +98,9 @@ export default function SignInMenu(): React.ReactElement {
     form.reset();
   };
 
-  const handleSubmit = (values: typeof form.values, event: FormEvent) => {
+  const handleSubmit = async (values: typeof form.values, event: FormEvent) => {
     console.log(`Signing in user ${values.username}`)
-    //TODO: API call(s) to sign in and fetch user data
-    let user: User = USER
-    updateUser(user)
+    await handleLogin(values)
     event.preventDefault();
     showNotification({
       icon: <IconLogin color={'teal'} />,

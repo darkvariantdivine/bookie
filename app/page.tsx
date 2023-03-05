@@ -92,7 +92,7 @@ const useStyle = createStyles((theme, _params, getRef) => ({
 
 export default function Home(): React.ReactElement {
   const {classes, theme, cx} = useStyle();
-  const { user, updateUser } = useContext(UserContext);
+  const { user, handleLogout } = useContext(UserContext);
 
   return (
     <main >
@@ -137,9 +137,7 @@ export default function Home(): React.ReactElement {
                     My Bookings
                   </Button>
                   <Button
-                    onClick={() => {
-                      updateUser(undefined);
-                    }}
+                    onClick={async () => {await handleLogout();}}
                     size="xl"
                     className={classes.control}
                     variant="gradient"

@@ -13,7 +13,7 @@ import {
   IconChevronDown,
   IconLogout,
 } from "@tabler/icons";
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {MantineTheme} from "@mantine/styles/lib/theme";
 import {UserContext} from "@/contexts/UserContext";
 import {showNotification} from "@mantine/notifications";
@@ -45,9 +45,9 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 export default function ProfileMenu(): React.ReactElement {
   const { classes, theme, cx } = useStyles();
-  const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { user, handleLogout } = useContext(UserContext);
 
-  const { user, updateUser } = useContext(UserContext);
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
 
   return (
     <Menu
@@ -95,18 +95,7 @@ export default function ProfileMenu(): React.ReactElement {
               stroke={1.5}
             />
           }
-          onClick={
-            () => {
-              updateUser(undefined);
-              showNotification(
-                {
-                  message: `${user.name} logged out`,
-                  icon: <IconLogout />,
-                  color: 'teal'
-                }
-              );
-            }
-          }
+          onClick={async () => {await handleLogout();}}
         >
           Logout
         </Menu.Item>
