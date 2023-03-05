@@ -59,7 +59,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface RoomPageProps {
-  params: {id: string}
+  params: {id: string};
 }
 
 export default function RoomPage({ params }: RoomPageProps) {

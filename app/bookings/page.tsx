@@ -66,7 +66,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface ModifyStartDateProps {
-  userBooking: UserBooking
+  userBooking: UserBooking;
 }
 
 export function ModifyStartDate(
@@ -98,7 +98,7 @@ export function ModifyStartDate(
 }
 
 interface ModifyDurationProps {
-  userBooking: UserBooking
+  userBooking: UserBooking;
 }
 
 export function ModifyDuration(
