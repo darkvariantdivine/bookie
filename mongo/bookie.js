@@ -119,11 +119,11 @@ bookie_db.rooms.insertMany(
                 "Mi bibendum neque egestas congue quisque egestas.",
             capacity: 10,
             images: [
-                "/MeetingRoom1.jpg",
-                "/MeetingRoom1.jpg",
-                "/MeetingRoom1.jpg",
-                "/MeetingRoom1.jpg",
-                "/MeetingRoom1.jpg",
+                "/MeetingRoom4.jpg",
+                "/MeetingRoom4.jpg",
+                "/MeetingRoom4.jpg",
+                "/MeetingRoom4.jpg",
+                "/MeetingRoom4.jpg",
             ]
         },
         {
