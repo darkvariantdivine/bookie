@@ -1,5 +1,5 @@
 
-import axios from 'axios';
+import axios, {Axios} from 'axios';
 import * as qs from 'qs';
 import {
   Booking,
@@ -11,13 +11,19 @@ import {
   HOST,
 } from "@/constants";
 
+const API: Axios = axios.create({
+  baseURL: HOST
+})
+
+export { API };
+
 export async function loginUser(
   auth: UserAuth
 ): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status, headers} = await axios.post<RestApiError>(
-      `${HOST}/login`, auth,
+    const {data, status, headers} = await API.post<RestApiError>(
+      "/login", auth,
       {
         'headers': {
           'Content-Type': 'application/json'
@@ -66,8 +72,8 @@ export async function logoutUser(
 ): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status, headers} = await axios.delete<RestApiError>(
-      `${HOST}/login`,
+    const {data, status, headers} = await API.delete<RestApiError>(
+      "/login",
       {
         'headers': {
           'Content-Type': 'application/json',
@@ -115,8 +121,8 @@ export async function fetchUser(
 ): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status} = await axios.get<User | RestApiError>(
-      `${HOST}/users/${user}`,
+    const {data, status} = await API.get<User | RestApiError>(
+      `/users/${user}`,
       {
         'headers': {
           'Content-Type': 'application/json'
@@ -161,8 +167,8 @@ export async function fetchUser(
 export async function fetchRooms(): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status} = await axios.get<Room[] | RestApiError>(
-      `${HOST}/rooms`,
+    const {data, status} = await API.get<Room[] | RestApiError>(
+      "/rooms",
       {
         'headers': {
           'Content-Type': 'application/json'
@@ -207,8 +213,8 @@ export async function fetchRooms(): Promise<RestApiResponse> {
 export async function fetchBookings(): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status} = await axios.get<Booking[] | RestApiError>(
-      `${HOST}/bookings`,
+    const {data, status} = await API.get<Booking[] | RestApiError>(
+      "/bookings",
       {
         'headers': {
           'Content-Type': 'application/json'
@@ -256,8 +262,8 @@ export async function createBooking(
 ): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status} = await axios.post<{ [id: string]: string } | RestApiError>(
-      `${HOST}/bookings`, booking,
+    const {data, status} = await API.post<{ [id: string]: string } | RestApiError>(
+      "/bookings", booking,
       {
         'headers': {
           'Content-Type': 'application/json',
@@ -310,8 +316,8 @@ export async function updateBooking(
 ): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status} = await axios.put<undefined | RestApiError>(
-      `${HOST}/bookings/${booking_id}`,
+    const {data, status} = await API.put<undefined | RestApiError>(
+      `/bookings/${booking_id}`,
       booking,
       {
         'headers': {
@@ -361,8 +367,8 @@ export async function deleteBookings(
 ): Promise<RestApiResponse> {
   let response: RestApiResponse;
   try {
-    const {data, status} = await axios.delete<undefined | RestApiError>(
-      `${HOST}/bookings`,
+    const {data, status} = await API.delete<undefined | RestApiError>(
+      "/bookings",
       {
         params: bookings,
         paramsSerializer: {

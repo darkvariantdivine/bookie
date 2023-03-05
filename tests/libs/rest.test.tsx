@@ -7,26 +7,25 @@ import {
   fetchUser,
   loginUser,
   logoutUser,
-  updateBooking
+  updateBooking,
+  API,
 } from "@/libs/rest";
 import {
   test,
   expect,
 } from "@jest/globals";
-import axios from 'axios';
 import {Booking, HOST, RestApiError} from "@/constants";
 import USER from '@/mocks/user.json';
 import ROOMS from '@/mocks/rooms.json';
 import BOOKINGS from '@/mocks/bookings.json';
-
-jest.mock('axios');
 
 describe("Mocking Login API calls", () => {
 
   test('Retrieves the token of the user', async () => {
     let token: string = '4448fdf20043d0a8bc5d4383ebac1a64';
     let testInput = {username: 'test', password: 'hello_world'};
-    (axios.post as jest.Mock).mockResolvedValue({
+    API.post = jest.fn();
+    (API.post as jest.Mock).mockResolvedValue({
       data: {},
       status: 204,
       headers: {
@@ -37,9 +36,9 @@ describe("Mocking Login API calls", () => {
     const output = await loginUser(testInput);
     expect(output['data']['token']).toEqual(token);
     expect(output['status']).toEqual(204);
-    expect((axios.post as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.post as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/login`);
-    expect((axios.post as jest.Mock).mock.calls[0][1]).toEqual(testInput);
+    expect((API.post as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.post as jest.Mock).mock.calls[0][0]).toEqual(`/login`);
+    expect((API.post as jest.Mock).mock.calls[0][1]).toEqual(testInput);
   });
 
   test('User not authenticated', async () => {
@@ -48,7 +47,8 @@ describe("Mocking Login API calls", () => {
       message: 'Requesting user does not exist',
     };
     let testInput = {username: 'test', password: 'hello_world'};
-    (axios.post as jest.Mock).mockResolvedValue({
+    API.post = jest.fn();
+    (API.post as jest.Mock).mockResolvedValue({
       data: mockError,
       status: 401
     });
@@ -56,22 +56,23 @@ describe("Mocking Login API calls", () => {
     const output = await loginUser(testInput);
     expect(output['data']).toEqual(mockError);
     expect(output['status']).toEqual(401);
-    expect((axios.post as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/login`);
-    expect((axios.post as jest.Mock).mock.calls[0][1]).toEqual(testInput);
+    expect((API.post as jest.Mock).mock.calls[0][0]).toEqual(`/login`);
+    expect((API.post as jest.Mock).mock.calls[0][1]).toEqual(testInput);
   });
 
   test('Logout user', async () => {
     let token: string = '4448fdf20043d0a8bc5d4383ebac1a64';
-    (axios.delete as jest.Mock).mockResolvedValue({
+    API.delete = jest.fn();
+    (API.delete as jest.Mock).mockResolvedValue({
       data: {},
       status: 204,
     });
 
     let output = await logoutUser(token);
     expect(output['status']).toEqual(204);
-    expect((axios.delete as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.delete as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/login`);
-    expect((axios.delete as jest.Mock).mock.calls[0][1]).toEqual(
+    expect((API.delete as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.delete as jest.Mock).mock.calls[0][0]).toEqual(`/login`);
+    expect((API.delete as jest.Mock).mock.calls[0][1]).toEqual(
       {headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}}
     );
   });
@@ -81,7 +82,8 @@ describe("Mocking Login API calls", () => {
 describe("Fetching data from APIs", () => {
 
   test('Retrieve user', async () => {
-    (axios.get as jest.Mock).mockResolvedValue({
+    API.get = jest.fn();
+    (API.get as jest.Mock).mockResolvedValue({
       data: USER,
       status: 200
     });
@@ -89,12 +91,13 @@ describe("Fetching data from APIs", () => {
     const output = await fetchUser(USER['id']);
     expect(output['data']).toEqual(USER);
     expect(output['status']).toEqual(200);
-    expect((axios.get as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.get as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/users/${USER['id']}`);
+    expect((API.get as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.get as jest.Mock).mock.calls[0][0]).toEqual(`/users/${USER['id']}`);
   });
 
   test('Retrieve rooms', async () => {
-    (axios.get as jest.Mock).mockResolvedValue({
+    API.get = jest.fn();
+    (API.get as jest.Mock).mockResolvedValue({
       data: ROOMS,
       status: 200
     });
@@ -102,12 +105,13 @@ describe("Fetching data from APIs", () => {
     const output = await fetchRooms();
     expect(output['data']).toEqual(ROOMS);
     expect(output['status']).toEqual(200);
-    expect((axios.get as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.get as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/rooms`);
+    expect((API.get as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.get as jest.Mock).mock.calls[0][0]).toEqual(`/rooms`);
   });
 
   test('Retrieve bookings', async () => {
-    (axios.get as jest.Mock).mockResolvedValue({
+    API.get = jest.fn();
+    (API.get as jest.Mock).mockResolvedValue({
       data: BOOKINGS,
       status: 200
     });
@@ -115,8 +119,8 @@ describe("Fetching data from APIs", () => {
     const output = await fetchBookings();
     expect(output['data']).toEqual(BOOKINGS);
     expect(output['status']).toEqual(200);
-    expect((axios.get as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.get as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings`);
+    expect((API.get as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.get as jest.Mock).mock.calls[0][0]).toEqual(`/bookings`);
   });
 
 });
@@ -125,7 +129,8 @@ describe("CRUD bookings", () => {
   test('Create booking', async () => {
     let token: string = '4448fdf20043d0a8bc5d4383ebac1a64';
     let { id, user, lastModified, ...booking} = BOOKINGS[0];
-    (axios.post as jest.Mock).mockResolvedValue({
+    API.post = jest.fn();
+    (API.post as jest.Mock).mockResolvedValue({
       data: BOOKINGS[0],
       status: 201
     });
@@ -133,10 +138,10 @@ describe("CRUD bookings", () => {
     const output = await createBooking(booking, token);
     expect(output['data']).toEqual(BOOKINGS[0]);
     expect(output['status']).toEqual(201);
-    expect((axios.post as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.post as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings`);
-    expect((axios.post as jest.Mock).mock.calls[0][1]).toEqual(booking);
-    expect((axios.post as jest.Mock).mock.calls[0][2]).toEqual(
+    expect((API.post as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.post as jest.Mock).mock.calls[0][0]).toEqual(`/bookings`);
+    expect((API.post as jest.Mock).mock.calls[0][1]).toEqual(booking);
+    expect((API.post as jest.Mock).mock.calls[0][2]).toEqual(
       {headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}}
     );
   });
@@ -148,7 +153,8 @@ describe("CRUD bookings", () => {
       code: 400,
       message: "Booking overlaps with other Bookings",
     };
-    (axios.post as jest.Mock).mockResolvedValue({
+    API.post = jest.fn();
+    (API.post as jest.Mock).mockResolvedValue({
       data: mockError,
       status: 400
     });
@@ -156,10 +162,10 @@ describe("CRUD bookings", () => {
     const output = await createBooking(booking, token);
     expect(output['data']).toEqual(mockError);
     expect(output['status']).toEqual(400);
-    expect((axios.post as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.post as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings`);
-    expect((axios.post as jest.Mock).mock.calls[0][1]).toEqual(booking);
-    expect((axios.post as jest.Mock).mock.calls[0][2]).toEqual(
+    expect((API.post as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.post as jest.Mock).mock.calls[0][0]).toEqual(`/bookings`);
+    expect((API.post as jest.Mock).mock.calls[0][1]).toEqual(booking);
+    expect((API.post as jest.Mock).mock.calls[0][2]).toEqual(
       {headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}}
     );
   });
@@ -167,17 +173,18 @@ describe("CRUD bookings", () => {
   test('Update booking', async () => {
     let token: string = '4448fdf20043d0a8bc5d4383ebac1a64';
     let { id, start, duration, ..._} = BOOKINGS[0];
-    (axios.put as jest.Mock).mockResolvedValue({
+    API.put = jest.fn();
+    (API.put as jest.Mock).mockResolvedValue({
       status: 204
     });
 
     const output = await updateBooking(id, {start: start, duration: duration}, token);
     expect(output['data']).toEqual(null);
     expect(output['status']).toEqual(204);
-    expect((axios.put as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.put as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings/${id}`);
-    expect((axios.put as jest.Mock).mock.calls[0][1]).toEqual({start: start, duration: duration});
-    expect((axios.put as jest.Mock).mock.calls[0][2]).toEqual(
+    expect((API.put as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.put as jest.Mock).mock.calls[0][0]).toEqual(`/bookings/${id}`);
+    expect((API.put as jest.Mock).mock.calls[0][1]).toEqual({start: start, duration: duration});
+    expect((API.put as jest.Mock).mock.calls[0][2]).toEqual(
       {headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}}
     );
   });
@@ -189,7 +196,8 @@ describe("CRUD bookings", () => {
       code: 400,
       message: "Booking overlaps with other Bookings",
     };
-    (axios.put as jest.Mock).mockResolvedValue({
+    API.put = jest.fn();
+    (API.put as jest.Mock).mockResolvedValue({
       data: mockError,
       status: 400
     });
@@ -197,10 +205,10 @@ describe("CRUD bookings", () => {
     const output = await updateBooking(id, {start: start, duration: duration}, token);
     expect(output['data']).toEqual(mockError);
     expect(output['status']).toEqual(400);
-    expect((axios.put as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.put as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings/${id}`);
-    expect((axios.put as jest.Mock).mock.calls[0][1]).toEqual({start: start, duration: duration});
-    expect((axios.put as jest.Mock).mock.calls[0][2]).toEqual(
+    expect((API.put as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.put as jest.Mock).mock.calls[0][0]).toEqual(`/bookings/${id}`);
+    expect((API.put as jest.Mock).mock.calls[0][1]).toEqual({start: start, duration: duration});
+    expect((API.put as jest.Mock).mock.calls[0][2]).toEqual(
       {headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'}}
     );
   });
@@ -208,15 +216,16 @@ describe("CRUD bookings", () => {
   test('Cancel bookings', async () => {
     let token: string = '4448fdf20043d0a8bc5d4383ebac1a64';
     let bookings: string[] = BOOKINGS.map((booking: Booking) => {return booking.id}) as string[];
-    (axios.delete as jest.Mock).mockResolvedValue({
+    API.delete = jest.fn();
+    (API.delete as jest.Mock).mockResolvedValue({
       status: 204
     });
 
     const output = await deleteBookings(bookings, token);
     expect(output['data']).toEqual(null);
     expect(output['status']).toEqual(204);
-    expect((axios.delete as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.delete as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings`);
+    expect((API.delete as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.delete as jest.Mock).mock.calls[0][0]).toEqual(`/bookings`);
   });
 
   test('Unable to cancel bookings', async () => {
@@ -226,7 +235,8 @@ describe("CRUD bookings", () => {
       code: 500,
       message: 'Unable to delete Booking(s)'
     };
-    (axios.delete as jest.Mock).mockResolvedValue({
+    API.delete = jest.fn();
+    (API.delete as jest.Mock).mockResolvedValue({
       data: mockError,
       status: 500
     });
@@ -234,8 +244,8 @@ describe("CRUD bookings", () => {
     const output = await deleteBookings(bookings, token);
     expect(output['data']).toEqual(mockError);
     expect(output['status']).toEqual(500);
-    expect((axios.delete as jest.Mock).mock.calls).toHaveLength(1);
-    expect((axios.delete as jest.Mock).mock.calls[0][0]).toEqual(`${HOST}/bookings`);
+    expect((API.delete as jest.Mock).mock.calls).toHaveLength(1);
+    expect((API.delete as jest.Mock).mock.calls[0][0]).toEqual(`/bookings`);
   });
 
 })
