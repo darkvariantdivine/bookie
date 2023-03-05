@@ -27,32 +27,32 @@ test('No bookings for room', () => {
 
 test('Room has bookings', () => {
   expect(
-    getRoomBookings('3fa85f64-5717-4562-b3fc-2c963f66', BOOKINGS)
+    getRoomBookings('8af9ab04f6ea4d64b25358781c92e07b', BOOKINGS)
   ).toStrictEqual([
       {
-        "id": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+        "id": "155280b4d8094e13845c91ef721e5c13",
+        "user": "b4811bbb0de74ca0b6c8feb541896746",
+        "room": "8af9ab04f6ea4d64b25358781c92e07b",
         "start": "2023-02-23T05:30:00Z",
         "duration": 1,
         "lastModified": "2023-02-23T05:04:29Z"
       },
       {
-        "id": "3fa85f64-5717-4562-b3fc-2c963f68",
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+        "id": "daf66c6b9f2e4c83bfa5545f67785fb0",
+        "user": "b4811bbb0de74ca0b6c8feb541896746",
+        "room": "8af9ab04f6ea4d64b25358781c92e07b",
         "start": "2023-02-23T07:30:00Z",
         "duration": 0.5,
         "lastModified": "2023-02-23T05:04:29Z"
       },
       {
-        "id": "3fa85f64-5717-4562-b3fc-2c963f69",
-        "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-        "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+        "id": "9b4204913a604f90a2ddecc5c9a4b1a0",
+        "user": "b4811bbb0de74ca0b6c8feb541896746",
+        "room": "8af9ab04f6ea4d64b25358781c92e07b",
         "start": "2023-02-23T09:00:00Z",
         "duration": 1,
         "lastModified": "2023-02-23T05:04:29Z"
-      }
+      },
     ]
   );
 });
@@ -68,9 +68,9 @@ test('No bookings on date', () => {
 test('Bookings on selected date', () => {
   expect(getDateBookings(dayjs.utc({y: 2023, M: 1, d: 25}), BOOKINGS)).toStrictEqual([
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f69",
-      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-      "room": "3fa85f64-5717-4562-b3fc-2c963f67",
+      "id": "b5d40005bdde463483949c6302e30137",
+      "user": "b4811bbb0de74ca0b6c8feb541896746",
+      "room": "7e1ad2e0a6d04be797176dd1bcdfc729",
       "start": "2023-02-25T09:00:00Z",
       "duration": 1,
       "lastModified": "2023-02-24T05:04:29Z"
@@ -78,37 +78,37 @@ test('Bookings on selected date', () => {
   ]);
   expect(getDateBookings(dayjs.utc({y: 2023, M: 1, d: 23}), BOOKINGS)).toStrictEqual([
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66",
-      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-      "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "id": "155280b4d8094e13845c91ef721e5c13",
+      "user": "b4811bbb0de74ca0b6c8feb541896746",
+      "room": "8af9ab04f6ea4d64b25358781c92e07b",
       "start": "2023-02-23T05:30:00Z",
       "duration": 1,
       "lastModified": "2023-02-23T05:04:29Z"
     },
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f67",
-      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-      "room": "3fa85f64-5717-4562-b3fc-2c963f67",
+      "id": "a4e3a8661b4144deab8d8c88c1a1760c",
+      "user": "b4811bbb0de74ca0b6c8feb541896746",
+      "room": "7e1ad2e0a6d04be797176dd1bcdfc729",
       "start": "2023-02-23T05:30:00Z",
       "duration": 1.5,
       "lastModified": "2023-02-23T05:04:29Z"
     },
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f68",
-      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-      "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "id": "daf66c6b9f2e4c83bfa5545f67785fb0",
+      "user": "b4811bbb0de74ca0b6c8feb541896746",
+      "room": "8af9ab04f6ea4d64b25358781c92e07b",
       "start": "2023-02-23T07:30:00Z",
       "duration": 0.5,
       "lastModified": "2023-02-23T05:04:29Z"
     },
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f69",
-      "user": "3fa85f64-5717-4562-b3fc-2c963f66",
-      "room": "3fa85f64-5717-4562-b3fc-2c963f66",
+      "id": "9b4204913a604f90a2ddecc5c9a4b1a0",
+      "user": "b4811bbb0de74ca0b6c8feb541896746",
+      "room": "8af9ab04f6ea4d64b25358781c92e07b",
       "start": "2023-02-23T09:00:00Z",
       "duration": 1,
       "lastModified": "2023-02-23T05:04:29Z"
-    }
+    },
   ]);
 });
 
