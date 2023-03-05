@@ -12,56 +12,67 @@ import {
 } from "@/constants";
 
 const API: Axios = axios.create({
-  baseURL: HOST
+  baseURL: HOST,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 })
 
-export { API };
+class RestApiError extends Error implements IRestApiError {
+  message!: string;
+  code: number;
+  request?: {[prop: string]: any};
+  details?: {[prop: string]: any};
+
+  constructor(
+    message: string,
+    code: number,
+    request?: {[prop: string]: any},
+    details?: {[prop: string]: any},
+  ) {
+    super(message);
+    this.name = this.constructor.name;
+    this.code = code;
+    this.request = request;
+    this.details = details;
+  }
+}
+
+export { API, RestApiError };
 
 export async function loginUser(
-  auth: UserAuth
-): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+  auth: IUserAuth
+): Promise<IRestApiResponse> {
   try {
-    const {data, status, headers} = await API.post<RestApiError>(
+    const {data, status, headers} = await API.post<IRestApiError>(
       "/login", auth,
-      {
-        'headers': {
-          'Content-Type': 'application/json'
-        }
-      }
     );
 
-    if (200 <= status && status < 300) {
-      let token: string = headers['Authorization'].split(' ')[1];
-      console.log(`Retrieved token ${token}`);
-      response = {
-        data: {'token': token, 'user': data},
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    let token: string = headers!.getAuthorization().split(' ')[1];
+    console.log(`Retrieved token ${token}`);
+    return {
+      data: {'token': token, 'user': data},
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
@@ -69,239 +80,223 @@ export async function loginUser(
 
 export async function logoutUser(
   token: string
-): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+): Promise<IRestApiResponse> {
   try {
-    const {data, status, headers} = await API.delete<RestApiError>(
+    const {status} = await API.delete<IRestApiError>(
       "/login",
       {
-        'headers': {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       }
     );
 
-    if (200 <= status && status < 300) {
-      console.log(`Successfully logged out user`);
-      response = {
-        data: {'token': token},
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Successfully logged out user`);
+    return {
+      data: null,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
 
 export async function fetchUser(
   user: string
-): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.get<User | RestApiError>(
-      `/users/${user}`,
-      {
-        'headers': {
-          'Content-Type': 'application/json'
-        }
-      }
+    const {data, status} = await API.get<IUser | IRestApiError>(
+      `/users/${user}`
     );
 
-    if (200 <= status && status < 300) {
-      console.log(`Retrieved user ${JSON.stringify(data)}`);
-      response = {
-        data: data,
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Retrieved user ${JSON.stringify(data)}`);
+    return {
+      data: data,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
 
-export async function fetchRooms(): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+export async function fetchRooms(): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.get<Room[] | RestApiError>(
-      "/rooms",
-      {
-        'headers': {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const {data, status} = await API.get<IRoom[] | IRestApiError>("/rooms");
 
-    if (200 <= status && status < 300) {
-      console.log(`Retrieved rooms ${JSON.stringify(data)}`);
-      response = {
-        data: data,
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Retrieved rooms ${JSON.stringify(data)}`);
+    return {
+      data: data,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
 
-export async function fetchBookings(): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+export async function fetchRoom(
+  room: string
+): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.get<Booking[] | RestApiError>(
-      "/bookings",
-      {
-        'headers': {
-          'Content-Type': 'application/json'
-        }
-      }
+    const {data, status} = await API.get<IRoom[] | IRestApiError>(
+      `/rooms/${room}`
     );
 
-    if (200 <= status && status < 300) {
-      console.log(`Retrieved bookings ${JSON.stringify(data)}`);
-      response = {
-        data: data,
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Retrieved room ${JSON.stringify(data)}`);
+    return {
+      data: data,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
+    }
+  }
+}
+
+export async function fetchBookings(): Promise<IRestApiResponse> {
+  try {
+    const {data, status} = await API.get<IBooking[] | IRestApiError>("/bookings");
+
+    console.log(`Retrieved bookings ${JSON.stringify(data)}`);
+    return {
+      data: data,
+      'status': status
+    };
+
+  } catch (error) {
+
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
+    } else {
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
 
 export async function createBooking(
-  booking: Booking,
+  booking: IBooking,
   token: string
-): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.post<{ [id: string]: string } | RestApiError>(
+    const {data, status} = await API.post<{ [id: string]: string } | IRestApiError>(
       "/bookings", booking,
       {
         'headers': {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       }
     );
 
-    if (200 <= status && status < 300) {
-      console.log(`Created booking ${JSON.stringify(data)}`);
-      response = {
-        data: data,
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Created booking ${JSON.stringify(data)}`);
+    return {
+      data: data,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
@@ -313,50 +308,43 @@ export async function updateBooking(
     duration?: number;
   },
   token: string
-): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.put<undefined | RestApiError>(
+    const {data, status} = await API.put<undefined | IRestApiError>(
       `/bookings/${booking_id}`,
       booking,
       {
         'headers': {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       }
     );
 
-    if (200 <= status && status < 300) {
-      console.log(`Updated booking ${JSON.stringify(booking)}`);
-      response = {
-        'data': null,
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Updated booking ${JSON.stringify(booking)}`);
+    return {
+      'data': null,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
@@ -364,10 +352,9 @@ export async function updateBooking(
 export async function deleteBookings(
   bookings: string[],
   token: string
-): Promise<RestApiResponse> {
-  let response: RestApiResponse;
+): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.delete<undefined | RestApiError>(
+    const {data, status} = await API.delete<undefined | IRestApiError>(
       "/bookings",
       {
         params: bookings,
@@ -377,42 +364,36 @@ export async function deleteBookings(
           }
         },
         'headers': {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       }
     );
 
-    if (200 <= status && status < 300) {
-      console.log(`Deleted bookings ${JSON.stringify(bookings)}`);
-      response = {
-        'data': null,
-        'status': status
-      };
-    } else {
-      response = {
-        data: data,
-        'status': status
-      };
-    }
+    console.log(`Deleted bookings ${JSON.stringify(bookings)}`);
+    return {
+      'data': null,
+      'status': status
+    };
 
-    return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      return {
-        data: {
-          code: error.code,
-          message: error.message
-        },
-        status: 500
-      };
+
+    console.log(error);
+    if (
+      axios.isAxiosError(error) &&
+      'code' in error.response!.data &&
+      'message' in error.response!.data
+    ) {
+      throw new RestApiError(
+        error.response!.data.message,
+        error.response!.data.code,
+        error.response!.data.request,
+        error.response!.data.details
+      );
     } else {
-      console.log(error);
-      return {
-        data: error,
-        status: 500
-      };
+      throw new RestApiError(
+        error!.toString(),
+        500
+      );
     }
   }
 }
