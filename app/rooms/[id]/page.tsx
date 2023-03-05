@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import ObjectSupport from "dayjs/plugin/objectSupport";
 
-import {Room} from "@/constants"
+import {IRestApiResponse, IRoom} from "@/constants"
 import SelectTimeSlots from "@/components/SelectTimeSlots";
 import {RoomContext} from "@/contexts/RoomContext";
 

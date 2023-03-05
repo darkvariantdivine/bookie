@@ -30,9 +30,8 @@ import utc from "dayjs/plugin/utc";
 
 import {RoomContext} from "@/contexts/RoomContext";
 import {
-  Booking,
-  Room,
-  UserBooking
+  IBooking,
+  IUserBooking
 } from "@/constants";
 import {BookingContext} from "@/contexts/BookingContext";
 import {
@@ -65,7 +64,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface ModifyStartDateProps {
-  userBooking: UserBooking;
+  userBooking: IUserBooking;
 }
 
 export function ModifyStartDate(
@@ -97,7 +96,7 @@ export function ModifyStartDate(
 }
 
 interface ModifyDurationProps {
-  userBooking: UserBooking;
+  userBooking: IUserBooking;
 }
 
 export function ModifyDuration(
@@ -161,16 +160,16 @@ export default function UserBookingsPage() {
     selectedDuration, setDuration
   } = useContext(BookingContext);
 
-  const [userBookings, setUserBookings] = useState<UserBooking[]>(
+  const [userBookings, setUserBookings] = useState<IUserBooking[]>(
     transformUserBookings(getUserBookings(user ? user.id : "default", bookings))
   );
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
-  function transformUserBookings(toTransform: Booking[]): UserBooking[] {
-    let transformedBookings: UserBooking[] = [];
+  function transformUserBookings(toTransform: IBooking[]): IUserBooking[] {
+    let transformedBookings: IUserBooking[] = [];
     toTransform.forEach(
-      (booking: Booking) => {
-        const userBooking: UserBooking = {
+      (booking: IBooking) => {
+        const userBooking: IUserBooking = {
           ...booking,
           room: roomsMap[booking.room],
         };
@@ -180,16 +179,16 @@ export default function UserBookingsPage() {
     return transformedBookings
   }
 
-  function handleBookingChanges(): UserBooking[] {
+  function handleBookingChanges(): IUserBooking[] {
     if (!user) {
       router.push("/login")
       return [];
     }
 
-    let newBookings: Booking[] = getUserBookings(user.id, retrieveBookings());
+    let newBookings: IBooking[] = getUserBookings(user.id, retrieveBookings());
     setCurrentBookings(newBookings);
 
-    let newUserBookings: UserBooking[] = transformUserBookings(newBookings);
+    let newUserBookings: IUserBooking[] = transformUserBookings(newBookings);
     setUserBookings(newUserBookings);
     return newUserBookings;
   }
@@ -198,12 +197,12 @@ export default function UserBookingsPage() {
     rowSelection: MRT_RowSelectionState
   ) {
     console.log(`Cancelling bookings ${rowSelection}`)
-    setUserBookings(userBookings.filter((booking: UserBooking) => !(booking.id in rowSelection)));
+    setUserBookings(userBookings.filter((booking: IUserBooking) => !(booking.id in rowSelection)));
     // TODO: API call to cancel changes
     // handleBookingChanges();
   }
 
-  const handleSaveRow: MantineReactTableProps<UserBooking>['onEditingRowSave'] =
+  const handleSaveRow: MantineReactTableProps<IUserBooking>['onEditingRowSave'] =
     async ({ exitEditingMode, row, values}) => {
       let first: dayjs.Dayjs = dayjs(selectedDuration[0]).utc(true);
       let second: dayjs.Dayjs = dayjs(selectedDuration[1]).utc(true);
@@ -237,7 +236,7 @@ export default function UserBookingsPage() {
     [bookings.length]
   )
 
-  const columns = useMemo<MRT_ColumnDef<UserBooking>[]>(
+  const columns = useMemo<MRT_ColumnDef<IUserBooking>[]>(
     () => [
       {
         accessorKey: "room.name",
@@ -262,7 +261,7 @@ export default function UserBookingsPage() {
         enableEditing: false,
       },
       {
-        accessorFn: (row: UserBooking) =>
+        accessorFn: (row: IUserBooking) =>
           dayjs(row.start).utc(true).local(),
         id: "start",
         header: 'Start Date Time',
@@ -278,7 +277,7 @@ export default function UserBookingsPage() {
         Edit: ({cell, row, table}) => <ModifyDuration userBooking={row.original} />,
       },
       {
-        accessorFn: (row:  UserBooking) =>
+        accessorFn: (row:  IUserBooking) =>
           dayjs(row.start).add(row.duration, 'hour').utc(true).local(),
         id: "end",
         header: 'End Date Time',
@@ -288,7 +287,7 @@ export default function UserBookingsPage() {
         enableEditing: false,
       },
       {
-        accessorFn: (row: UserBooking) =>
+        accessorFn: (row: IUserBooking) =>
           dayjs(row.lastModified).utc(true).local(),
         id: "lastModified",
         header: 'Last Modified',

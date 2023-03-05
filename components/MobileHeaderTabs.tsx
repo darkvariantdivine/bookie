@@ -19,7 +19,7 @@ import {
 import {useDisclosure} from "@mantine/hooks";
 
 import {
-  Tab,
+  ITab,
   TABS
 } from "@/constants";
 import {UserContext} from "@/contexts/UserContext";
@@ -111,7 +111,7 @@ export function MobileHeaderTabs() {
               withBorder
             >
               {
-                TABS.map((tab: Tab) => (
+                TABS.map((tab: ITab) => (
                   <Link
                     passHref
                     href={tab.link}

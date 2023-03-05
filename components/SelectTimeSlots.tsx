@@ -27,8 +27,9 @@ import {
   getTimeline,
 } from "@/libs/bookings";
 import {
-  Booking,
-  Room, SLOT_INTERVAL,
+  IBooking,
+  IRoom,
+  SLOT_INTERVAL,
   TIMESLOTS
 } from "@/constants";
 import {UserContext} from "@/contexts/UserContext";
@@ -49,7 +50,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 }));
 
 interface SelectTimeSlotProps {
-  room: Room;
+  room: IRoom;
 }
 
 export default function SelectTimeSlots(
@@ -98,7 +99,7 @@ export default function SelectTimeSlots(
     return newDate;
   }
 
-  function handleTimeSlotChanges(newBookings: Booking[]) {
+  function handleTimeSlotChanges(newBookings: IBooking[]) {
 
     setTimeSlots(getCurrentTimeSlots(selectedDate, TIMESLOTS));
     setAvailableTimeSlots(getTimeline(newBookings, timeSlots));
@@ -111,14 +112,14 @@ export default function SelectTimeSlots(
     }
   }
 
-  function handleCurrentBookingChanges(newBookings: Booking[]): Booking[] {
+  function handleCurrentBookingChanges(newBookings: IBooking[]): IBooking[] {
     setCurrentBookings(newBookings);
     handleTimeSlotChanges(newBookings);
     return newBookings;
   }
 
-  function handleBookingChanges(): Booking[] {
-    let roomBookings: Booking[] = getDateBookings(
+  function handleBookingChanges(): IBooking[] {
+    let roomBookings: IBooking[] = getDateBookings(
       selectedDate,
       getRoomBookings(room.id, retrieveBookings())
     );
@@ -132,7 +133,7 @@ export default function SelectTimeSlots(
     form.setFieldValue('start', newDate.utc(true).toISOString());
   }
 
-  const form = useForm<Booking>({
+  const form = useForm<IBooking>({
     initialValues: {
       user: user.id,
       room: room.id,

@@ -6,7 +6,11 @@ import React, {
   useState
 } from 'react';
 
-import {RestApiError, RestApiResponse, User, UserAuth} from "@/constants";
+import {
+  IRestApiResponse,
+  IUser,
+  IUserAuth
+} from "@/constants";
 import {useRouter} from "next/navigation";
 import {loginUser, logoutUser} from "@/libs/rest";
 
@@ -17,7 +21,7 @@ function UserContextProvider({ children }) {
 
   let prevUser: string | null = sessionStorage.getItem('USER');
   let prevToken: string | null = sessionStorage.getItem('TOKEN');
-  const [user, setUser] = useState<User | undefined>(
+  const [user, setUser] = useState<IUser | undefined>(
     prevUser !== null ? JSON.parse(prevUser) : undefined
   );
   const [token, setToken] = useState<string | undefined>(

@@ -1,7 +1,7 @@
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import {Booking, SLOT_INTERVAL} from "@/constants";
+import {IBooking, SLOT_INTERVAL} from "@/constants";
 
 dayjs.extend(utc);
 
@@ -12,30 +12,30 @@ export function isDateEqual(
 }
 
 export function getUserBookings(
-  user: string, bookings: Booking[]
-): Booking[] {
+  user: string, bookings: IBooking[]
+): IBooking[] {
   return bookings.filter(
-    (booking: Booking) => {
+    (booking: IBooking) => {
       return booking.user === user
     }
   )
 }
 
 export function getRoomBookings(
-  room: string, bookings: Booking[]
-): Booking[] {
+  room: string, bookings: IBooking[]
+): IBooking[] {
   return bookings.filter(
-    (booking: Booking) => {
+    (booking: IBooking) => {
       return booking.room === room
     }
   )
 }
 
 export function getDateBookings(
-  date: dayjs.Dayjs, bookings: Booking[]
-): Booking[] {
+  date: dayjs.Dayjs, bookings: IBooking[]
+): IBooking[] {
   return bookings.filter(
-    (booking: Booking) => {
+    (booking: IBooking) => {
       return isDateEqual(dayjs(booking.start), date)
     }
   )
@@ -55,12 +55,12 @@ export function getTimeSlotsFromDuration(
 }
 
 export function getTimeline(
-  bookings: Booking[], timeSlots: number[]
+  bookings: IBooking[], timeSlots: number[]
 ): number[] {
   // Assumes all bookings here are for the same room
   // and on the same day
   let takenTimeslots: number[] = bookings.flatMap(
-    (booking: Booking) => {
+    (booking: IBooking) => {
       return getTimeSlotsFromDuration(
         dayjs(booking.start), booking.duration
       );

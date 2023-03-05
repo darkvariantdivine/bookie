@@ -9,7 +9,7 @@ import {
   Tabs
 } from "@mantine/core";
 import {
-  Tab,
+  ITab,
   TABS
 } from "@/constants";
 import {
@@ -74,7 +74,7 @@ export function HeaderTabs(): React.ReactElement {
       }}
       onTabChange={
         (value: string) => {
-          let tab: Tab = TABS.find((tab: Tab) => value === tab.link);
+          let tab: ITab = TABS.find((tab: ITab) => value === tab.link);
           if (tab.requireSignIn && !user) {
             router.push('/login');
           } else {
@@ -86,7 +86,7 @@ export function HeaderTabs(): React.ReactElement {
     >
       <Tabs.List>
         {
-          TABS.map((tab: Tab) => (
+          TABS.map((tab: ITab) => (
             <Tabs.Tab
               value={tab.link}
               key={tab.link}

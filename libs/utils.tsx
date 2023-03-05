@@ -1,4 +1,4 @@
-import {Tab, TABS} from "@/constants";
+import {ITab, TABS} from "@/constants";
 
 
 export function populateArray<T>(toPopulate: T[], populated: T[]) {

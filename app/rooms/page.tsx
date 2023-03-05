@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import React, {useContext, useEffect} from 'react';
 
-import {Room} from "@/constants";
+import {IRoom} from "@/constants";
 import BookingCard from "@/app/rooms/BookingCard";
 import {RoomContext} from "@/contexts/RoomContext";
 import {NavBar} from "@/components/NavBar";
@@ -44,7 +44,7 @@ export default function RoomsLandingPage(): React.ReactElement {
           gap="md"
         >
           {
-            rooms.map((room: Room) => (
+            rooms.map((room: IRoom) => (
               <BookingCard room={room}/>
             ))
           }

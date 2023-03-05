@@ -2,12 +2,12 @@
 import axios, {Axios} from 'axios';
 import * as qs from 'qs';
 import {
-  Booking,
-  RestApiError,
-  RestApiResponse,
-  Room,
-  User,
-  UserAuth,
+  IBooking,
+  IRestApiError,
+  IRestApiResponse,
+  IRoom,
+  IUser,
+  IUserAuth,
   HOST,
 } from "@/constants";
 

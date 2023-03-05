@@ -1,22 +1,22 @@
 
-interface UserAuth {
+interface IUserAuth {
   username: string
   password: string
 }
 
-interface RestApiError {
+interface IRestApiError {
   code: number;
   message: string;
   request?: {[prop: string]: any};
   details?: {[prop: string]: any};
 }
 
-interface RestApiResponse {
-  data: RestApiError | any;
+interface IRestApiResponse {
+  data: IRestApiError | any;
   status: number;
 }
 
-interface User {
+interface IUser {
   id: string;
   name: string;
   image: string;
@@ -24,13 +24,13 @@ interface User {
   rooms: string[];
 }
 
-interface Tab {
+interface ITab {
   label: string;
   link: string;
   requireSignIn: boolean;
 }
 
-interface Room {
+interface IRoom {
   id: string;
   name: string;
   description: string;
@@ -38,7 +38,7 @@ interface Room {
   images: string[];
 }
 
-interface Booking {
+interface IBooking {
   id?: string;
   user?: string;
   room: string;
@@ -47,16 +47,16 @@ interface Booking {
   lastModified?: string;
 }
 
-interface UserBooking {
+interface IUserBooking {
   id: string;
   user: string;
-  room: Room;
+  room: IRoom;
   start: string;
   duration: number;
   lastModified: string;
 }
 
-const TABS: Tab[] = [
+const TABS: ITab[] = [
   {label: 'Home', link: '/', requireSignIn: false},
   {label: 'Rooms', link: '/rooms', requireSignIn: false},
   {label: 'My Bookings', link: '/bookings', requireSignIn: true}
@@ -83,14 +83,14 @@ const TIMESLOTS: number[] = Array(
 )
 
 export {
-  type UserAuth,
-  type RestApiError,
-  type RestApiResponse,
-  type User,
-  type Tab,
-  type Room,
-  type Booking,
-  type UserBooking,
+  type IUserAuth,
+  type IRestApiError,
+  type IRestApiResponse,
+  type IUser,
+  type ITab,
+  type IRoom,
+  type IBooking,
+  type IUserBooking,
   TABS,
   PASSWORD_REQS,
   SLOT_INTERVAL,

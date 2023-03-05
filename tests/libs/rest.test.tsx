@@ -14,7 +14,10 @@ import {
   test,
   expect,
 } from "@jest/globals";
-import {Booking, HOST, RestApiError} from "@/constants";
+import {
+  IBooking,
+  IRestApiError
+} from "@/constants";
 import USER from '@/mocks/user.json';
 import ROOMS from '@/mocks/rooms.json';
 import BOOKINGS from '@/mocks/bookings.json';

@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 import dayjs from "dayjs";
 
-import {Booking, RestApiResponse, TIMESLOTS} from "@/constants";
+import {IBooking, IRestApiResponse, TIMESLOTS} from "@/constants";
 import {
   getCurrentTimeSlots,
   getDateBookings,
@@ -17,10 +17,10 @@ import {fetchBookings} from "@/libs/rest";
 const BookingContext = createContext([]);
 
 function BookingContextProvider({ children }) {
-  const [ bookings, setBookings ] = useState<Booking[]>([]);
+  const [ bookings, setBookings ] = useState<IBooking[]>([]);
 
   const [ selectedDate, setDate ] = useState<dayjs.Dayjs | undefined>(dayjs());
-  const [ currentBookings, setCurrentBookings ] = useState<Booking[]>(getDateBookings(selectedDate, bookings));
+  const [ currentBookings, setCurrentBookings ] = useState<IBooking[]>(getDateBookings(selectedDate, bookings));
 
   const [ timeSlots, setTimeSlots ] = useState<number[]>(getCurrentTimeSlots(selectedDate, TIMESLOTS));
   const [ availableTimeSlots, setAvailableTimeSlots ] = useState<number[]>(getTimeline(currentBookings, timeSlots));
@@ -29,7 +29,7 @@ function BookingContextProvider({ children }) {
   const [ duration, setDuration ] = useState<[Date | null, Date | null]>([null, null]);
 
   const retrieveBookings = async () => {
-    let data: RestApiResponse = await fetchBookings();
+    let data: IRestApiResponse = await fetchBookings();
     if (data.status < 300) {
       setBookings(data['data']);
     }
