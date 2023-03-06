@@ -8,7 +8,7 @@ dayjs.extend(utc);
 export function isDateEqual(
   date1: dayjs.Dayjs, date2: dayjs.Dayjs
 ): boolean {
-  return date1.utc().isSame(date2.utc(), 'day');
+  return date1.utc().local().isSame(date2.utc().local(), 'day');
 }
 
 export function getUserBookings(

@@ -68,20 +68,20 @@ export default function SelectTimeSlots(
     retrieveBookings,
     selectedDate, setDate,
     setCurrentBookings,
-    timeSlots, setTimeSlots,
-    availableTimeSlots, setAvailableTimeSlots,
+    setTimeSlots,
+    setAvailableTimeSlots,
     selectedTimeSlots, setSelectedTimeSlots
   } = useContext(BookingContext);
   const { classes } = useStyles();
 
   function handleTimeSlotChanges(newBookings: IBooking[]) {
-    console.log("Current timeslots", getCurrentTimeSlots(selectedDate, TIMESLOTS))
-    setTimeSlots(getCurrentTimeSlots(selectedDate, TIMESLOTS));
-    console.log("Available time slots", getTimeline(newBookings, timeSlots))
-    setAvailableTimeSlots(getTimeline(newBookings, timeSlots));
+    let newTimeSlots: number[] = getCurrentTimeSlots(selectedDate, TIMESLOTS);
+    setTimeSlots(newTimeSlots);
+    let newAvailableTimeSlots: number[] = getTimeline(newBookings, newTimeSlots);
+    setAvailableTimeSlots(newAvailableTimeSlots);
     if (
       selectedTimeSlots.some(
-        (slot: number) => !availableTimeSlots.includes(slot)
+        (slot: number) => !newAvailableTimeSlots.includes(slot)
       )
     ) {
       showNotification({
@@ -191,8 +191,8 @@ export default function SelectTimeSlots(
   useEffect(
     () => {
       if (!user) {
-        console.log("User has logged out, redirecting to login page");
-        router.push('/login');
+        console.log("User has logged out, redirecting to home page");
+        router.push('/');
       }
     },
     [user]

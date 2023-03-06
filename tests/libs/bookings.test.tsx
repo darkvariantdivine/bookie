@@ -5,13 +5,15 @@ import {
   test,
   expect,
 } from "@jest/globals";
-import {SLOT_INTERVAL, TIMESLOTS} from "@/constants";
+import {TIMESLOTS} from "@/constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import ObjectSupport from "dayjs/plugin/objectSupport";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 
 dayjs.extend(utc);
 dayjs.extend(ObjectSupport);
+dayjs.extend(localizedFormat);
 
 test('Empty bookings and room', () => {
   expect(getRoomBookings("", [])).toStrictEqual([]);
@@ -167,6 +169,7 @@ test('Timeslots available with bookings removed', () => {
 });
 
 test('Quarterly timeslots with bookings removed', async () => {
+  console.log(dayjs("2023-03-07T01:00:00.246000+00:00").utc().local().format('llll'))
   const constants = await import("@/constants");
   constants.SLOT_INTERVAL = 0.25;
   let bookings = [...BOOKINGS]
