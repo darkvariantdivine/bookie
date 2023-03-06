@@ -15,6 +15,7 @@ import {
 } from "@tabler/icons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/navigation";
 import {useForm} from "@mantine/form";
@@ -39,6 +40,7 @@ import {createBooking} from "@/libs/rest";
 import {handleApiError} from "@/components/Errors";
 
 dayjs.extend(utc);
+dayjs.extend(localizedFormat);
 
 const useStyles = createStyles((theme, _params, getRef) => ({
 
@@ -75,7 +77,7 @@ export default function SelectTimeSlots(
   function handleTimeSlotChanges(newBookings: IBooking[]) {
     console.log("Current timeslots", getCurrentTimeSlots(selectedDate, TIMESLOTS))
     setTimeSlots(getCurrentTimeSlots(selectedDate, TIMESLOTS));
-    console.log("Available time slots", getCurrentTimeSlots(selectedDate, TIMESLOTS))
+    console.log("Available time slots", getTimeline(newBookings, timeSlots))
     setAvailableTimeSlots(getTimeline(newBookings, timeSlots));
     if (
       selectedTimeSlots.some(
@@ -114,7 +116,7 @@ export default function SelectTimeSlots(
     },
     validate: {
       start: (value: string) => (
-        dayjs(value).isBefore(dayjs()) ?
+        dayjs(value).isBefore(dayjs().utc()) ?
           "Selected date has to be greater than the current date" :
           null
       ),
@@ -172,7 +174,7 @@ export default function SelectTimeSlots(
 
   useEffect(
     () => {
-      console.log(`Selected Date changed to ${selectedDate.toString()}`);
+      console.log(`Selected Date changed to ${selectedDate.format('llll')}`);
       console.log("Updating timeslots and setting forms");
       showNotification({
         message: "Selected date has changed, clearing all selected slots",
@@ -207,7 +209,7 @@ export default function SelectTimeSlots(
         let date: dayjs.Dayjs = selectedDate.hour(selectedTimeSlots[0], 'hour').minute(0).second(0);
         console.log(
           `Selected time slots have been updated to 
-          ${date.toString()} with duration ${duration} hours, updating form`
+          ${date.format('llll')} with duration ${duration} hours, updating form`
         );
         form.setFieldValue('duration', duration);
         form.setFieldValue('start', date.utc().toISOString())

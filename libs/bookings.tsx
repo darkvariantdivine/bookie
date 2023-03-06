@@ -62,7 +62,7 @@ export function getTimeline(
   let takenTimeslots: number[] = bookings.flatMap(
     (booking: IBooking) => {
       return getTimeSlotsFromDuration(
-        dayjs(booking.start), booking.duration
+        dayjs(booking.start).utc().local(), booking.duration
       );
     }
   ).sort();
