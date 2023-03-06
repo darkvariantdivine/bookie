@@ -18,6 +18,7 @@ function RoomContextProvider({ children }: { children: React.ReactNode }) {
   const [roomsMap, setRoomsMap] = useState<{[id: string]: IRoom}>(
     generateRoomsMap(rooms)
   );
+  const [selectedRoom, setRoom] = useState<IRoom | undefined>(undefined);
 
   function generateRoomsMap(toUpdate: IRoom[]): {[id: string]: IRoom} {
     return Object.fromEntries(toUpdate.map((item: IRoom) => [item.id, item]))
@@ -41,6 +42,7 @@ function RoomContextProvider({ children }: { children: React.ReactNode }) {
   return (
     <RoomContext.Provider value={{
       rooms, roomsMap, retrieveRooms,
+      selectedRoom, setRoom
     }}>
       {children}
     </RoomContext.Provider>

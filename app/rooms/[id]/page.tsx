@@ -12,8 +12,8 @@ import {
   Paper,
 } from "@mantine/core";
 import React, {
+  useContext,
   useEffect,
-  useState,
 } from "react";
 import {
   IconArrowBackUp
@@ -25,13 +25,13 @@ import ObjectSupport from "dayjs/plugin/objectSupport";
 
 import {
   IRestApiResponse,
-  IRoom
 } from "@/constants"
 import SelectTimeSlots from "@/components/SelectTimeSlots";
 import {NavBar} from "@/components/NavBar";
 import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 import {fetchRoom} from "@/libs/rest";
 import Loading from "@/components/Loading";
+import {RoomContext} from "@/contexts/RoomContext";
 
 dayjs.extend(utc);
 dayjs.extend(ObjectSupport);
@@ -70,20 +70,24 @@ export default function RoomPage({ params }: RoomPageProps) {
   const router = useRouter()
   const { classes, theme, cx } = useStyles();
 
-  const [room, setRoom] = useState<IRoom | null>(null);
+  const {selectedRoom, setRoom} = useContext(RoomContext);
+
+  const retrieveRoom = async () => {
+    let data: IRestApiResponse = await fetchRoom(params.id);
+    setRoom(data['data']);
+  }
 
   useEffect(
-    () => {
-      const retrieveRoom = async () => {
-        let data: IRestApiResponse = await fetchRoom(params.id);
-        setRoom(data['data']);
-      }
-      retrieveRoom();
-    },
+    () => {retrieveRoom();},
     []
   )
 
-  if (room === null) {
+  useEffect(
+    () => {retrieveRoom();},
+    [params.id]
+  )
+
+  if (selectedRoom === undefined) {
     return (
       <main className={classes.main}>
         <Loading />
@@ -110,18 +114,18 @@ export default function RoomPage({ params }: RoomPageProps) {
                 sx={{maxWidth: 450}}
               >
                 <Group>
-                  <Title order={1}>{room.name}</Title>
-                  <Text>{room.description}</Text>
+                  <Title order={1}>{selectedRoom.name}</Title>
+                  <Text>{selectedRoom.description}</Text>
                 </Group>
                 <PhotoCarouselWithAutoplay
                   imagesToDisplay={
-                    room.images.length > 0 ?
-                      room.images :
+                    selectedRoom.images.length > 0 ?
+                      selectedRoom.images :
                       ["/Logo.png"]
                   }
                 />
               </Stack>
-              <SelectTimeSlots room={room}/>
+              <SelectTimeSlots room={selectedRoom}/>
             </Flex>
           </Container>
         </Paper>
