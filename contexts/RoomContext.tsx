@@ -5,13 +5,16 @@ import React, {
   useState
 } from 'react';
 
-import {IRestApiResponse, IRoom} from "@/constants";
+import {
+  IRestApiResponse,
+  IRoom
+} from "@/constants";
 import {fetchRooms} from "@/libs/rest";
 
-const RoomContext = createContext([]);
+const RoomContext = createContext({} as any);
 
-function RoomContextProvider({ children }) {
-  const [rooms, setRooms] = useState<IRoom[]>([]);
+function RoomContextProvider({ children }: { children: React.ReactNode }) {
+  const [rooms, setRooms] = useState<IRoom[]>([] as any[]);
   const [roomsMap, setRoomsMap] = useState<{[id: string]: IRoom}>(
     generateRoomsMap(rooms)
   );

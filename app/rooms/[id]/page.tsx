@@ -23,14 +23,14 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import ObjectSupport from "dayjs/plugin/objectSupport";
 
-import {IRestApiResponse, IRoom} from "@/constants"
+import {
+  IRestApiResponse,
+  IRoom
+} from "@/constants"
 import SelectTimeSlots from "@/components/SelectTimeSlots";
-import {RoomContext} from "@/contexts/RoomContext";
-
-import ROOMS from "@/mocks/rooms.json"
 import {NavBar} from "@/components/NavBar";
 import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
-import {fetchRoom, RestApiError} from "@/libs/rest";
+import {fetchRoom} from "@/libs/rest";
 import Loading from "@/components/Loading";
 
 dayjs.extend(utc);
@@ -121,7 +121,6 @@ export default function RoomPage({ params }: RoomPageProps) {
               </Flex>
             </Container>
         }
-
       </Paper>
     </main>
   )

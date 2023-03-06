@@ -63,18 +63,19 @@ export default function SelectTimeSlots(
   const router = useRouter();
   const { user, token } = useContext(UserContext);
   const {
-    bookings, retrieveBookings,
+    retrieveBookings,
     selectedDate, setDate,
-    currentBookings, setCurrentBookings,
+    setCurrentBookings,
     timeSlots, setTimeSlots,
     availableTimeSlots, setAvailableTimeSlots,
     selectedTimeSlots, setSelectedTimeSlots
   } = useContext(BookingContext);
-  const { classes, theme, cx } = useStyles();
+  const { classes } = useStyles();
 
   function handleTimeSlotChanges(newBookings: IBooking[]) {
-
+    console.log("Current timeslots", getCurrentTimeSlots(selectedDate, TIMESLOTS))
     setTimeSlots(getCurrentTimeSlots(selectedDate, TIMESLOTS));
+    console.log("Available time slots", getCurrentTimeSlots(selectedDate, TIMESLOTS))
     setAvailableTimeSlots(getTimeline(newBookings, timeSlots));
     if (
       selectedTimeSlots.some(
@@ -179,7 +180,6 @@ export default function SelectTimeSlots(
         color: 'green',
         autoClose: 5000,
       });
-      setSelectedTimeSlots([]);
       form.setFieldValue('start', selectedDate.utc().toISOString());
       handleBookingChanges();
     },

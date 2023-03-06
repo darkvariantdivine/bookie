@@ -14,7 +14,7 @@ export function BookieDatePicker() {
 
   const { selectedDate, setDate } = useContext(BookingContext);
 
-  function handleDateChanges(dateToSet: Date | dayjs.Dayjs): dayjs.Dayjs {
+  function handleDateChanges(dateToSet: Date | null) {
     let newDate: dayjs.Dayjs;
     if (
       dateToSet === null ||
@@ -25,7 +25,6 @@ export function BookieDatePicker() {
       newDate = dayjs(dateToSet);
     }
     setDate(newDate);
-    return newDate;
   }
 
   return (

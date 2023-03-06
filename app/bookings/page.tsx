@@ -21,6 +21,7 @@ import {
   MantineReactTable,
   MantineReactTableProps,
   MRT_ColumnDef,
+  MRT_Row,
   MRT_RowSelectionState
 } from "mantine-react-table";
 import {useRouter} from "next/navigation";
@@ -86,13 +87,13 @@ interface ModifyStartDateProps {
   userBooking: IUserBooking;
 }
 
-export function ModifyStartDate(
+function ModifyStartDate(
   {
     userBooking,
   }: ModifyStartDateProps
 ) {
 
-  const { selectedDate, setDate } = useContext(BookingContext);
+  const { setDate } = useContext(BookingContext);
 
   useEffect(
     () => {
@@ -106,11 +107,12 @@ export function ModifyStartDate(
   )
 }
 
+
 interface ModifyDurationProps {
   userBooking: IUserBooking;
 }
 
-export function ModifyDuration(
+function ModifyDuration(
   {
     userBooking,
   }: ModifyDurationProps
@@ -123,15 +125,15 @@ export function ModifyDuration(
 
   function updateDuration(newDuration: [Date, Date]) {
     let first: Date = dayjs(selectedDate)
-      .hour(newDuration[0]!.getHours())
-      .minute(newDuration[0]!.getMinutes())
-      .second(0)
-      .toDate();
+    .hour(newDuration[0]!.getHours())
+    .minute(newDuration[0]!.getMinutes())
+    .second(0)
+    .toDate();
     let second: Date = dayjs(selectedDate)
-      .hour(newDuration[1]!.getHours())
-      .minute(newDuration[1]!.getMinutes())
-      .second(0)
-      .toDate();
+    .hour(newDuration[1]!.getHours())
+    .minute(newDuration[1]!.getMinutes())
+    .second(0)
+    .toDate();
 
     setDuration([first, second]);
   }
@@ -264,7 +266,7 @@ export default function UserBookingsPage() {
       exitEditingMode();
     }
 
-  function handleEditCancel({ row }) {
+  function handleEditCancel({ row }: { row: MRT_Row<IUserBooking>}) {
     setDate(dayjs(row.original.start));
     setDuration([null, null])
   }

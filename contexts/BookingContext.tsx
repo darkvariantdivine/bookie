@@ -6,7 +6,11 @@ import React, {
 } from 'react';
 import dayjs from "dayjs";
 
-import {IBooking, IRestApiResponse, TIMESLOTS} from "@/constants";
+import {
+  IBooking,
+  IRestApiResponse,
+  TIMESLOTS
+} from "@/constants";
 import {
   getCurrentTimeSlots,
   getDateBookings,
@@ -14,17 +18,17 @@ import {
 } from "@/libs/bookings";
 import {fetchBookings} from "@/libs/rest";
 
-const BookingContext = createContext([]);
+const BookingContext = createContext({} as any);
 
-function BookingContextProvider({ children }) {
-  const [ bookings, setBookings ] = useState<IBooking[]>([]);
+function BookingContextProvider({ children }: { children: React.ReactNode }) {
+  const [ bookings, setBookings ] = useState<IBooking[]>([] as any[]);
 
   const [ selectedDate, setDate ] = useState<dayjs.Dayjs>(dayjs());
   const [ currentBookings, setCurrentBookings ] = useState<IBooking[]>(getDateBookings(selectedDate, bookings));
 
   const [ timeSlots, setTimeSlots ] = useState<number[]>(getCurrentTimeSlots(selectedDate, TIMESLOTS));
   const [ availableTimeSlots, setAvailableTimeSlots ] = useState<number[]>(getTimeline(currentBookings, timeSlots));
-  const [ selectedTimeSlots, setSelectedTimeSlots ] = useState<number[]>([]);
+  const [ selectedTimeSlots, setSelectedTimeSlots ] = useState<number[]>([] as any[]);
 
   let start: Date = new Date();
   let end: Date = new Date();

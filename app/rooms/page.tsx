@@ -43,7 +43,7 @@ export default function RoomsLandingPage(): React.ReactElement {
         >
           {
             rooms.map((room: IRoom) => (
-              <BookingCard room={room}/>
+              <BookingCard key={room.id} room={room}/>
             ))
           }
         </Flex>

@@ -26,6 +26,7 @@ export default function BookingCard({ room }: BookingCardProps): React.ReactElem
 
   return (
     <Card
+      key={room.id}
       shadow={"sm"}
       p="lg"
       m="lg"

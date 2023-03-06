@@ -2,6 +2,7 @@
 
 import React, {
   createContext,
+  useEffect,
   useState
 } from 'react';
 
@@ -17,21 +18,15 @@ import {
 } from "@/libs/rest";
 import {handleApiError} from "@/components/Errors";
 
-const UserContext = createContext({});
+const UserContext = createContext({} as any);
 
-function UserContextProvider({ children }) {
+function UserContextProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  let prevUser: string | null = sessionStorage.getItem('USER');
-  let prevToken: string | null = sessionStorage.getItem('TOKEN');
-  const [user, setUser] = useState<IUser | undefined>(
-    prevUser !== null ? JSON.parse(prevUser) : undefined
-  );
-  const [token, setToken] = useState<string | undefined>(
-    prevToken !== null ? prevToken : undefined
-  );
+  const [user, setUser] = useState<IUser | undefined>(undefined);
+  const [token, setToken] = useState<string | undefined>(undefined);
 
-  const handleLogin: Promise<IUser> = async (auth: IUserAuth) => {
+  const handleLogin = async (auth: IUserAuth) => {
     let data: IRestApiResponse = await loginUser(auth);
     sessionStorage.setItem('USER', JSON.stringify(data['data']['user']));
     sessionStorage.setItem('TOKEN', data['data']['token']);
@@ -53,6 +48,16 @@ function UserContextProvider({ children }) {
     setToken(undefined);
     router.push('/');
   }
+
+  useEffect(
+    () => {
+      let prevUser: string | null = sessionStorage.getItem('USER');
+      let prevToken: string | null = sessionStorage.getItem('TOKEN');
+      setUser(prevUser !== null ? JSON.parse(prevUser) : undefined);
+      setToken(prevToken !== null ? prevToken : undefined);
+    },
+    []
+  );
 
   return (
     <UserContext.Provider value={{

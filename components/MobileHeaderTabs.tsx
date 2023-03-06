@@ -14,7 +14,6 @@ import React, {
 import {MantineTheme} from "@mantine/styles/lib/theme";
 import {
   usePathname,
-  useRouter
 } from "next/navigation";
 import {useDisclosure} from "@mantine/hooks";
 
@@ -80,12 +79,11 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 }));
 
 export function MobileHeaderTabs() {
-  const router = useRouter();
   const { classes, theme, cx } = useStyles();
   const { user } = useContext(UserContext);
 
   const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(getActiveTab(usePathname()));
+  const [active, setActive] = useState(getActiveTab(usePathname()!));
 
   return (
     <>

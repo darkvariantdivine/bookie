@@ -61,7 +61,7 @@ export function HeaderTabs(): React.ReactElement {
   const { classes, theme, cx } = useStyles();
 
   const { user } = useContext(UserContext);
-  const [active, setActive] = useState(getActiveTab(usePathname()));
+  const [active, setActive] = useState(getActiveTab(usePathname()!));
 
   return (
     <Tabs
@@ -74,7 +74,7 @@ export function HeaderTabs(): React.ReactElement {
       }}
       onTabChange={
         (value: string) => {
-          let tab: ITab = TABS.find((tab: ITab) => value === tab.link);
+          let tab: ITab = TABS.find((tab: ITab) => value === tab.link)!;
           if (tab.requireSignIn && !user) {
             router.push('/login');
           } else {
