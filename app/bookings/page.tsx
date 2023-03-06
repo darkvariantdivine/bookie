@@ -242,12 +242,12 @@ export default function UserBookingsPage() {
       let firstRounded: {[k: string]: number} = roundInterval(duration[0]!.getMinutes());
       let secondRounded: {[k: string]: number} = roundInterval(duration[1]!.getMinutes());
 
-      let first: dayjs.Dayjs = dayjs(duration[0])
+      let first: dayjs.Dayjs = dayjs(selectedDate)
         .hour(duration[0].getHours() + firstRounded['hours'])
         .minute(firstRounded['minutes'])
         .utc();
-      let second: dayjs.Dayjs = dayjs(duration[1])
-        .hour(duration[0].getHours() + secondRounded['hours'])
+      let second: dayjs.Dayjs = dayjs(selectedDate)
+        .hour(duration[1].getHours() + secondRounded['hours'])
         .minute(secondRounded['minutes'])
         .utc();
 
