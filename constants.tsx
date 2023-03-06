@@ -47,15 +47,6 @@ interface IBooking {
   lastModified?: string;
 }
 
-interface IUserBooking {
-  id: string;
-  user: string;
-  room: IRoom;
-  start: string;
-  duration: number;
-  lastModified: string;
-}
-
 const TABS: ITab[] = [
   {label: 'Home', link: '/', requireSignIn: false},
   {label: 'Rooms', link: '/rooms', requireSignIn: false},
@@ -76,6 +67,9 @@ const SLOT_INTERVAL: number = process.env.NEXT_PUBLIC_SLOT_INTERVAL ?
 const HOST: string = process.env.NEXT_PUBLIC_SERVER ?
   process.env.NEXT_PUBLIC_SERVER : 'http://localhost:20000/v1.0'
 
+const TIMEZONE: string = process.env.NEXT_TIMEZONE ?
+  process.env.NEXT_TIMEZONE : 'Asia/Singapore'
+
 const TIMESLOTS: number[] = Array(
   24 / SLOT_INTERVAL
 ).fill(0).map(
@@ -90,10 +84,10 @@ export {
   type ITab,
   type IRoom,
   type IBooking,
-  type IUserBooking,
   TABS,
   PASSWORD_REQS,
   SLOT_INTERVAL,
   HOST,
+  TIMEZONE,
   TIMESLOTS
 }

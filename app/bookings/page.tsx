@@ -27,11 +27,12 @@ import {useRouter} from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 
 import {RoomContext} from "@/contexts/RoomContext";
 import {
   IBooking,
-  IUserBooking
+  IRoom,
 } from "@/constants";
 import {BookingContext} from "@/contexts/BookingContext";
 import {
@@ -42,8 +43,14 @@ import {NavBar} from "@/components/NavBar";
 import {TimeRangeInput} from "@mantine/dates";
 import {BookieDatePicker} from "@/components/DatePicker";
 import {openConfirmModal} from "@mantine/modals";
+import {
+  deleteBookings,
+  updateBooking
+} from "@/libs/rest";
+import {handleApiError} from "@/components/Errors";
 
 dayjs.extend(utc);
+dayjs.extend(localizedFormat);
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   cellBox: {
@@ -63,6 +70,17 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   }
 }));
 
+
+interface IUserBooking {
+  id: string;
+  user: string;
+  room: IRoom;
+  start: dayjs.Dayjs;
+  duration: number;
+  end: dayjs.Dayjs;
+  lastModified: dayjs.Dayjs;
+}
+
 interface ModifyStartDateProps {
   userBooking: IUserBooking;
 }
@@ -77,21 +95,13 @@ export function ModifyStartDate(
 
   useEffect(
     () => {
-      console.log(dayjs(userBooking.start))
-      setDate(dayjs(userBooking.start).utc(true).local())
+      setDate(dayjs(userBooking.start))
     },
     []
   );
 
-  function handleSelectedDate(date: Date | dayjs.Dayjs) {
-    setDate(dayjs(date))
-  }
-
   return (
-    <BookieDatePicker
-      selectedDate={selectedDate}
-      updateDateChanges={handleSelectedDate}
-    />
+    <BookieDatePicker />
   )
 }
 
@@ -110,28 +120,36 @@ export function ModifyDuration(
     duration, setDuration
   } = useContext(BookingContext);
 
-  function updateDuration() {
-    let first: Date = dayjs(selectedDate).toDate();
-    let second: Date = dayjs(selectedDate).add(userBooking.duration, 'hour').toDate();
+  function updateDuration(newDuration: [Date, Date]) {
+    let first: Date = dayjs(selectedDate)
+      .hour(newDuration[0]!.getHours())
+      .minute(newDuration[0]!.getHours())
+      .toDate();
+    let second: Date = dayjs(selectedDate)
+      .hour(newDuration[1]!.getHours())
+      .minute(newDuration[1]!.getHours())
+      .toDate();
 
     setDuration([first, second]);
   }
 
   useEffect(
     () => {
-
       setDate(
         !selectedDate.isSame(dayjs(userBooking.start), 'minute') ?
           dayjs(selectedDate) :
-          dayjs(userBooking.start).utc(true).local()
+          dayjs(userBooking.start)
       );
-      updateDuration();
+      updateDuration([
+        dayjs(selectedDate).toDate(),
+        dayjs(selectedDate).add(userBooking.duration, 'hour').toDate()
+      ]);
     },
     []
   );
 
   useEffect(
-    () => updateDuration(),
+    () => updateDuration(duration),
     [selectedDate]
   )
 
@@ -152,17 +170,15 @@ export default function UserBookingsPage() {
   const { classes, theme, cx } = useStyles();
 
   const { roomsMap } = useContext(RoomContext);
-  const { user } = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
   const {
     bookings, retrieveBookings,
     setCurrentBookings,
     selectedDate, setDate,
-    selectedDuration, setDuration
+    duration, setDuration
   } = useContext(BookingContext);
 
-  const [userBookings, setUserBookings] = useState<IUserBooking[]>(
-    transformUserBookings(getUserBookings(user ? user.id : "default", bookings))
-  );
+  const [userBookings, setUserBookings] = useState<IUserBooking[]>([]);
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
   function transformUserBookings(toTransform: IBooking[]): IUserBooking[] {
@@ -170,54 +186,75 @@ export default function UserBookingsPage() {
     toTransform.forEach(
       (booking: IBooking) => {
         const userBooking: IUserBooking = {
-          ...booking,
+          id: booking.id!,
+          user: booking.user!,
           room: roomsMap[booking.room],
-        };
+          start: dayjs(booking.start),
+          duration: booking.duration,
+          end: dayjs(booking.start).add(booking.duration, 'hours'),
+          lastModified: dayjs(booking.lastModified)
+        }
         transformedBookings.push(userBooking);
       }
     );
     return transformedBookings
   }
 
-  function handleBookingChanges(): IUserBooking[] {
+  const handleBookingChanges = async () => {
     if (!user) {
-      router.push("/login")
+      router.push("/")
       return [];
     }
 
-    let newBookings: IBooking[] = getUserBookings(user.id, retrieveBookings());
-    setCurrentBookings(newBookings);
+    try {
+      let newBookings: IBooking[] = getUserBookings(user.id, await retrieveBookings());
+      setCurrentBookings(newBookings);
 
-    let newUserBookings: IUserBooking[] = transformUserBookings(newBookings);
-    setUserBookings(newUserBookings);
-    return newUserBookings;
+      let newUserBookings: IUserBooking[] = transformUserBookings(newBookings);
+      setUserBookings(newUserBookings);
+      return newUserBookings;
+    } catch (e) {
+      handleApiError(e);
+    }
   }
 
-  function handleBookingCancellation(
+  const handleBookingCancellation = async(
     rowSelection: MRT_RowSelectionState
-  ) {
-    console.log(`Cancelling bookings ${rowSelection}`)
+  ) => {
+    console.log(`Cancelling bookings ${JSON.stringify(Object.keys(rowSelection))}`);
     setUserBookings(userBookings.filter((booking: IUserBooking) => !(booking.id in rowSelection)));
-    // TODO: API call to cancel changes
-    // handleBookingChanges();
+
+    try {
+      await deleteBookings(Object.keys(rowSelection), token);
+    } catch (e) {
+      handleApiError(e);
+    }
+    await handleBookingChanges();
+    setRowSelection({});
   }
 
   const handleSaveRow: MantineReactTableProps<IUserBooking>['onEditingRowSave'] =
     async ({ exitEditingMode, row, values}) => {
-      let first: dayjs.Dayjs = dayjs(selectedDuration[0]).utc(true);
-      let second: dayjs.Dayjs = dayjs(selectedDuration[1]).utc(true);
-      userBookings[row.index]["start"] = selectedDate?.toISOString()
-      userBookings[row.index]["duration"] = second.diff(first, 'minute');
-      userBookings[row.index]["end"] = second.toISOString();
-      setUserBookings([...userBookings]);
+      let first: dayjs.Dayjs = dayjs(duration[0]).utc();
+      let second: dayjs.Dayjs = dayjs(duration[1]).utc();
 
-      // TODO: send/receive api updates here
-      // handleBookingChanges()
+      let updates: {[k: string]: string | number} = {
+        start: first.toISOString(),
+        duration: second.diff(first, 'minute') / 60
+      }
+      console.log(`Updating values ${JSON.stringify(updates)}`);
+
+      try {
+        await updateBooking(row.original.id, updates, token);
+      } catch (e) {
+        handleApiError(e);
+      }
+      await handleBookingChanges();
       exitEditingMode();
     }
 
   function handleEditCancel({ row }) {
-    setDate(dayjs(row.original.start).utc(true).local());
+    setDate(dayjs(row.original.start));
     setDuration([null, null])
   }
 
@@ -228,12 +265,12 @@ export default function UserBookingsPage() {
       }
       handleBookingChanges();
     },
-    []
+    [roomsMap]
   )
 
   useEffect(
-    () => {handleBookingChanges()},
-    [bookings.length]
+    () => {handleBookingChanges();},
+    [roomsMap, JSON.stringify(bookings)]
   )
 
   const columns = useMemo<MRT_ColumnDef<IUserBooking>[]>(
@@ -261,12 +298,11 @@ export default function UserBookingsPage() {
         enableEditing: false,
       },
       {
-        accessorFn: (row: IUserBooking) =>
-          dayjs(row.start).utc(true).local(),
+        accessorKey: 'start',
         id: "start",
         header: 'Start Date Time',
         Cell: ({ cell }) => (
-          <span>{cell.getValue<dayjs.Dayjs>().utc(true).local().toString()}</span>
+          <span>{cell.getValue<dayjs.Dayjs>().format("llll")}</span>
         ),
         Edit: ({cell, row, table}) => <ModifyStartDate userBooking={row.original} />,
       },
@@ -277,22 +313,20 @@ export default function UserBookingsPage() {
         Edit: ({cell, row, table}) => <ModifyDuration userBooking={row.original} />,
       },
       {
-        accessorFn: (row:  IUserBooking) =>
-          dayjs(row.start).add(row.duration, 'hour').utc(true).local(),
+        accessorKey: "end",
         id: "end",
         header: 'End Date Time',
         Cell: ({ cell }) => (
-          <span>{cell.getValue<dayjs.Dayjs>().utc(true).local().toString()}</span>
+          <span>{cell.getValue<dayjs.Dayjs>().format("llll")}</span>
         ),
         enableEditing: false,
       },
       {
-        accessorFn: (row: IUserBooking) =>
-          dayjs(row.lastModified).utc(true).local(),
+        accessorKey: 'lastModified',
         id: "lastModified",
         header: 'Last Modified',
         Cell: ({ cell }) => (
-          <span>{cell.getValue<dayjs.Dayjs>().utc(true).local().toString()}</span>
+          <span>{cell.getValue<dayjs.Dayjs>().format("llll")}</span>
         ),
         enableEditing: false,
       },
@@ -328,14 +362,14 @@ export default function UserBookingsPage() {
               () => openConfirmModal({
                 title: 'Cancel Booking',
                 children: (
-                <Text size="sm">
-                  Confirm to cancel the selected bookings
-                </Text>
+                  <Text size="sm">
+                    Confirm to cancel the selected bookings
+                  </Text>
                 ),
                 labels: { confirm: 'Confirm', cancel: 'Cancel' },
                 closeOnConfirm: true,
                 closeOnCancel: true,
-                onConfirm: () => handleBookingCancellation(rowSelection)
+                onConfirm: async () => await handleBookingCancellation(rowSelection)
               })
             }
             leftIcon={<IconCircleX />}
