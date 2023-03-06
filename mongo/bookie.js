@@ -27,7 +27,7 @@ bookie_db.users.insertMany(
             salt: "9347e591cbe15dc9",
             name: "Test User 1",
             description: "This is test user 1",
-            image: "/TestUser1.png",
+            image: "/TestUser1.jpg",
             rooms: []
         },
         {

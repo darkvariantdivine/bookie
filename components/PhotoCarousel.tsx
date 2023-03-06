@@ -52,8 +52,8 @@ export default function PhotoCarousel(
 ): React.ReactElement {
   const { classes } = useStyles();
 
-  const images = imagesToDisplay.map((image: string) => (
-    <Carousel.Slide key={image}>
+  const images = imagesToDisplay.map((image: string, index: number) => (
+    <Carousel.Slide key={String(index)}>
       <Image
         width={maxWidth}
         src={image}
@@ -91,8 +91,8 @@ export function PhotoCarouselWithAutoplay(
   const { classes } = useStyles();
   const autoplay = useRef(Autoplay({ delay: autoplayDuration }));
 
-  const images = imagesToDisplay.map((image: string) => (
-    <Carousel.Slide key={image}>
+  const images = imagesToDisplay.map((image: string, index: number) => (
+    <Carousel.Slide key={String(index)}>
       <Image
         width={maxWidth}
         src={image}
