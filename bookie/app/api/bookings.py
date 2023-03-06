@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timezone
+
 from logging import Logger, getLogger
 from typing import Dict, List, Any
 
@@ -372,10 +373,7 @@ async def update_booking(
         )
     )
 
-    if any(
-            (b.end <= new_booking.start or new_booking.end >= b.start)
-            for b in room_bookings
-    ):
+    if any(new_booking.overlaps(b) for b in room_bookings):
         raise BookieAPIException(
             status_code=status.HTTP_400_BAD_REQUEST,
             message=ErrorMessage.API_BOOKING_OVERLAPS_ERROR_MSG,

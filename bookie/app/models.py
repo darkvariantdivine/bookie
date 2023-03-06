@@ -1,4 +1,6 @@
 
+from __future__ import annotations
+
 from datetime import datetime, timezone, timedelta
 from functools import partial
 from typing import List, Dict, Any
@@ -117,3 +119,18 @@ class Booking(BaseModel):
             datetime: End datetime
         """
         return self.start + timedelta(hours=self.duration)
+
+    def overlaps(self, booking: Booking) -> bool:
+        """
+        Checks if the booking overlaps with another
+
+        Args:
+            booking (Booking): Booking to check
+
+        Returns:
+            bool: If booking overlaps
+        """
+        return not (
+                self.end <= booking.start or
+                self.start >= booking.end
+        )
