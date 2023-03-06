@@ -1,6 +1,7 @@
 
 import React, {
   createContext,
+  useEffect,
   useState
 } from 'react';
 
@@ -24,6 +25,15 @@ function RoomContextProvider({ children }) {
     setRooms(data['data']);
     setRoomsMap(generateRoomsMap(data['data']));
   }
+
+  useEffect(
+    () => {
+      retrieveRooms();
+      const id: NodeJS.Timer = setInterval(async () => {await retrieveRooms()}, 300000);
+      return () => clearInterval(id);
+    },
+    []
+  );
 
   return (
     <RoomContext.Provider value={{

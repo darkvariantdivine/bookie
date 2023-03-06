@@ -19,14 +19,17 @@ const BookingContext = createContext([]);
 function BookingContextProvider({ children }) {
   const [ bookings, setBookings ] = useState<IBooking[]>([]);
 
-  const [ selectedDate, setDate ] = useState<dayjs.Dayjs | undefined>(dayjs());
+  const [ selectedDate, setDate ] = useState<dayjs.Dayjs>(dayjs());
   const [ currentBookings, setCurrentBookings ] = useState<IBooking[]>(getDateBookings(selectedDate, bookings));
 
   const [ timeSlots, setTimeSlots ] = useState<number[]>(getCurrentTimeSlots(selectedDate, TIMESLOTS));
   const [ availableTimeSlots, setAvailableTimeSlots ] = useState<number[]>(getTimeline(currentBookings, timeSlots));
   const [ selectedTimeSlots, setSelectedTimeSlots ] = useState<number[]>([]);
 
-  const [ duration, setDuration ] = useState<[Date | null, Date | null]>([null, null]);
+  let start: Date = new Date();
+  let end: Date = new Date();
+  end.setHours(start.getHours() + 1)
+  const [ duration, setDuration ] = useState<[Date, Date]>([start, end]);
 
   const retrieveBookings = async () => {
     let data: IRestApiResponse = await fetchBookings();
@@ -35,6 +38,16 @@ function BookingContextProvider({ children }) {
     }
     return data['data'];
   }
+
+  useEffect(
+    () => {
+      retrieveBookings();
+      const id: NodeJS.Timer = setInterval(async () => {await retrieveBookings()}, 300000);
+      return () => clearInterval(id);
+    },
+    []
+  );
+
 
   return (
     <BookingContext.Provider value={{
