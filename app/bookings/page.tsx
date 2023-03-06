@@ -48,6 +48,7 @@ import {
   updateBooking
 } from "@/libs/rest";
 import {handleApiError} from "@/components/Errors";
+import {roundInterval} from "@/libs/utils";
 
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);
@@ -123,11 +124,13 @@ export function ModifyDuration(
   function updateDuration(newDuration: [Date, Date]) {
     let first: Date = dayjs(selectedDate)
       .hour(newDuration[0]!.getHours())
-      .minute(newDuration[0]!.getHours())
+      .minute(newDuration[0]!.getMinutes())
+      .second(0)
       .toDate();
     let second: Date = dayjs(selectedDate)
       .hour(newDuration[1]!.getHours())
-      .minute(newDuration[1]!.getHours())
+      .minute(newDuration[1]!.getMinutes())
+      .second(0)
       .toDate();
 
     setDuration([first, second]);
@@ -135,14 +138,13 @@ export function ModifyDuration(
 
   useEffect(
     () => {
-      setDate(
-        !selectedDate.isSame(dayjs(userBooking.start), 'minute') ?
-          dayjs(selectedDate) :
-          dayjs(userBooking.start)
-      );
+      let date: dayjs.Dayjs = !selectedDate.isSame(dayjs(userBooking.start), 'minute') ?
+        dayjs(selectedDate) :
+        dayjs(userBooking.start)
+      setDate(date);
       updateDuration([
-        dayjs(selectedDate).toDate(),
-        dayjs(selectedDate).add(userBooking.duration, 'hour').toDate()
+        dayjs(date).toDate(),
+        dayjs(date).add(userBooking.duration, 'hour').toDate()
       ]);
     },
     []
@@ -235,8 +237,17 @@ export default function UserBookingsPage() {
 
   const handleSaveRow: MantineReactTableProps<IUserBooking>['onEditingRowSave'] =
     async ({ exitEditingMode, row, values}) => {
-      let first: dayjs.Dayjs = dayjs(duration[0]).utc();
-      let second: dayjs.Dayjs = dayjs(duration[1]).utc();
+      let firstRounded: {[k: string]: number} = roundInterval(duration[0]!.getMinutes());
+      let secondRounded: {[k: string]: number} = roundInterval(duration[1]!.getMinutes());
+
+      let first: dayjs.Dayjs = dayjs(duration[0])
+        .hour(duration[0].getHours() + firstRounded['hours'])
+        .minute(firstRounded['minutes'])
+        .utc();
+      let second: dayjs.Dayjs = dayjs(duration[1])
+        .hour(duration[0].getHours() + secondRounded['hours'])
+        .minute(secondRounded['minutes'])
+        .utc();
 
       let updates: {[k: string]: string | number} = {
         start: first.toISOString(),

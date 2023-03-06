@@ -3,9 +3,12 @@ import {DatePicker} from "@mantine/dates";
 import {IconCalendar} from "@tabler/icons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
 import {BookingContext} from "@/contexts/BookingContext";
 
 dayjs.extend(utc);
+dayjs.extend(localizedFormat);
 
 export function BookieDatePicker() {
 
@@ -29,7 +32,7 @@ export function BookieDatePicker() {
     <DatePicker
       label={"Select Booking Date"}
       description={"View available slots for chosen date"}
-      placeholder={selectedDate.toString()}
+      placeholder={selectedDate.format('llll')}
       variant={'filled'}
       withAsterisk
       value={selectedDate}

@@ -8,7 +8,7 @@ import {
   loginUser,
   logoutUser,
   updateBooking,
-  API, RestApiError,
+  API,
 } from "@/libs/rest";
 import {
   test,
