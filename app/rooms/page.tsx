@@ -25,9 +25,7 @@ const useStyle = createStyles({
 
 export default function RoomsLandingPage(): React.ReactElement {
   const {classes, theme, cx} = useStyle();
-  const { rooms, retrieveRooms } = useContext(RoomContext);
-
-  useEffect(() => {retrieveRooms();},[]);
+  const { rooms } = useContext(RoomContext);
 
   return (
     <main className={classes.main}>
