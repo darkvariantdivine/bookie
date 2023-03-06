@@ -1,31 +1,39 @@
-import React from "react";
+import React, {useContext} from "react";
 import {DatePicker} from "@mantine/dates";
 import {IconCalendar} from "@tabler/icons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import {BookingContext} from "@/contexts/BookingContext";
 
 dayjs.extend(utc);
 
-interface BookieDatePickerProps {
-  selectedDate: dayjs.Dayjs;
-  updateDateChanges: (date: Date | dayjs.Dayjs) => void;
-}
+export function BookieDatePicker() {
 
-export function BookieDatePicker(
-  {
-    selectedDate,
-    updateDateChanges,
-  }: BookieDatePickerProps
-) {
+  const { selectedDate, setDate } = useContext(BookingContext);
+
+  function handleDateChanges(dateToSet: Date | dayjs.Dayjs): dayjs.Dayjs {
+    let newDate: dayjs.Dayjs;
+    if (
+      dateToSet === null ||
+      dayjs(dateToSet).isSame(selectedDate, 'day')
+    ) {
+      newDate = dayjs();
+    } else {
+      newDate = dayjs(dateToSet);
+    }
+    setDate(newDate);
+    return newDate;
+  }
+
   return (
     <DatePicker
       label={"Select Booking Date"}
       description={"View available slots for chosen date"}
-      placeholder={selectedDate.utc(true).local().toString()}
+      placeholder={selectedDate.toString()}
       variant={'filled'}
       withAsterisk
       value={selectedDate}
-      onChange={updateDateChanges}
+      onChange={handleDateChanges}
       clearable
       dropdownPosition={"bottom-start"}
       dropdownType={'popover'}
