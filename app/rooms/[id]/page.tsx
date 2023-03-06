@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import React, {
   useEffect,
-  useState
+  useState,
 } from "react";
 import {
   IconArrowBackUp
@@ -83,46 +83,50 @@ export default function RoomPage({ params }: RoomPageProps) {
     []
   )
 
-  return (
-    <main className={classes.main}>
-      <NavBar />
-      <Paper
-        className={classes.wrapper}
-      >
-        <ActionIcon onClick={router.back}>
-          <IconArrowBackUp />
-        </ActionIcon>
-        {!room && <Loading />}
-        {
-          room &&
-            <Container
-              py={"xl"}
-              size={"lg"}
+  if (room === null) {
+    return (
+      <main className={classes.main}>
+        <Loading />
+      </main>
+    )
+  } else {
+    return (
+      <main className={classes.main}>
+        <NavBar />
+        <Paper
+          className={classes.wrapper}
+        >
+          <ActionIcon onClick={router.back} size={"xl"}>
+            <IconArrowBackUp size={36}/>
+          </ActionIcon>
+          <Container
+            py={"xl"}
+            size={"lg"}
+          >
+            <Flex
+              className={classes.inner}
             >
-              <Flex
-                className={classes.inner}
+              <Stack
+                sx={{maxWidth: 450}}
               >
-                <Stack
-                  sx={{maxWidth: 450}}
-                >
-                  <Group>
-                    <Title order={1}>{room.name}</Title>
-                    <Text>{room.description}</Text>
-                  </Group>
-                  <PhotoCarouselWithAutoplay
-                    imagesToDisplay={
-                      room.images.length > 0 ?
-                        room.images :
-                        ["/Logo.png"]
-                    }
-                  />
-                </Stack>
-                <SelectTimeSlots room={room}/>
-              </Flex>
-            </Container>
-        }
-      </Paper>
-    </main>
-  )
+                <Group>
+                  <Title order={1}>{room.name}</Title>
+                  <Text>{room.description}</Text>
+                </Group>
+                <PhotoCarouselWithAutoplay
+                  imagesToDisplay={
+                    room.images.length > 0 ?
+                      room.images :
+                      ["/Logo.png"]
+                  }
+                />
+              </Stack>
+              <SelectTimeSlots room={room}/>
+            </Flex>
+          </Container>
+        </Paper>
+      </main>
+    )
+  }
 }
 
