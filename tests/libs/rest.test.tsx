@@ -36,7 +36,7 @@ describe("Mocking Login API calls", () => {
       data: USER,
       status: 204,
       headers: {
-        Authorization: `Bearer ${token}`
+        authorization: `Bearer ${token}`
       }
     });
 

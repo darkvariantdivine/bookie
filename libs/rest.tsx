@@ -1,6 +1,5 @@
 
 import axios, {Axios} from 'axios';
-import * as qs from 'qs';
 import {
   IBooking,
   IRestApiError,
@@ -48,7 +47,7 @@ export async function loginUser(
       "/login", auth,
     );
 
-    let token: string = headers!.getAuthorization().split(' ')[1];
+    let token: string = (headers?.authorization as string).split(' ')[1];
     console.log(`Retrieved token ${token}`);
     return {
       data: {'token': token, 'user': data},
@@ -354,14 +353,12 @@ export async function deleteBookings(
   token: string
 ): Promise<IRestApiResponse> {
   try {
-    const {data, status} = await API.delete<undefined | IRestApiError>(
+    const {status} = await API.delete<undefined | IRestApiError>(
       "/bookings",
       {
-        params: bookings,
+        params: {'booking': bookings},
         paramsSerializer: {
-          encode: (params: string[]) => {
-            return qs.stringify({'booking': params}, {arrayFormat: 'repeat'});
-          }
+          indexes: null,
         },
         'headers': {
           'Authorization': `Bearer ${token}`
