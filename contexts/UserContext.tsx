@@ -15,6 +15,7 @@ import {
   loginUser,
   logoutUser
 } from "@/libs/rest";
+import {handleApiError} from "@/components/Errors";
 
 const UserContext = createContext({});
 
@@ -41,7 +42,11 @@ function UserContextProvider({ children }) {
   }
 
   const handleLogout = async () => {
-    await logoutUser(token as string);
+    try {
+      await logoutUser(token as string);
+    } catch (e) {
+      handleApiError(e, false);
+    }
     sessionStorage.removeItem('USER');
     sessionStorage.removeItem('TOKEN');
     setUser(undefined);
@@ -51,7 +56,9 @@ function UserContextProvider({ children }) {
 
   return (
     <UserContext.Provider value={{
-      user, setUser, handleLogin, handleLogout
+      user, setUser,
+      token,
+      handleLogin, handleLogout
     }}>
       {children}
     </UserContext.Provider>

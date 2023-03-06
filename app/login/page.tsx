@@ -30,7 +30,7 @@ import {showNotification} from "@mantine/notifications";
 import {UserContext} from "@/contexts/UserContext";
 import {IUser, IUserAuth} from "@/constants";
 import {useRouter} from "next/navigation";
-import {RestApiError} from "@/libs/rest";
+import {handleApiError} from "@/components/Errors";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
@@ -109,14 +109,7 @@ export default function SignInMenu(): React.ReactElement {
       form.reset();
       setOpened(false);
     } catch (e) {
-      let message: string;
-      if (e instanceof RestApiError) message = e.message;
-      else message = String(e);
-      showNotification({
-        icon: <IconX />,
-        message: message,
-        color: 'red'
-      });
+      handleApiError(e);
       form.reset();
     }
   };
