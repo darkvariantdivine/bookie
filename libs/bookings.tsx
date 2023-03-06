@@ -8,7 +8,7 @@ dayjs.extend(utc);
 export function isDateEqual(
   date1: dayjs.Dayjs, date2: dayjs.Dayjs
 ): boolean {
-  return date1.utc().isSame(date2.utc(), 'day')
+  return date1.utc().isSame(date2.utc(), 'day');
 }
 
 export function getUserBookings(
@@ -16,9 +16,9 @@ export function getUserBookings(
 ): IBooking[] {
   return bookings.filter(
     (booking: IBooking) => {
-      return booking.user === user
+      return booking.user === user;
     }
-  )
+  );
 }
 
 export function getRoomBookings(
@@ -26,9 +26,9 @@ export function getRoomBookings(
 ): IBooking[] {
   return bookings.filter(
     (booking: IBooking) => {
-      return booking.room === room
+      return booking.room === room;
     }
-  )
+  );
 }
 
 export function getDateBookings(
@@ -48,10 +48,10 @@ export function getTimeSlotsFromDuration(
   if (date.utc().local().minute() > 0) {
     start += date.utc().local().minute() / 60;
   }
-  let slots: number = duration / SLOT_INTERVAL
+  let slots: number = Math.floor(duration / SLOT_INTERVAL);
   return Array.from(Array(slots).keys()).map(
     (i: number) => {return start + (i * SLOT_INTERVAL)}
-  )
+  );
 }
 
 export function getTimeline(
@@ -80,11 +80,11 @@ export function getCurrentTimeSlots(
         .hour(Math.trunc(slot))
         .minute((slot % 1) * 60)
         .isAfter(currentDateTime, 'minute')
-      )
+      );
     }
-  )
+  );
 }
 
 export function slotToString(slot: number) {
-  return `${String(Math.trunc(slot)).padStart(2, '0')}${String((slot % 1) * 60).padStart(2, '0')}`
+  return `${String(Math.trunc(slot)).padStart(2, '0')}${String((slot % 1) * 60).padStart(2, '0')}`;
 }
