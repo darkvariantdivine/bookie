@@ -35,6 +35,8 @@ import {
 import {UserContext} from "@/contexts/UserContext";
 import {BookieDatePicker} from "@/components/DatePicker";
 import {BookieTimeline} from "@/components/Timeline";
+import {createBooking} from "@/libs/rest";
+import {handleApiError} from "@/components/Errors";
 
 dayjs.extend(utc);
 
@@ -59,7 +61,7 @@ export default function SelectTimeSlots(
   }: SelectTimeSlotProps
 ) {
   const router = useRouter();
-  const { user } = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
   const {
     bookings, retrieveBookings,
     selectedDate, setDate,
@@ -70,35 +72,6 @@ export default function SelectTimeSlots(
   } = useContext(BookingContext);
   const { classes, theme, cx } = useStyles();
 
-  function handleClearAllSlots(message?: string) {
-    showNotification({
-      message: message ? message : `Successfully cleared all slots`,
-      icon: <IconCircleCheck />,
-      color: 'green',
-      autoClose: 5000,
-    });
-
-    setSelectedTimeSlots([]);
-  }
-
-  function handleDateChanges(
-    dateToSet: Date | dayjs.Dayjs | null,
-    selectedDate: dayjs.Dayjs,
-    setDate: (date: dayjs.Dayjs) => void
-  ): dayjs.Dayjs {
-    let newDate: dayjs.Dayjs;
-    if (
-      dateToSet === null ||
-      dayjs(dateToSet).isSame(selectedDate, 'day')
-    ) {
-      newDate = dayjs().utc(true).local();
-    } else {
-      newDate = dayjs(dateToSet).utc(true).local();
-    }
-    setDate(newDate);
-    return newDate;
-  }
-
   function handleTimeSlotChanges(newBookings: IBooking[]) {
 
     setTimeSlots(getCurrentTimeSlots(selectedDate, TIMESLOTS));
@@ -108,7 +81,13 @@ export default function SelectTimeSlots(
         (slot: number) => !availableTimeSlots.includes(slot)
       )
     ) {
-      handleClearAllSlots("Selection time has lapsed, clearing all slots")
+      showNotification({
+        message: "Selection time has lapsed, clearing all slots",
+        icon: <IconCircleCheck />,
+        color: 'green',
+        autoClose: 5000,
+      });
+      setSelectedTimeSlots([]);
     }
   }
 
@@ -118,31 +97,23 @@ export default function SelectTimeSlots(
     return newBookings;
   }
 
-  function handleBookingChanges(): IBooking[] {
+  const handleBookingChanges = async () => {
     let roomBookings: IBooking[] = getDateBookings(
-      selectedDate,
-      getRoomBookings(room.id, retrieveBookings())
+      selectedDate, getRoomBookings(room.id, await retrieveBookings())
     );
     return handleCurrentBookingChanges(roomBookings);
   }
 
-  function updateDateChanges(date: Date | dayjs.Dayjs) {
-    let newDate: dayjs.Dayjs = handleDateChanges(date, selectedDate, setDate);
-    handleBookingChanges();
-    handleClearAllSlots("Selected date has changed, clearing all selected slots");
-    form.setFieldValue('start', newDate.utc(true).toISOString());
-  }
-
   const form = useForm<IBooking>({
     initialValues: {
-      user: user.id,
+      user: user ? user.id : 'default',
       room: room.id,
-      start: selectedDate.utc(true).toISOString(),
+      start: selectedDate.utc().toISOString(),
       duration: 0,
     },
     validate: {
       start: (value: string) => (
-        !dayjs(value).isBefore(dayjs()) ?
+        dayjs(value).isBefore(dayjs()) ?
           "Selected date has to be greater than the current date" :
           null
       ),
@@ -170,30 +141,47 @@ export default function SelectTimeSlots(
         autoClose: 5000,
       });
     }
-    form.reset();
   }
 
-  const handleSubmit = (values: typeof form.values, event: FormEvent) => {
+  const handleSubmit = async (values: typeof form.values, event: FormEvent) => {
     console.log(`Submitting booking with values ${JSON.stringify(values)}`)
     event.preventDefault();
-    // TODO: API call to submit booking form
-    form.reset();
-    handleDateChanges(dayjs(), selectedDate, setDate);
-    handleClearAllSlots("Booking submitted, clearing all selected slots");
-    handleBookingChanges();
+    try {
+      await createBooking(values, token);
+      form.reset();
+      setDate(dayjs());
+      setSelectedTimeSlots([]);
+      showNotification({
+        message: "Booking submitted, clearing all selected slots",
+        icon: <IconCircleCheck />,
+        color: 'green',
+        autoClose: 5000,
+      });
+      await handleBookingChanges();
+    } catch (e) {
+      handleApiError(e);
+      form.reset();
+    }
   }
 
-  useEffect(() => {
-    const id: NodeJS.Timer = setInterval(() => {handleBookingChanges()}, 300000);
-    return () => clearInterval(id)
-  },[]);
+  useEffect(
+    () => {handleBookingChanges();},
+    []
+  );
 
   useEffect(
     () => {
-      console.log(`Selected Date changed to ${selectedDate.utc(true).local().toString()}`)
-      console.log("Updating timeslots and setting forms")
+      console.log(`Selected Date changed to ${selectedDate.toString()}`);
+      console.log("Updating timeslots and setting forms");
+      showNotification({
+        message: "Selected date has changed, clearing all selected slots",
+        icon: <IconCircleCheck />,
+        color: 'green',
+        autoClose: 5000,
+      });
+      setSelectedTimeSlots([]);
+      form.setFieldValue('start', selectedDate.utc().toISOString());
       handleBookingChanges();
-      form.setFieldValue('start', selectedDate.utc(true).toISOString());
     },
     [selectedDate]
   );
@@ -201,8 +189,8 @@ export default function SelectTimeSlots(
   useEffect(
     () => {
       if (!user) {
-        console.log("User has logged out, redirecting to login page")
-        router.push('/login')
+        console.log("User has logged out, redirecting to login page");
+        router.push('/login');
       }
     },
     [user]
@@ -211,16 +199,18 @@ export default function SelectTimeSlots(
   useEffect(
     () => {
       if (selectedTimeSlots.length === 0) {
-        console.log("Selected time slots have been cleared, updating form")
+        console.log("Selected time slots have been cleared, updating form");
         form.setFieldValue('duration', 0);
-        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc(true).toISOString())
+        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString())
       } else {
-        console.log("Selected time slots have been updated, updating form")
-        form.setFieldValue(
-          'duration',
-          selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL
+        let duration: number = selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL;
+        let date: dayjs.Dayjs = selectedDate.hour(selectedTimeSlots[0], 'hour').minute(0).second(0);
+        console.log(
+          `Selected time slots have been updated to 
+          ${date.toString()} with duration ${duration} hours, updating form`
         );
-        form.setFieldValue('start', selectedDate.add(selectedTimeSlots[0], 'hour').utc(true).toISOString())
+        form.setFieldValue('duration', duration);
+        form.setFieldValue('start', date.utc().toISOString())
       }
     },
     [JSON.stringify(selectedTimeSlots)]
@@ -228,10 +218,7 @@ export default function SelectTimeSlots(
 
   return (
     <Container>
-      <BookieDatePicker
-        selectedDate={selectedDate}
-        updateDateChanges={updateDateChanges}
-      />
+      <BookieDatePicker />
       <ScrollArea
         className={classes.scrollBar}
         type={'hover'}
@@ -244,7 +231,17 @@ export default function SelectTimeSlots(
           onSubmit={form.onSubmit(handleSubmit, handleErrors)}
         >
           <Button
-            onClick={() => handleClearAllSlots()}
+            onClick={
+              () => {
+                showNotification({
+                  message: "Clearing selected time slots",
+                  icon: <IconCircleCheck />,
+                  color: 'green',
+                  autoClose: 5000,
+                });
+                setSelectedTimeSlots([]);
+              }
+            }
           >
             Clear Selection
           </Button>
