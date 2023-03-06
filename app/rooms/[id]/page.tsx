@@ -11,7 +11,10 @@ import {
   Group,
   Paper,
 } from "@mantine/core";
-import React, {useContext} from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
 import {
   IconArrowBackUp
 } from "@tabler/icons";
@@ -27,6 +30,8 @@ import {RoomContext} from "@/contexts/RoomContext";
 import ROOMS from "@/mocks/rooms.json"
 import {NavBar} from "@/components/NavBar";
 import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
+import {fetchRoom, RestApiError} from "@/libs/rest";
+import Loading from "@/components/Loading";
 
 dayjs.extend(utc);
 dayjs.extend(ObjectSupport);
@@ -65,12 +70,18 @@ export default function RoomPage({ params }: RoomPageProps) {
   const router = useRouter()
   const { classes, theme, cx } = useStyles();
 
-  const { rooms } = useContext(RoomContext);
-  const room: Room = rooms.filter((room: Room) => {return params.id === room.id})[0];
+  const [room, setRoom] = useState<IRoom | null>(null);
 
-  function createBooking(form: unknown) {
-    // TODO: API call to create Booking
-  }
+  useEffect(
+    () => {
+      const retrieveRoom = async () => {
+        let data: IRestApiResponse = await fetchRoom(params.id);
+        setRoom(data['data']);
+      }
+      retrieveRoom();
+    },
+    []
+  )
 
   return (
     <main className={classes.main}>
@@ -81,31 +92,36 @@ export default function RoomPage({ params }: RoomPageProps) {
         <ActionIcon onClick={router.back}>
           <IconArrowBackUp />
         </ActionIcon>
-        <Container
-          py={"xl"}
-          size={"lg"}
-        >
-          <Flex
-            className={classes.inner}
-          >
-            <Stack
-              sx={{maxWidth: 450}}
+        {!room && <Loading />}
+        {
+          room &&
+            <Container
+              py={"xl"}
+              size={"lg"}
             >
-              <Group>
-                <Title order={1}>{room.name}</Title>
-                <Text>{room.description}</Text>
-              </Group>
-              <PhotoCarouselWithAutoplay
-                imagesToDisplay={
-                  room.images.length > 0 ?
-                    room.images :
-                    ["/Logo.png"]
-                }
-              />
-            </Stack>
-            <SelectTimeSlots room={room}/>
-          </Flex>
-        </Container>
+              <Flex
+                className={classes.inner}
+              >
+                <Stack
+                  sx={{maxWidth: 450}}
+                >
+                  <Group>
+                    <Title order={1}>{room.name}</Title>
+                    <Text>{room.description}</Text>
+                  </Group>
+                  <PhotoCarouselWithAutoplay
+                    imagesToDisplay={
+                      room.images.length > 0 ?
+                        room.images :
+                        ["/Logo.png"]
+                    }
+                  />
+                </Stack>
+                <SelectTimeSlots room={room}/>
+              </Flex>
+            </Container>
+        }
+
       </Paper>
     </main>
   )
