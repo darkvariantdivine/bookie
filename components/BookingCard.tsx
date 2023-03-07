@@ -1,6 +1,5 @@
 "use client";
 
-import {IRoom} from "@/constants";
 import React, {useContext} from "react";
 import {
   Badge,
@@ -10,8 +9,10 @@ import {
   Group,
   Text
 } from "@mantine/core";
-import {UserContext} from "@/contexts/UserContext";
+
+import {IRoom} from "@/constants";
 import PhotoCarousel from "@/components/PhotoCarousel";
+import {UserContext} from "@/contexts/UserContext";
 
 const useStyles = createStyles((theme, _params, getRef) => ({
 }));
@@ -20,9 +21,10 @@ interface BookingCardProps {
   room: IRoom;
 }
 
-export default function BookingCard({ room }: BookingCardProps): React.ReactElement {
+const BookingCard = ({ room }: BookingCardProps): React.ReactElement => {
   const { classes } = useStyles();
-  const { user } = useContext(UserContext);
+
+  const {user} = useContext(UserContext);
 
   return (
     <Card
@@ -77,3 +79,5 @@ export default function BookingCard({ room }: BookingCardProps): React.ReactElem
     </Card>
   )
 }
+
+export default BookingCard;

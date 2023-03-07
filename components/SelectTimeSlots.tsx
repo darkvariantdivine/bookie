@@ -70,15 +70,19 @@ interface SelectTimeSlotProps {
   room: IRoom;
 }
 
+interface CreateBookingProps {
+  booking: IBooking;
+  token: string;
+}
+
 export default function SelectTimeSlots(
   {
     room,
   }: SelectTimeSlotProps
 ) {
   const router = useRouter();
-  const { user, token } = useContext(UserContext);
   const {
-    retrieveBookings,
+    setBookings,
     selectedDate, setDate,
     setCurrentBookings,
     setTimeSlots,
@@ -87,7 +91,31 @@ export default function SelectTimeSlots(
   } = useContext(BookingContext);
   const { classes } = useStyles();
 
-  function handleTimeSlotChanges(newBookings: IBooking[]) {
+  const queryClient: QueryClient = useQueryClient();
+  const {user, token} = useContext(UserContext);
+
+  const {mutate: createBooking} = useMutation({
+    mutationFn: ({booking, token}: CreateBookingProps) => API.post(
+      `/bookings`, booking, {headers: {Authorization: `Bearer ${token}`}}
+    ).then((response: AxiosResponse) => response.data),
+    onSuccess: (_, variables: CreateBookingProps) => {
+      console.log(`Successfully created booking ${JSON.stringify(variables.booking)}`);
+      setDate(dayjs());
+      setSelectedTimeSlots([]);
+      showNotification({
+        message: "Booking submitted, clearing all selected slots",
+        icon: <IconCircleCheck />,
+        color: 'green',
+        autoClose: 5000,
+      });
+      return queryClient.invalidateQueries(['bookings']);
+    },
+    onError: (error: AxiosError) => {
+      handleApiError(error);
+    }
+  })
+
+  const handleTimeSlotChanges = (newBookings: IBooking[]) => {
     let newTimeSlots: number[] = getCurrentTimeSlots(selectedDate, TIMESLOTS);
     setTimeSlots(newTimeSlots);
     let newAvailableTimeSlots: number[] = getTimeline(newBookings, newTimeSlots);
@@ -107,19 +135,16 @@ export default function SelectTimeSlots(
     }
   }
 
-  function handleCurrentBookingChanges(newBookings: IBooking[]): IBooking[] {
-    setCurrentBookings(newBookings);
-    handleTimeSlotChanges(newBookings);
-    return newBookings;
-  }
-
-  const handleBookingChanges = async () => {
+  const handleBookingChanges = (newBookings: IBooking[]) => {
     let roomBookings: IBooking[] = getDateBookings(
-      selectedDate, getRoomBookings(room.id, await retrieveBookings())
+      selectedDate, getRoomBookings(room.id, newBookings)
     );
-    return handleCurrentBookingChanges(roomBookings);
+    setBookings(newBookings);
+    setCurrentBookings(roomBookings);
+    handleTimeSlotChanges(roomBookings);
   }
 
+  const {isLoading} = useBookings(handleBookingChanges);
   const form = useForm<IBooking>({
     initialValues: {
       user: user ? user.id : 'default',
@@ -159,31 +184,12 @@ export default function SelectTimeSlots(
     }
   }
 
-  const handleSubmit = async (values: typeof form.values, event: FormEvent) => {
-    console.log(`Submitting booking with values ${JSON.stringify(values)}`)
+  const handleSubmit = (values: typeof form.values, event: FormEvent) => {
+    console.log(`Submitting booking with values ${JSON.stringify(values)}`);
     event.preventDefault();
-    try {
-      await createBooking(values, token);
-      form.reset();
-      setDate(dayjs());
-      setSelectedTimeSlots([]);
-      showNotification({
-        message: "Booking submitted, clearing all selected slots",
-        icon: <IconCircleCheck />,
-        color: 'green',
-        autoClose: 5000,
-      });
-      await handleBookingChanges();
-    } catch (e) {
-      handleApiError(e);
-      form.reset();
-    }
+    createBooking({booking: values, token: token!});
+    form.reset();
   }
-
-  useEffect(
-    () => {handleBookingChanges();},
-    []
-  );
 
   useEffect(
     () => {
@@ -196,7 +202,7 @@ export default function SelectTimeSlots(
         autoClose: 5000,
       });
       form.setFieldValue('start', selectedDate.utc().toISOString());
-      handleBookingChanges();
+      queryClient.invalidateQueries(['bookings']);
     },
     [selectedDate]
   );
@@ -230,6 +236,8 @@ export default function SelectTimeSlots(
     },
     [JSON.stringify(selectedTimeSlots)]
   )
+
+  if (isLoading) return <Loading />
 
   return (
     <Container>

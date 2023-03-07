@@ -32,24 +32,26 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 
-import {RoomContext} from "@/contexts/RoomContext";
 import {
   IBooking,
-  IRoom,
+  IRoom
 } from "@/constants";
 import {BookingContext} from "@/contexts/BookingContext";
 import {
   getUserBookings
 } from "@/libs/bookings";
-import {UserContext} from "@/contexts/UserContext";
 import NavBar from "@/components/NavBar";
 import BookieDatePicker from "@/components/DatePicker";
-import {
-  deleteBookings,
-  updateBooking
-} from "@/libs/rest";
-import handleApiError from "@/components/Errors";
+import handleApiError from "@/hooks/errors";
 import {roundInterval} from "@/libs/utils";
+import Loading from "@/components/Loading";
+import {useRoomsMap} from "@/hooks/rooms";
+import {
+  useBookings,
+  useDeleteBookings,
+  useUpdateBooking
+} from "@/hooks/bookings";
+import {UserContext} from "@/contexts/UserContext";
 
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);
@@ -173,10 +175,12 @@ export default function UserBookingsPage() {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
 
-  const { roomsMap } = useContext(RoomContext);
-  const { user, token } = useContext(UserContext);
+  const {user, token} = useContext(UserContext);
+  const { mutate: deleteBookings } = useDeleteBookings();
+  const { mutate: updateBooking } = useUpdateBooking();
+
   const {
-    bookings, retrieveBookings,
+    setBookings,
     setCurrentBookings,
     selectedDate, setDate,
     duration, setDuration
@@ -185,14 +189,17 @@ export default function UserBookingsPage() {
   const [userBookings, setUserBookings] = useState<IUserBooking[]>([]);
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
-  function transformUserBookings(toTransform: IBooking[]): IUserBooking[] {
+  const { isLoading, data: roomsMap } = useRoomsMap();
+  const { data: bookings } = useBookings();
+
+  const transformUserBookings = (toTransform: IBooking[]): IUserBooking[] => {
     let transformedBookings: IUserBooking[] = [];
     toTransform.forEach(
       (booking: IBooking) => {
         const userBooking: IUserBooking = {
           id: booking.id!,
           user: booking.user!,
-          room: roomsMap[booking.room],
+          room: roomsMap![booking.room],
           start: dayjs(booking.start),
           duration: booking.duration,
           end: dayjs(booking.start).add(booking.duration, 'hours'),
@@ -204,7 +211,7 @@ export default function UserBookingsPage() {
     return transformedBookings
   }
 
-  const handleBookingChanges = async () => {
+  const handleBookingChanges = () => {
     if (!user) {
       console.log("User has been logged out, redirecting to home page");
       router.push("/");
@@ -212,7 +219,9 @@ export default function UserBookingsPage() {
     }
 
     try {
-      let newBookings: IBooking[] = getUserBookings(user.id, await retrieveBookings());
+
+      let newBookings: IBooking[] = getUserBookings(user.id, bookings!);
+      setBookings(bookings!);
       setCurrentBookings(newBookings);
 
       let newUserBookings: IUserBooking[] = transformUserBookings(newBookings);
@@ -223,18 +232,14 @@ export default function UserBookingsPage() {
     }
   }
 
-  const handleBookingCancellation = async(
+  const handleBookingCancellation = async (
     rowSelection: MRT_RowSelectionState
   ) => {
     console.log(`Cancelling bookings ${JSON.stringify(Object.keys(rowSelection))}`);
     setUserBookings(userBookings.filter((booking: IUserBooking) => !(booking.id in rowSelection)));
 
-    try {
-      await deleteBookings(Object.keys(rowSelection), token);
-    } catch (e) {
-      handleApiError(e);
-    }
-    await handleBookingChanges();
+    await deleteBookings({bookings: Object.keys(rowSelection), token: token!});
+    handleBookingChanges();
     setRowSelection({});
   }
 
@@ -258,16 +263,12 @@ export default function UserBookingsPage() {
       }
       console.log(`Updating values ${JSON.stringify(updates)}`);
 
-      try {
-        await updateBooking(row.original.id, updates, token);
-      } catch (e) {
-        handleApiError(e);
-      }
-      await handleBookingChanges();
+      await updateBooking({booking_id: row.original.id, updates: updates, token: token!});
+      handleBookingChanges();
       exitEditingMode();
     }
 
-  function handleEditCancel({ row }: { row: MRT_Row<IUserBooking>}) {
+  const handleEditCancel = ({ row }: { row: MRT_Row<IUserBooking>}) => {
     setDate(dayjs(row.original.start));
     setDuration([null, null])
   }
@@ -276,6 +277,8 @@ export default function UserBookingsPage() {
     () => {handleBookingChanges();},
     [roomsMap, JSON.stringify(bookings)]
   )
+
+  if (isLoading) return <Loading />
 
   const columns = useMemo<MRT_ColumnDef<IUserBooking>[]>(
     () => [
