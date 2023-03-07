@@ -6,9 +6,9 @@ import {ModalsProvider} from "@mantine/modals";
 import {NotificationsProvider} from "@mantine/notifications";
 import React from "react";
 
-import {UserContextProvider} from "@/contexts/UserContext";
-import {RoomContextProvider} from "@/contexts/RoomContext";
 import {BookingContextProvider} from "@/contexts/BookingContext";
+import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
+import {UserContextProvider} from "@/contexts/UserContext";
 
 export const metadata = {
   title: "Bookie",
@@ -17,6 +17,8 @@ export const metadata = {
     icon: "/favicon.ico"
   }
 }
+
+let queryClient: QueryClient = new QueryClient();
 
 export default function RootLayout({
   children
@@ -36,8 +38,8 @@ export default function RootLayout({
           withCSSVariables
           withNormalizeCSS
         >
-          <UserContextProvider>
-            <RoomContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <UserContextProvider>
               <BookingContextProvider>
                 <NotificationsProvider>
                   <ModalsProvider>
@@ -45,8 +47,8 @@ export default function RootLayout({
                   </ModalsProvider>
                 </NotificationsProvider>
               </BookingContextProvider>
-            </RoomContextProvider>
-          </UserContextProvider>
+            </UserContextProvider>
+          </QueryClientProvider>
         </MantineProvider>
       </body>
     </html>
