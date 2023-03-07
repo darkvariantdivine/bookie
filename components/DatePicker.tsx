@@ -10,11 +10,11 @@ import {BookingContext} from "@/contexts/BookingContext";
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);
 
-export default function BookieDatePicker() {
+const BookieDatePicker = (): React.ReactElement => {
 
   const { selectedDate, setDate } = useContext(BookingContext);
 
-  function handleDateChanges(dateToSet: Date | null) {
+  const handleDateChanges = (dateToSet: Date | null) => {
     let newDate: dayjs.Dayjs;
     if (
       dateToSet === null ||
@@ -47,3 +47,4 @@ export default function BookieDatePicker() {
   );
 }
 
+export default BookieDatePicker;
