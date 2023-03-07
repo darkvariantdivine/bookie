@@ -2,41 +2,196 @@
 Bookie organises your workplace, allowing users to reserve meeting rooms.
 
 ## Features
-Bookie supports the following features:
+
+Presently, Bookie supports the following features:
 1. View all meeting rooms/facilities for booking
-2. View and select available timeslots for booking
+2. Graphical interactive timeline to select and view available timeslots for booking
 3. Submit, edit, cancel and view existing bookings
-4. User authentication for booking 
+4. User authentication via tokens, bookings require authentication
+5. Responsive UI that scales on different browser sizes, including mobile
+6. Live feedback via notifications 
 
-## Getting Started
+## Tech Stack
 
-First, run the development server:
+Bookie was developed with the following technology stack:
 
-```bash
+- Frontend
+  1. NodeJS 18
+  2. Typescript
+  3. ReactJS
+  4. NextJS 13
+  5. Mantine 5
+  6. Mantine React Table
+- Backend
+  1. Python 3.10
+  2. FastAPI
+- Testing & Development
+  1. Postman (APIs)
+  2. Jest (Unit testing and component testing)
+  3. OpenAPI 3.0 documentation
+  4. Playwright ^ (End-to-end testing)
+- Deployment
+  1. MongoDB
+  3. Nginx as reverse proxy ^
+  4. Docker ^
+  5. Docker-compose ^
+
+^ = still in development
+
+
+## Principles
+
+The tech stack was chosen in accordance with the following principles:
+1. Rapid prototyping
+2. Agile product development
+3. Future Scalability
+
+These incorporate and promote velocity, flexibility and evolution within the
+product development process.
+
+### Rapid Prototyping
+
+Bootstrapping a product requires speed and this must be inherently supported by 
+the tech stack. One consideration is the familiarity of the developers with the 
+technologies. In this case, the tech stack I choose requires the least learning 
+and experimentation on my part.
+
+The frameworks chosen also abstract a substantial amount of styling and formatting
+required to deliver a frontend UI, freeing up developers to focus on business logic.
+NextJS abstracts away much of the setup and boilerplate code required to deliver a
+production-ready website. The sitemap of the website is also inherently reflected in
+the structure with the new NextJS `/app` directory. NextJS also provides many tools 
+that simplify the basic website development tasks such as routing and linking. 
+
+One of most tedious aspects of web development is dealing with styling and formatting.
+This is simplified by the Mantine framework that provides a set of stylish components
+with APIs for developers to configure them. Along with Mantine React Table, another
+Mantine based table that simplifies the presentation of data in a tabular format, these
+frameworks allow developers to develop stylish frontends rapidly.
+ 
+Similarly on the backend, FastAPI provides a set of resources that allow users to 
+rapidly deliver RESTful backend systems that conform to APIs prescribed by an 
+OpenAPI document. This complements the frameworks that amplify development speed on 
+the frontend. 
+
+### Agile Product Development
+
+The initial product runway is oftentimes shrouded by uncertainty as product requirements
+are still in flux hence the tech stack needs to support flexibility and agility. These 
+qualities are also supported by the frameworks chosen as they provide interfaces that
+allow configuration and customisation for more complex use cases. 
+
+Notably, a NoSQL database MongoDB was chosen for this reason as the data model is 
+conventionally the most inflexible aspect of product development. Choosing a schemaless
+database allows the data model to evolve alongside the product, separately from the
+associations and relationships that may constrict development. 
+
+### Future Scalability
+
+The product development cycle eventually reaches an inflexion point after a certain 
+period of time. This is usually accompanied by indications that the existing tech 
+stack is unable to support the requirements e.g. increasing latency per request. At 
+this point, we need to look at systems to extend and scale the system provided.
+
+One of the most straightforward paths is to deploy the product on the cloud and scale
+resources accordingly. This necessitates a cloud-native stack that can be easily
+deployed online and is reflected in the choice of deployment tools e.g. docker 
+containers that integrate easily with all cloud providers.
+
+Another aspect is integrating API versioning early on that allows developers to 
+isolate feature updates and maintain existing systems. This has already been integrated
+into Bookie's API design. 
+
+## Development
+
+This section captures how to setup a development environment to work with Bookie
+
+### Frontend
+
+Install NodeJS 18 with nvm
+
+```shell
+nvm install 18.14.1
+```
+
+Install dependencies with npm
+
+```shell
+npm install
+```
+
+Start NextJS server to view UI
+
+```shell
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Note:**
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+You will need to start the Backend server before the Frontend works
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Backend
 
-## Learn More
+Install MongoDB, instructions can be found at this 
+[link](https://www.mongodb.com/docs/manual/administration/install-community/)
 
-To learn more about Next.js, take a look at the following resources:
+Install Python 3.10 with pyenv
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```shell
+pyenv install 3.10
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Install Python dependencies
 
-## Deploy on Vercel
+```shell
+pip3 install poetry
+poetry install
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Build and run the backend server
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```shell
+poetry build
+python3 -m bookie
+```
+
+## Deployment (Work in Progress)
+
+This section captures how to setup and deploy the Bookie environment locally.
+
+Install Docker, instructions can be found at this 
+[link](https://docs.docker.com/get-docker/)
+
+Install Docker compose 
+```shell
+pip3 install docker-compose
+```
+
+Run container build scripts 
+```shell
+npm run docker-build
+```
+
+Setup deployment environment
+```shell
+npm run gen-certs
+```
+
+Start containers
+```shell
+npm run docker-start
+```
+
+Stop containers
+```shell
+npm run docker-stop
+```
+
+Reset environment
+```shell
+npm run docker-reset
+```
