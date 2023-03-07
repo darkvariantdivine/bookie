@@ -46,8 +46,7 @@ export default function PhotoCarousel(
   {
     imagesToDisplay=["/Logo.png"],
     imageDescription="Meeting room image",
-    maxWidth=450,
-    slideSize="80%",
+    slideSize="100%",
   }: PhotoCarouselProps
 ): React.ReactElement {
   const { classes } = useStyles();
@@ -55,7 +54,8 @@ export default function PhotoCarousel(
   const images = imagesToDisplay.map((image: string, index: number) => (
     <Carousel.Slide key={String(index)}>
       <Image
-        width={maxWidth}
+        fit={"contain"}
+        maw={"inherit"}
         src={image}
         alt={imageDescription}
       />
@@ -64,7 +64,6 @@ export default function PhotoCarousel(
 
   return (
     <Carousel
-      sx={{maxWidth: maxWidth}}
       slideSize={slideSize}
       withIndicators
       loop

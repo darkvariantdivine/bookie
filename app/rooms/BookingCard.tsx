@@ -32,6 +32,7 @@ export default function BookingCard({ room }: BookingCardProps): React.ReactElem
       m="lg"
       radius={"md"}
       mih={50}
+      maw={450}
       withBorder
     >
       <Card.Section>
@@ -58,6 +59,7 @@ export default function BookingCard({ room }: BookingCardProps): React.ReactElem
         mb={"xs"}
         size={"sm"}
         color={"dimmed"}
+        truncate
       >
         {room.description}
       </Text>
