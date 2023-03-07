@@ -24,7 +24,7 @@ const useStyle = createStyles({
   }
 });
 
-export default function RoomsLandingPage(): React.ReactElement {
+const RoomsLandingPage = (): React.ReactElement => {
   const {classes, theme, cx} = useStyle();
 
   const { isLoading, data: rooms } = useRooms();
@@ -55,3 +55,5 @@ export default function RoomsLandingPage(): React.ReactElement {
     </main>
   )
 }
+
+export default RoomsLandingPage;

@@ -59,7 +59,9 @@ interface RoomPageProps {
   params: {id: string};
 }
 
-export default function RoomPage({ params }: RoomPageProps) {
+const RoomPage = (
+  { params }: RoomPageProps
+): React.ReactElement => {
   const router = useRouter()
   const { classes, theme, cx } = useStyles();
 
@@ -106,3 +108,4 @@ export default function RoomPage({ params }: RoomPageProps) {
   )
 }
 
+export default RoomPage;

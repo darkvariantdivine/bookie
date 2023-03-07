@@ -20,11 +20,11 @@ export const metadata = {
 
 let queryClient: QueryClient = new QueryClient();
 
-export default function RootLayout({
+const RootLayout = ({
   children
 }: {
   children: React.ReactNode
-}) {
+}) => {
   return (
     <html lang="en">
       {/*
@@ -54,3 +54,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+export default RootLayout;

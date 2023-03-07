@@ -11,11 +11,6 @@ interface IRestApiError {
   details?: {[prop: string]: any};
 }
 
-interface IRestApiResponse {
-  data: IRestApiError | any;
-  status: number;
-}
-
 interface IUser {
   id: string;
   name: string;
@@ -79,7 +74,6 @@ const TIMESLOTS: number[] = Array(
 export {
   type IUserAuth,
   type IRestApiError,
-  type IRestApiResponse,
   type IUser,
   type ITab,
   type IRoom,

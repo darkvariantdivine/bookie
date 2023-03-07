@@ -83,7 +83,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 }));
 
-export default function NavBar(): React.ReactElement {
+const NavBar = (): React.ReactElement => {
   const { classes, theme, cx } = useStyles();
 
   const {user} = useContext(UserContext);
@@ -120,3 +120,5 @@ export default function NavBar(): React.ReactElement {
     </div>
   );
 }
+
+export default NavBar;

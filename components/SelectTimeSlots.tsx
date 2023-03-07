@@ -75,11 +75,11 @@ interface CreateBookingProps {
   token: string;
 }
 
-export default function SelectTimeSlots(
+const SelectTimeSlots =(
   {
     room,
   }: SelectTimeSlotProps
-) {
+): React.ReactElement => {
   const router = useRouter();
   const {
     setBookings,
@@ -278,3 +278,5 @@ export default function SelectTimeSlots(
     </Container>
   )
 }
+
+export default BookieTimeline;

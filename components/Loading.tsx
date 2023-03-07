@@ -15,7 +15,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
   },
 }));
 
-export default function Loading() {
+const Loading = (): React.ReactElement => {
   const { classes, theme, cx } = useStyles();
   return (
     <Container>
@@ -31,3 +31,5 @@ export default function Loading() {
     </Container>
   )
 }
+
+export default Loading;

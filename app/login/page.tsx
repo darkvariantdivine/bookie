@@ -81,7 +81,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
   },
 }));
 
-export default function SignInMenu(): React.ReactElement {
+const SignInMenu = (): React.ReactElement => {
   const form = useForm<IUserAuth>({
     initialValues: {
       username: '',
@@ -209,3 +209,5 @@ export default function SignInMenu(): React.ReactElement {
     </Modal>
   )
 }
+
+export default SignInMenu;

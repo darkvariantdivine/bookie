@@ -5,15 +5,15 @@ import {IBooking, SLOT_INTERVAL} from "@/constants";
 
 dayjs.extend(utc);
 
-export function isDateEqual(
+const isDateEqual = (
   date1: dayjs.Dayjs, date2: dayjs.Dayjs
-): boolean {
+): boolean => {
   return date1.utc().local().isSame(date2.utc().local(), 'day');
 }
 
-export function getUserBookings(
+const getUserBookings = (
   user: string, bookings: IBooking[]
-): IBooking[] {
+): IBooking[] => {
   return bookings.filter(
     (booking: IBooking) => {
       return booking.user === user;
@@ -21,9 +21,9 @@ export function getUserBookings(
   );
 }
 
-export function getRoomBookings(
+const getRoomBookings = (
   room: string, bookings: IBooking[]
-): IBooking[] {
+): IBooking[] => {
   return bookings.filter(
     (booking: IBooking) => {
       return booking.room === room;
@@ -31,9 +31,9 @@ export function getRoomBookings(
   );
 }
 
-export function getDateBookings(
+const getDateBookings = (
   date: dayjs.Dayjs, bookings: IBooking[]
-): IBooking[] {
+): IBooking[] => {
   return bookings.filter(
     (booking: IBooking) => {
       return isDateEqual(dayjs(booking.start), date)
@@ -41,9 +41,9 @@ export function getDateBookings(
   )
 }
 
-export function getTimeSlotsFromDuration(
+const getTimeSlotsFromDuration = (
   date: dayjs.Dayjs, duration: number
-): number[] {
+): number[] => {
   let start: number = date.utc().local().hour();
   if (date.utc().local().minute() > 0) {
     start += date.utc().local().minute() / 60;
@@ -54,9 +54,9 @@ export function getTimeSlotsFromDuration(
   );
 }
 
-export function getTimeline(
+const getTimeline = (
   bookings: IBooking[], timeSlots: number[]
-): number[] {
+): number[] => {
   // Assumes all bookings here are for the same room
   // and on the same day
   let takenTimeslots: number[] = bookings.flatMap(
@@ -69,9 +69,9 @@ export function getTimeline(
   return timeSlots.filter((slot: number) => !takenTimeslots.includes(slot))
 }
 
-export function getCurrentTimeSlots(
+const getCurrentTimeSlots = (
   date: dayjs.Dayjs, timeslots: number[]
-): number[] {
+): number[] => {
   let currentDateTime: dayjs.Dayjs = dayjs.utc().local().second(0).millisecond(0)
   return timeslots.filter(
     (slot) => {
@@ -85,6 +85,17 @@ export function getCurrentTimeSlots(
   );
 }
 
-export function slotToString(slot: number) {
+const slotToString = (slot: number) => {
   return `${String(Math.trunc(slot)).padStart(2, '0')}${String((slot % 1) * 60).padStart(2, '0')}`;
 }
+
+export {
+  isDateEqual,
+  getUserBookings,
+  getRoomBookings,
+  getDateBookings,
+  getTimeSlotsFromDuration,
+  getTimeline,
+  getCurrentTimeSlots,
+  slotToString
+};

@@ -56,7 +56,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
   },
 }));
 
-export default function HeaderTabs(): React.ReactElement {
+const HeaderTabs = (): React.ReactElement => {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
 
@@ -99,3 +99,5 @@ export default function HeaderTabs(): React.ReactElement {
     </Tabs>
   )
 }
+
+export default HeaderTabs;

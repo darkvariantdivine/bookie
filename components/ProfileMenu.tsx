@@ -44,7 +44,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 }));
 
-export default function ProfileMenu(): React.ReactElement {
+const ProfileMenu = (): React.ReactElement => {
   const { classes, theme, cx } = useStyles();
   const {user, token} = useContext(UserContext);
 
@@ -106,3 +106,5 @@ export default function ProfileMenu(): React.ReactElement {
     </Menu>
   )
 }
+
+export default ProfileMenu;

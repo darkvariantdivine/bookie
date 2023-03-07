@@ -91,7 +91,7 @@ const useStyle = createStyles((theme, _params, getRef) => ({
   },
 }));
 
-export default function Home(): React.ReactElement {
+const Home = (): React.ReactElement => {
   const {classes, theme, cx} = useStyle();
   const {user, token} = useContext(UserContext);
   const { mutate: handleLogout } = useLogout();
@@ -166,3 +166,5 @@ export default function Home(): React.ReactElement {
     </main>
   )
 }
+
+export default Home;

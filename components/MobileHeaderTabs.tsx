@@ -76,7 +76,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 }));
 
-export default function MobileHeaderTabs() {
+const MobileHeaderTabs = (): React.ReactElement => {
   const { classes, theme, cx } = useStyles();
 
   const router = useRouter();
@@ -144,3 +144,5 @@ export default function MobileHeaderTabs() {
     </>
   )
 }
+
+export default MobileHeaderTabs;

@@ -78,7 +78,7 @@ interface TimelineState {
   selected: boolean
 }
 
-export default function BookieTimeline() {
+const BookieTimeline = () => {
   const { classes } = useStyles();
 
   const {
@@ -264,3 +264,5 @@ export default function BookieTimeline() {
     </Timeline>
   );
 }
+
+export default BookieTimeline;

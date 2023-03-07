@@ -42,13 +42,13 @@ interface PhotoCarouselProps {
   autoplayDuration?: number;
 }
 
-export default function PhotoCarousel(
+const PhotoCarousel = (
   {
     imagesToDisplay=["/Logo.png"],
     imageDescription="Meeting room image",
     slideSize="100%",
   }: PhotoCarouselProps
-): React.ReactElement {
+): React.ReactElement => {
   const { classes } = useStyles();
 
   const images = imagesToDisplay.map((image: string, index: number) => (
@@ -78,7 +78,7 @@ export default function PhotoCarousel(
   )
 }
 
-export function PhotoCarouselWithAutoplay(
+const PhotoCarouselWithAutoplay = (
   {
     imagesToDisplay=["/Logo.png"],
     imageDescription="Meeting room image",
@@ -86,7 +86,7 @@ export function PhotoCarouselWithAutoplay(
     slideSize="80%",
     autoplayDuration=3000,
   }: PhotoCarouselProps
-): React.ReactElement {
+): React.ReactElement => {
   const { classes } = useStyles();
   const autoplay = useRef(Autoplay({ delay: autoplayDuration }));
 
@@ -119,3 +119,6 @@ export function PhotoCarouselWithAutoplay(
     </Carousel>
   )
 }
+
+export default PhotoCarousel;
+export {PhotoCarouselWithAutoplay};

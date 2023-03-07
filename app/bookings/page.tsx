@@ -89,11 +89,11 @@ interface ModifyStartDateProps {
   userBooking: IUserBooking;
 }
 
-function ModifyStartDate(
+const ModifyStartDate = (
   {
     userBooking,
   }: ModifyStartDateProps
-) {
+): React.ReactElement => {
 
   const { setDate } = useContext(BookingContext);
 
@@ -114,11 +114,11 @@ interface ModifyDurationProps {
   userBooking: IUserBooking;
 }
 
-function ModifyDuration(
+const ModifyDuration = (
   {
     userBooking,
   }: ModifyDurationProps
-) {
+): React.ReactElement => {
 
   const {
     selectedDate, setDate,
@@ -171,7 +171,7 @@ function ModifyDuration(
   )
 }
 
-export default function UserBookingsPage() {
+const UserBookingsPage = (): React.ReactElement => {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
 
@@ -392,3 +392,5 @@ export default function UserBookingsPage() {
     </main>
   )
 }
+
+export default UserBookingsPage;
