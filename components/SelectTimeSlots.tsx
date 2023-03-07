@@ -75,7 +75,7 @@ interface CreateBookingProps {
   token: string;
 }
 
-const SelectTimeSlots =(
+const SelectTimeSlots = (
   {
     room,
   }: SelectTimeSlotProps
@@ -279,4 +279,4 @@ const SelectTimeSlots =(
   )
 }
 
-export default BookieTimeline;
+export default SelectTimeSlots;
