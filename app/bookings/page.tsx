@@ -269,8 +269,9 @@ const UserBookingsPage = (): React.ReactElement => {
     }
 
   const handleEditCancel = ({ row }: { row: MRT_Row<IUserBooking>}) => {
-    setDate(dayjs(row.original.start));
-    setDuration([null, null])
+    let start: dayjs.Dayjs = dayjs(row.original.start);
+    setDate(start);
+    setDuration([start.toDate(), start.add(row.original.duration, 'hour').toDate()])
   }
 
   useEffect(
