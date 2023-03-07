@@ -34,10 +34,10 @@ import {
   TIMESLOTS
 } from "@/constants";
 import {UserContext} from "@/contexts/UserContext";
-import {BookieDatePicker} from "@/components/DatePicker";
-import {BookieTimeline} from "@/components/Timeline";
+import BookieDatePicker from "@/components/DatePicker";
+import BookieTimeline from "@/components/Timeline";
 import {createBooking} from "@/libs/rest";
-import {handleApiError} from "@/components/Errors";
+import handleApiError from "@/components/Errors";
 
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);

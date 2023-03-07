@@ -1,0 +1,31 @@
+
+# Build API component
+FROM python:3.10.10-slim-buster AS api
+
+# Setup Bookie workspace
+RUN useradd -ms /bin/bash python
+WORKDIR /home/python/bookie
+ENV HOME /home/python
+ENV BOOKIE_DIR /home/python/bookie
+RUN chown -R python:python $HOME
+
+# Copy files over
+COPY bookie ./bookie
+COPY pyproject.toml ./
+
+# Install Python dependencies and build API
+RUN pip3.10 install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install && \
+    poetry build
+
+# To allow access to reserved ports
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends libcap2-bin && \
+	apt-get purge -y --auto-remove -o Apt::AutoRemove::RecommendsImportant=false && \
+	rm -rf /var/lib/apt/lists/* && \
+    setcap 'cap_net_bind_service=+ep' bookie/__main__.py && \
+    chmod 777 bookie/__main__.py
+
+# Run Backend
+CMD ["python3", "-m", "bookie"]

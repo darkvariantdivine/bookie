@@ -78,8 +78,8 @@ interface TimelineState {
   selected: boolean
 }
 
-export function BookieTimeline() {
-  const { classes, theme, cx } = useStyles();
+export default function BookieTimeline() {
+  const { classes } = useStyles();
 
   const {
     timeSlots,

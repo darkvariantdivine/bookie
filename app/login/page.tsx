@@ -27,10 +27,11 @@ import React, {
   useState
 } from "react";
 import {showNotification} from "@mantine/notifications";
+
 import {UserContext} from "@/contexts/UserContext";
 import {IUser, IUserAuth} from "@/constants";
 import {useRouter} from "next/navigation";
-import {handleApiError} from "@/components/Errors";
+import handleApiError from "@/components/Errors";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
 const useStyles = createStyles((theme: MantineTheme) => ({

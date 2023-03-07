@@ -1,0 +1,13 @@
+.next
+.git
+.vscode
+.idea
+dist
+node_modules
+coverage
+venv
+tests
+mocks
+docs
+ssl
+logs

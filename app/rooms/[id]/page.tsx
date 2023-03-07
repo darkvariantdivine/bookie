@@ -27,7 +27,7 @@ import {
   IRestApiResponse,
 } from "@/constants"
 import SelectTimeSlots from "@/components/SelectTimeSlots";
-import {NavBar} from "@/components/NavBar";
+import NavBar from "@/components/NavBar";
 import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 import {fetchRoom} from "@/libs/rest";
 import Loading from "@/components/Loading";

@@ -15,8 +15,8 @@ import {MantineTheme} from "@mantine/styles/lib/theme";
 
 import ProfileMenu from "@/components/ProfileMenu";
 import {UserContext} from "@/contexts/UserContext";
-import {HeaderTabs} from "@/components/HeaderTabs";
-import {MobileHeaderTabs} from "@/components/MobileHeaderTabs";
+import HeaderTabs from "@/components/HeaderTabs";
+import MobileHeaderTabs from "@/components/MobileHeaderTabs";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
   header: {
@@ -85,7 +85,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 }));
 
-export function NavBar(): React.ReactElement {
+export default function NavBar(): React.ReactElement {
   const { classes, theme, cx } = useStyles();
   const { user } = useContext(UserContext);
 

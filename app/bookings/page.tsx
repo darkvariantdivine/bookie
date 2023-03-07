@@ -24,7 +24,9 @@ import {
   MRT_Row,
   MRT_RowSelectionState
 } from "mantine-react-table";
+import {openConfirmModal} from "@mantine/modals";
 import {useRouter} from "next/navigation";
+import {TimeRangeInput} from "@mantine/dates";
 import Link from "next/link";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -40,15 +42,13 @@ import {
   getUserBookings
 } from "@/libs/bookings";
 import {UserContext} from "@/contexts/UserContext";
-import {NavBar} from "@/components/NavBar";
-import {TimeRangeInput} from "@mantine/dates";
-import {BookieDatePicker} from "@/components/DatePicker";
-import {openConfirmModal} from "@mantine/modals";
+import NavBar from "@/components/NavBar";
+import BookieDatePicker from "@/components/DatePicker";
 import {
   deleteBookings,
   updateBooking
 } from "@/libs/rest";
-import {handleApiError} from "@/components/Errors";
+import handleApiError from "@/components/Errors";
 import {roundInterval} from "@/libs/utils";
 
 dayjs.extend(utc);

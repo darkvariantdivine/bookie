@@ -78,7 +78,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 }));
 
-export function MobileHeaderTabs() {
+export default function MobileHeaderTabs() {
   const { classes, theme, cx } = useStyles();
   const { user } = useContext(UserContext);
 

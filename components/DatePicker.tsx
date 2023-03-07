@@ -10,7 +10,7 @@ import {BookingContext} from "@/contexts/BookingContext";
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);
 
-export function BookieDatePicker() {
+export default function BookieDatePicker() {
 
   const { selectedDate, setDate } = useContext(BookingContext);
 

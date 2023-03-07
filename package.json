@@ -7,8 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "unittest": "jest",
-    "test": "jest"
+    "unittests": "jest",
+    "reset": "rm -rf ssl .next",
+    "docker-build": "docker-compose build",
+    "docker-start": "mkdir -p logs && docker-compose up -d",
+    "docker-stop": "docker-compose down",
+    "docker-reset": "docker-compose down -v",
+    "gen-certs": "mkdir -p ssl && cd ssl && openssl req -x509 -nodes -days 36500 -newkey rsa:2048 --keyout bookie.key -out bookie.crt -subj '/C=SG/L=Singapore/O=Bookie/CN=bookie'"
   },
   "dependencies": {
     "@mantine/carousel": "^5.10.4",

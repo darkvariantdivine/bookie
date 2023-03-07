@@ -1,0 +1,12 @@
+
+# Build Nginx component
+FROM nginx:1.22-alpine AS nginx
+
+# Copying essential dependencies
+COPY nginx/nginx.conf /etc/nginx
+COPY nginx/conf.d /etc/nginx/conf.d
+
+# Copying Certificates
+COPY ssl /etc/nginx/ssl
+
+CMD ["nginx", "-g", "daemon off;"]

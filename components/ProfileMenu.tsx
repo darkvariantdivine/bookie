@@ -13,10 +13,10 @@ import {
   IconChevronDown,
   IconLogout,
 } from "@tabler/icons";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useState} from "react";
 import {MantineTheme} from "@mantine/styles/lib/theme";
+
 import {UserContext} from "@/contexts/UserContext";
-import {showNotification} from "@mantine/notifications";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
   user: {

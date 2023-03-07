@@ -1,0 +1,17 @@
+
+# Build MongoDB component
+FROM mongo:4.4-focal AS mongo
+
+# Copy setup scripts over
+RUN mkdir -p /home/bookie/mongo
+COPY mongo /home/bookie/mongo
+WORKDIR /home/bookie/mongo
+
+# Create links to setup MongoDB
+RUN ln -s mongod.conf /etc/mongod.conf
+RUN cp setup/* /docker-entrypoint-initdb.d
+
+# Start container
+CMD ["mongod"]
+
+

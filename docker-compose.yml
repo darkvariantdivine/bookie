@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: "."
+      target: "api"
+      dockerfile: "Dockerfile-api"
+    image: "bookie/api:${TAG:-latest}"
+    container_name: bookie_api
+
+  ui:
+    build:
+      context: "."
+      target: "ui"
+    image: "bookie/ui:${TAG:-latest}"
+    container_name: bookie_ui
+
+  mongo:
+    build:
+      context: "."
+      target: "mongo"
+      dockerfile: "Dockerfile-mongo"
+    image: "bookie/mongo:${TAG:-latest}"
+    container_name: bookie_mongo
+
+  nginx:
+    build:
+      context: "."
+      target: "nginx"
+      dockerfile: "Dockerfile-nginx"
+    image: "bookie/nginx:${TAG:-latest}"
+    container_name: bookie_nginx

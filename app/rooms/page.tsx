@@ -6,12 +6,12 @@ import {
   Flex,
   Title
 } from "@mantine/core";
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 
 import {IRoom} from "@/constants";
-import BookingCard from "@/app/rooms/BookingCard";
+import BookingCard from "@/components/BookingCard";
 import {RoomContext} from "@/contexts/RoomContext";
-import {NavBar} from "@/components/NavBar";
+import NavBar from "@/components/NavBar";
 
 const useStyle = createStyles({
   main: {
