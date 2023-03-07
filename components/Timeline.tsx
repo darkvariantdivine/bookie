@@ -194,7 +194,7 @@ const BookieTimeline = () => {
   }
 
   useEffect(
-    () => {console.log(timeline); handleSelected(); console.log(timeline)},
+    () => {handleSelected();},
     [JSON.stringify(selectedTimeSlots)]
   )
 
@@ -230,7 +230,6 @@ const BookieTimeline = () => {
                     variant={"transparent"}
                     onClick={
                       () => {
-                        setSelected(state.slot, !state.selected);
                         handleClearedSlot(state.slot);
                       }
                     }
@@ -243,7 +242,6 @@ const BookieTimeline = () => {
                       variant={'transparent'}
                       onClick={
                         () => {
-                          setSelected(state.slot, true);
                           handleSelectedSlot(state.slot);
                         }
                       }

@@ -11,7 +11,6 @@ import {
 import React, {useContext} from 'react';
 import {IconLogout} from "@tabler/icons";
 
-import {useLogout} from "@/hooks/auth";
 import {UserContext} from "@/contexts/UserContext";
 
 const useStyle = createStyles((theme, _params, getRef) => ({
@@ -93,8 +92,7 @@ const useStyle = createStyles((theme, _params, getRef) => ({
 
 const Home = (): React.ReactElement => {
   const {classes, theme, cx} = useStyle();
-  const {user, token} = useContext(UserContext);
-  const { mutate: handleLogout } = useLogout();
+  const {user, token, logout} = useContext(UserContext);
 
   return (
     <main>
@@ -139,7 +137,7 @@ const Home = (): React.ReactElement => {
                     My Bookings
                   </Button>
                   <Button
-                    onClick={() => handleLogout({token})}
+                    onClick={() => logout({token})}
                     size="xl"
                     className={classes.control}
                     variant="gradient"

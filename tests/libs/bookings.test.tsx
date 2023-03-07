@@ -169,7 +169,6 @@ test('Timeslots available with bookings removed', () => {
 });
 
 test('Quarterly timeslots with bookings removed', async () => {
-  console.log(dayjs("2023-03-07T01:00:00.246000+00:00").utc().local().format('llll'))
   const constants = await import("@/constants");
   constants.SLOT_INTERVAL = 0.25;
   let bookings = [...BOOKINGS]

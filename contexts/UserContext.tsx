@@ -5,14 +5,41 @@ import React, {
   useEffect,
   useState
 } from 'react';
+import {useMutation} from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
 
 import {IUser} from "@/constants";
+import {API} from "@/libs/rest";
 
 const UserContext = createContext({} as any);
+
+interface LogoutProps {
+  token?: string
+}
 
 function UserContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<IUser | undefined>(undefined);
   const [token, setToken] = useState<string | undefined>(undefined);
+
+  const router = useRouter();
+
+  const handleLogout = () => {
+    console.log(`Successfully logged out user ${user!.name}`);
+    sessionStorage.removeItem('USER');
+    sessionStorage.removeItem('TOKEN');
+    setUser(undefined);
+    setToken(undefined);
+    router.push('/')
+  }
+
+  const {mutate: logout} = useMutation({
+    mutationFn: ({token}: LogoutProps) => API.delete(
+      `/login`,
+      {headers: {Authorization: `Bearer ${token}`}}
+    ).then(() => null),
+    onSuccess: () => handleLogout(),
+    onError: () => handleLogout()
+  })
 
   useEffect(
     () => {
@@ -27,7 +54,8 @@ function UserContextProvider({ children }: { children: React.ReactNode }) {
   return (
     <UserContext.Provider value={{
       user, setUser,
-      token, setToken
+      token, setToken,
+      logout
     }}>
       {children}
     </UserContext.Provider>
