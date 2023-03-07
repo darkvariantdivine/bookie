@@ -2,8 +2,10 @@
 import React from "react";
 import Loading from "@/components/Loading";
 
-export default function LoadingPage() {
+const LoadingPage = (): React.ReactElement => {
   return (
     <Loading />
   )
 }
+
+export default LoadingPage;
