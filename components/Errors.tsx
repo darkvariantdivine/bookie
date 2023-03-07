@@ -3,13 +3,11 @@ import {showNotification} from "@mantine/notifications";
 import {IconX} from "@tabler/icons";
 import React from "react";
 
-import {RestApiError} from "@/libs/rest";
-
-
 export default function handleApiError(e: Error | any, notification: boolean = true) {
   let message: string;
-  if (e instanceof RestApiError) message = e.message;
+  if (e.message) message = e.message;
   else message = String(e);
+  console.log(message);
   if (notification) {
     showNotification({
       icon: <IconX />,

@@ -16,7 +16,7 @@ import {
   loginUser,
   logoutUser
 } from "@/libs/rest";
-import {handleApiError} from "@/components/Errors";
+import handleApiError from "@/components/Errors";
 
 const UserContext = createContext({} as any);
 

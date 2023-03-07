@@ -95,7 +95,7 @@ export default function Home(): React.ReactElement {
   const { user, handleLogout } = useContext(UserContext);
 
   return (
-    <main >
+    <main>
       <div className={classes.wrapper}>
         <Container size={700} className={classes.inner}>
           <Group>
@@ -137,7 +137,7 @@ export default function Home(): React.ReactElement {
                     My Bookings
                   </Button>
                   <Button
-                    onClick={async () => {await handleLogout();}}
+                    onClick={async () => {handleLogout();}}
                     size="xl"
                     className={classes.control}
                     variant="gradient"

@@ -206,7 +206,8 @@ export default function UserBookingsPage() {
 
   const handleBookingChanges = async () => {
     if (!user) {
-      router.push("/")
+      console.log("User has been logged out, redirecting to home page");
+      router.push("/");
       return [];
     }
 
@@ -270,16 +271,6 @@ export default function UserBookingsPage() {
     setDate(dayjs(row.original.start));
     setDuration([null, null])
   }
-
-  useEffect(
-    () => {
-      if (!user) {
-        router.push('/')
-      }
-      handleBookingChanges();
-    },
-    [roomsMap]
-  )
 
   useEffect(
     () => {handleBookingChanges();},

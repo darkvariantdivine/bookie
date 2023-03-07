@@ -30,7 +30,6 @@ import {showNotification} from "@mantine/notifications";
 
 import {UserContext} from "@/contexts/UserContext";
 import {IUser, IUserAuth} from "@/constants";
-import {useRouter} from "next/navigation";
 import handleApiError from "@/components/Errors";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
@@ -79,9 +78,9 @@ export default function SignInMenu(): React.ReactElement {
     },
   });
 
-  const router = useRouter();
   const { classes, theme, cx } = useStyles();
   const [opened, setOpened] = useState(true);
+
   const { user, handleLogin } = useContext(UserContext);
 
   const handleErrors = (errors: typeof form.errors, values: typeof form.values) => {
