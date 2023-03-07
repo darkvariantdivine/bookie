@@ -15,4 +15,5 @@ export default function handleApiError(e: Error | any, notification: boolean = t
       color: 'red'
     });
   }
+  return e;
 }

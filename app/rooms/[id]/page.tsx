@@ -11,27 +11,20 @@ import {
   Group,
   Paper,
 } from "@mantine/core";
-import React, {
-  useContext,
-  useEffect,
-} from "react";
 import {
   IconArrowBackUp
 } from "@tabler/icons";
+import React from 'react';
 import {useRouter} from "next/navigation";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import ObjectSupport from "dayjs/plugin/objectSupport";
 
-import {
-  IRestApiResponse,
-} from "@/constants"
 import SelectTimeSlots from "@/components/SelectTimeSlots";
 import NavBar from "@/components/NavBar";
 import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
-import {fetchRoom} from "@/libs/rest";
 import Loading from "@/components/Loading";
-import {RoomContext} from "@/contexts/RoomContext";
+import {useRoom} from "@/hooks/rooms";
 
 dayjs.extend(utc);
 dayjs.extend(ObjectSupport);
@@ -70,67 +63,46 @@ export default function RoomPage({ params }: RoomPageProps) {
   const router = useRouter()
   const { classes, theme, cx } = useStyles();
 
-  const {selectedRoom, setRoom} = useContext(RoomContext);
+  const { isLoading, data: room } = useRoom(params.id);
 
-  const retrieveRoom = async () => {
-    let data: IRestApiResponse = await fetchRoom(params.id);
-    setRoom(data['data']);
-  }
+  if (isLoading) return <Loading />
 
-  useEffect(
-    () => {retrieveRoom();},
-    []
-  )
-
-  useEffect(
-    () => {retrieveRoom();},
-    [params.id]
-  )
-
-  if (selectedRoom === undefined) {
-    return (
-      <main className={classes.main}>
-        <Loading />
-      </main>
-    )
-  } else {
-    return (
-      <main className={classes.main}>
-        <NavBar />
-        <Paper
-          className={classes.wrapper}
+  return (
+    <main className={classes.main}>
+      <NavBar />
+      <Paper
+        className={classes.wrapper}
+      >
+        <ActionIcon onClick={router.back} size={"xl"}>
+          <IconArrowBackUp size={36}/>
+        </ActionIcon>
+        <Container
+          py={"xl"}
+          size={"lg"}
         >
-          <ActionIcon onClick={router.back} size={"xl"}>
-            <IconArrowBackUp size={36}/>
-          </ActionIcon>
-          <Container
-            py={"xl"}
-            size={"lg"}
+          <Flex
+            className={classes.inner}
           >
-            <Flex
-              className={classes.inner}
+            <Stack
+              sx={{maxWidth: 450}}
             >
-              <Stack
-                sx={{maxWidth: 450}}
-              >
-                <Group>
-                  <Title order={1}>{selectedRoom.name}</Title>
-                  <Text>{selectedRoom.description}</Text>
-                </Group>
-                <PhotoCarouselWithAutoplay
-                  imagesToDisplay={
-                    selectedRoom.images.length > 0 ?
-                      selectedRoom.images :
-                      ["/Logo.png"]
-                  }
-                />
-              </Stack>
-              <SelectTimeSlots room={selectedRoom}/>
-            </Flex>
-          </Container>
-        </Paper>
-      </main>
-    )
-  }
+              <Group>
+                <Title order={1}>{room!.name}</Title>
+                <Text>{room!.description}</Text>
+              </Group>
+              <PhotoCarouselWithAutoplay
+                imagesToDisplay={
+                  room!.images.length > 0 ?
+                    room!.images :
+                    ["/Logo.png"]
+                }
+              />
+            </Stack>
+            <SelectTimeSlots room={room!}/>
+          </Flex>
+        </Container>
+      </Paper>
+    </main>
+  )
 }
 

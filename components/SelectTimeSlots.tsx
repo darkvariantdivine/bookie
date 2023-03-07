@@ -21,6 +21,15 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/navigation";
 import {useForm} from "@mantine/form";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient
+} from "@tanstack/react-query";
+import {
+  AxiosError,
+  AxiosResponse
+} from "axios";
 
 import {BookingContext} from "@/contexts/BookingContext";
 import {
@@ -35,11 +44,13 @@ import {
   SLOT_INTERVAL,
   TIMESLOTS
 } from "@/constants";
-import {UserContext} from "@/contexts/UserContext";
 import BookieDatePicker from "@/components/DatePicker";
 import BookieTimeline from "@/components/Timeline";
-import {createBooking} from "@/libs/rest";
-import handleApiError from "@/components/Errors";
+import {API} from "@/libs/rest";
+import handleApiError from "@/hooks/errors";
+import {useBookings} from "@/hooks/bookings";
+import Loading from "@/components/Loading";
+import {UserContext} from "@/contexts/UserContext";
 
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);

@@ -6,12 +6,13 @@ import {
   Flex,
   Title
 } from "@mantine/core";
-import React, {useContext} from 'react';
+import React from 'react';
 
 import {IRoom} from "@/constants";
 import BookingCard from "@/components/BookingCard";
-import {RoomContext} from "@/contexts/RoomContext";
 import NavBar from "@/components/NavBar";
+import Loading from "@/components/Loading";
+import {useRooms} from "@/hooks/rooms";
 
 const useStyle = createStyles({
   main: {
@@ -25,7 +26,10 @@ const useStyle = createStyles({
 
 export default function RoomsLandingPage(): React.ReactElement {
   const {classes, theme, cx} = useStyle();
-  const { rooms } = useContext(RoomContext);
+
+  const { isLoading, data: rooms } = useRooms();
+
+  if (isLoading) return <Loading />;
 
   return (
     <main className={classes.main}>
@@ -42,7 +46,7 @@ export default function RoomsLandingPage(): React.ReactElement {
           gap="md"
         >
           {
-            rooms.map((room: IRoom) => (
+            rooms!.map((room: IRoom) => (
               <BookingCard key={room.id} room={room}/>
             ))
           }
