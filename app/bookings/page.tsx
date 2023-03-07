@@ -31,6 +31,10 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import {
+  QueryClient,
+  useQueryClient
+} from "@tanstack/react-query";
 
 import {
   IBooking,
@@ -42,7 +46,6 @@ import {
 } from "@/libs/bookings";
 import NavBar from "@/components/NavBar";
 import BookieDatePicker from "@/components/DatePicker";
-import handleApiError from "@/hooks/errors";
 import {roundInterval} from "@/libs/utils";
 import Loading from "@/components/Loading";
 import {useRoomsMap} from "@/hooks/rooms";
@@ -189,8 +192,8 @@ const UserBookingsPage = (): React.ReactElement => {
   const [userBookings, setUserBookings] = useState<IUserBooking[]>([]);
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
+  const queryClient: QueryClient = useQueryClient();
   const { isLoading, data: roomsMap } = useRoomsMap();
-  const { data: bookings } = useBookings();
 
   const transformUserBookings = (toTransform: IBooking[]): IUserBooking[] => {
     let transformedBookings: IUserBooking[] = [];
@@ -211,35 +214,29 @@ const UserBookingsPage = (): React.ReactElement => {
     return transformedBookings
   }
 
-  const handleBookingChanges = () => {
+  const handleBookingChanges = (newBookings: IBooking[]) => {
     if (!user) {
       console.log("User has been logged out, redirecting to home page");
       router.push("/");
       return [];
     }
 
-    try {
+    let userBookings: IBooking[] = getUserBookings(user.id, newBookings);
+    setBookings(newBookings);
+    setCurrentBookings(userBookings);
 
-      let newBookings: IBooking[] = getUserBookings(user.id, bookings!);
-      setBookings(bookings!);
-      setCurrentBookings(newBookings);
-
-      let newUserBookings: IUserBooking[] = transformUserBookings(newBookings);
-      setUserBookings(newUserBookings);
-      return newUserBookings;
-    } catch (e) {
-      handleApiError(e);
-    }
+    let newUserBookings: IUserBooking[] = transformUserBookings(userBookings);
+    setUserBookings(newUserBookings);
+    return newUserBookings;
   }
 
-  const handleBookingCancellation = async (
+  const handleBookingCancellation = (
     rowSelection: MRT_RowSelectionState
   ) => {
     console.log(`Cancelling bookings ${JSON.stringify(Object.keys(rowSelection))}`);
     setUserBookings(userBookings.filter((booking: IUserBooking) => !(booking.id in rowSelection)));
 
-    await deleteBookings({bookings: Object.keys(rowSelection), token: token!});
-    handleBookingChanges();
+    deleteBookings({bookings: Object.keys(rowSelection), token});
     setRowSelection({});
   }
 
@@ -263,8 +260,7 @@ const UserBookingsPage = (): React.ReactElement => {
       }
       console.log(`Updating values ${JSON.stringify(updates)}`);
 
-      await updateBooking({booking_id: row.original.id, updates: updates, token: token!});
-      handleBookingChanges();
+      updateBooking({booking_id: row.original.id, updates, token});
       exitEditingMode();
     }
 
@@ -274,10 +270,7 @@ const UserBookingsPage = (): React.ReactElement => {
     setDuration([start.toDate(), start.add(row.original.duration, 'hour').toDate()])
   }
 
-  useEffect(
-    () => {handleBookingChanges();},
-    [roomsMap, JSON.stringify(bookings)]
-  )
+  useBookings(handleBookingChanges);
 
   if (isLoading) return <Loading />
 
