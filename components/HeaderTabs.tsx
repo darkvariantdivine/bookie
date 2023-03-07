@@ -9,17 +9,17 @@ import {
   Tabs
 } from "@mantine/core";
 import {
-  ITab,
-  TABS
-} from "@/constants";
-import {
   usePathname,
   useRouter
 } from "next/navigation";
 import {MantineTheme} from "@mantine/styles/lib/theme";
 
-import {UserContext} from "@/contexts/UserContext";
 import {getActiveTab} from "@/libs/utils";
+import {
+  ITab,
+  TABS
+} from "@/constants";
+import {UserContext} from "@/contexts/UserContext";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
   tabs: {
@@ -60,7 +60,7 @@ export default function HeaderTabs(): React.ReactElement {
   const router = useRouter();
   const { classes, theme, cx } = useStyles();
 
-  const { user } = useContext(UserContext);
+  const {user, token} = useContext(UserContext);
   const [active, setActive] = useState(getActiveTab(usePathname()!));
 
   return (

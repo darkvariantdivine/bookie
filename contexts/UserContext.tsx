@@ -6,48 +6,13 @@ import React, {
   useState
 } from 'react';
 
-import {
-  IRestApiResponse,
-  IUser,
-  IUserAuth
-} from "@/constants";
-import {useRouter} from "next/navigation";
-import {
-  loginUser,
-  logoutUser
-} from "@/libs/rest";
-import handleApiError from "@/components/Errors";
+import {IUser} from "@/constants";
 
 const UserContext = createContext({} as any);
 
 function UserContextProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-
   const [user, setUser] = useState<IUser | undefined>(undefined);
   const [token, setToken] = useState<string | undefined>(undefined);
-
-  const handleLogin = async (auth: IUserAuth) => {
-    let data: IRestApiResponse = await loginUser(auth);
-    sessionStorage.setItem('USER', JSON.stringify(data['data']['user']));
-    sessionStorage.setItem('TOKEN', data['data']['token']);
-    setUser(data['data']['user']);
-    setToken(data['data']['token']);
-    router.push('/rooms');
-    return data['data']['user'];
-  }
-
-  const handleLogout = async () => {
-    try {
-      await logoutUser(token as string);
-    } catch (e) {
-      handleApiError(e, false);
-    }
-    sessionStorage.removeItem('USER');
-    sessionStorage.removeItem('TOKEN');
-    setUser(undefined);
-    setToken(undefined);
-    router.push('/');
-  }
 
   useEffect(
     () => {
@@ -62,8 +27,7 @@ function UserContextProvider({ children }: { children: React.ReactNode }) {
   return (
     <UserContext.Provider value={{
       user, setUser,
-      token,
-      handleLogin, handleLogout
+      token, setToken
     }}>
       {children}
     </UserContext.Provider>

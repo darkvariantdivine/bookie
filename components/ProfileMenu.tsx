@@ -16,6 +16,7 @@ import {
 import React, {useContext, useState} from "react";
 import {MantineTheme} from "@mantine/styles/lib/theme";
 
+import {useLogout} from "@/hooks/auth";
 import {UserContext} from "@/contexts/UserContext";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
@@ -45,9 +46,11 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 export default function ProfileMenu(): React.ReactElement {
   const { classes, theme, cx } = useStyles();
-  const { user, handleLogout } = useContext(UserContext);
+  const {user, token} = useContext(UserContext);
 
-  const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const {mutate: handleLogout} = useLogout();
+
+  const [userMenuOpened, setUserMenuOpened] = useState<boolean>(false);
 
   return (
     <Menu
@@ -95,7 +98,7 @@ export default function ProfileMenu(): React.ReactElement {
               stroke={1.5}
             />
           }
-          onClick={async () => {await handleLogout();}}
+          onClick={() => handleLogout({token})}
         >
           Logout
         </Menu.Item>

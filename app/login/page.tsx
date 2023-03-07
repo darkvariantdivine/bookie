@@ -27,10 +27,24 @@ import React, {
   useState
 } from "react";
 import {showNotification} from "@mantine/notifications";
+import {
+  AxiosError,
+  AxiosResponse
+} from "axios";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient
+} from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
 
+import {
+  IUser,
+  IUserAuth
+} from "@/constants";
+import handleApiError from "@/hooks/errors";
+import {API} from "@/libs/rest";
 import {UserContext} from "@/contexts/UserContext";
-import {IUser, IUserAuth} from "@/constants";
-import handleApiError from "@/components/Errors";
 // import {PhotoCarouselWithAutoplay} from "@/components/PhotoCarousel";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
@@ -78,10 +92,50 @@ export default function SignInMenu(): React.ReactElement {
     },
   });
 
+  const router = useRouter();
   const { classes, theme, cx } = useStyles();
+  const {setUser, setToken} = useContext(UserContext);
+
   const [opened, setOpened] = useState(true);
 
-  const { user, handleLogin } = useContext(UserContext);
+  const queryClient: QueryClient = useQueryClient();
+  const { mutate: handleLogin } = useMutation({
+    mutationFn: (auth: IUserAuth) => API.post(
+      `/login`, auth
+    ).then(
+      (response: AxiosResponse) => {
+        let token: string = (
+          response.headers?.authorization as string
+        ).split(' ')[1];
+        return {
+          user: response.data,
+          token
+        }
+      }
+    ),
+    onSuccess: (data: {user: IUser, token: string}, variables: IUserAuth) => {
+      console.log(`Successfully logged in user ${variables.username}, with details ${data.user}`);
+      sessionStorage.setItem('USER', JSON.stringify(data.user));
+      sessionStorage.setItem('TOKEN', data['token'] as string);
+      queryClient.setQueryData(['user'], data.user);
+      queryClient.setQueryData(['token'], data.token);
+      setUser(data.user);
+      setToken(data.token);
+      showNotification({
+        icon: <IconLogin color={'teal'} />,
+        message: `${data.user.name} successfully logged in`,
+        color: 'teal'
+      })
+      form.reset();
+      setOpened(false);
+      router.push('/rooms');
+      return data;
+    },
+    onError: (error: AxiosError) => {
+      handleApiError(error);
+      form.reset();
+    }
+  });
 
   const handleErrors = (errors: typeof form.errors, values: typeof form.values) => {
     console.log(`Errors ${JSON.stringify(errors)} occurred when 
@@ -96,22 +150,10 @@ export default function SignInMenu(): React.ReactElement {
     form.reset();
   };
 
-  const handleSubmit = async (values: typeof form.values, event: FormEvent) => {
+  const handleSubmit = (values: typeof form.values, event: FormEvent) => {
     console.log(`Signing in user ${values.username}`)
-    try {
-      let loginUser: IUser = await handleLogin(values)
-      event.preventDefault();
-      showNotification({
-        icon: <IconLogin color={'teal'} />,
-        message: `${loginUser.name} successfully logged in`,
-        color: 'teal'
-      })
-      form.reset();
-      setOpened(false);
-    } catch (e) {
-      handleApiError(e);
-      form.reset();
-    }
+    handleLogin(values);
+    event.preventDefault();
   };
 
   return (

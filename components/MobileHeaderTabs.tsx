@@ -7,13 +7,11 @@ import {
   Transition
 } from "@mantine/core";
 import Link from "next/link";
-import React, {
-  useContext,
-  useState
-} from "react";
+import React, {useContext, useState} from "react";
 import {MantineTheme} from "@mantine/styles/lib/theme";
 import {
   usePathname,
+  useRouter,
 } from "next/navigation";
 import {useDisclosure} from "@mantine/hooks";
 
@@ -21,8 +19,8 @@ import {
   ITab,
   TABS
 } from "@/constants";
-import {UserContext} from "@/contexts/UserContext";
 import {getActiveTab} from "@/libs/utils";
+import {UserContext} from "@/contexts/UserContext";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
   dropDown: {
@@ -80,7 +78,10 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 
 export default function MobileHeaderTabs() {
   const { classes, theme, cx } = useStyles();
-  const { user } = useContext(UserContext);
+
+  const router = useRouter();
+
+  const {user} = useContext(UserContext);
 
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(getActiveTab(usePathname()!));
@@ -116,9 +117,14 @@ export default function MobileHeaderTabs() {
                     key={tab.label}
                     onClick={
                       (event) => {
-                        event.preventDefault();
-                        setActive(tab.link);
-                        close();
+                        if (tab.requireSignIn && !user) {
+                          router.push('/login');
+                          close();
+                        } else {
+                          event.preventDefault();
+                          setActive(tab.link);
+                          close();
+                        }
                       }
                     }
                     className={
