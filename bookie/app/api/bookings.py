@@ -186,10 +186,7 @@ async def create_booking(
         await mongo.get_bookings_room_date(booking.room, booking.start)
     )
 
-    if not all(
-            b.end <= booking.start and booking.end >= b.start
-            for b in room_bookings
-    ):
+    if any(booking.overlaps(b) for b in room_bookings):
         raise BookieAPIException(
             status_code=status.HTTP_400_BAD_REQUEST,
             message=ErrorMessage.API_BOOKING_OVERLAPS_ERROR_MSG,
