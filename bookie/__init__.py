@@ -13,6 +13,3 @@ config = {
     'host': HOST,
     'port': PORT
 }
-
-if __name__ == '__main__':
-    uvicorn.run(web_app, **config)

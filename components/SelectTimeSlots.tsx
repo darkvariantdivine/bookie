@@ -98,7 +98,7 @@ const SelectTimeSlots = (
     mutationFn: ({booking, token}: CreateBookingProps) => API.post(
       `/bookings`, booking, {headers: {Authorization: `Bearer ${token}`}}
     ).then((response: AxiosResponse) => response.data),
-    onSuccess: (_, variables: CreateBookingProps) => {
+    onSuccess: async (_, variables: CreateBookingProps) => {
       console.log(`Successfully created booking ${JSON.stringify(variables.booking)}`);
       setDate(dayjs());
       setSelectedTimeSlots([]);
@@ -108,7 +108,7 @@ const SelectTimeSlots = (
         color: 'green',
         autoClose: 5000,
       });
-      return queryClient.invalidateQueries(['bookings']);
+      await queryClient.invalidateQueries(['bookings']);
     },
     onError: (error: AxiosError) => {
       handleApiError(error);
@@ -154,7 +154,7 @@ const SelectTimeSlots = (
     },
     validate: {
       start: (value: string) => (
-        dayjs(value).isBefore(dayjs().utc()) ?
+        dayjs(value).utc().isBefore(dayjs().utc()) ?
           "Selected date has to be greater than the current date" :
           null
       ),
@@ -201,6 +201,7 @@ const SelectTimeSlots = (
         color: 'green',
         autoClose: 5000,
       });
+      setSelectedTimeSlots([]);
       form.setFieldValue('start', selectedDate.utc().toISOString());
       queryClient.invalidateQueries(['bookings']);
     },
@@ -222,7 +223,7 @@ const SelectTimeSlots = (
       if (selectedTimeSlots.length === 0) {
         console.log("Selected time slots have been cleared, updating form");
         form.setFieldValue('duration', 0);
-        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString())
+        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString());
       } else {
         let duration: number = selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL;
         let date: dayjs.Dayjs = selectedDate.hour(selectedTimeSlots[0], 'hour').minute(0).second(0);
@@ -231,7 +232,7 @@ const SelectTimeSlots = (
           ${date.format('llll')} with duration ${duration} hours, updating form`
         );
         form.setFieldValue('duration', duration);
-        form.setFieldValue('start', date.utc().toISOString())
+        form.setFieldValue('start', date.utc().toISOString());
       }
     },
     [JSON.stringify(selectedTimeSlots)]

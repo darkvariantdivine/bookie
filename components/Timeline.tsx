@@ -93,6 +93,7 @@ const BookieTimeline = () => {
       ({slotStr: slotToString(slot), slot, hidden: false, active: true, selected: false})
     )
   );
+
   const setSelected = (slot: number, selected: boolean) => {
     setTimeline(
       timeline.map(
@@ -108,7 +109,7 @@ const BookieTimeline = () => {
     )
   };
 
-  function handleSelected() {
+  const handleSelected = () => {
     setTimeline(
       timeline.map(
         (state: TimelineState) =>
@@ -120,7 +121,7 @@ const BookieTimeline = () => {
     );
   }
 
-  function updateTimeSlots() {
+  const updateTimeSlots = () => {
     setTimeline(
       timeline.map(
         (state: TimelineState) =>
@@ -135,7 +136,7 @@ const BookieTimeline = () => {
     );
   }
 
-  function handleSelectedSlot(slot: number): number[] {
+  const handleSelectedSlot = (slot: number) => {
     let newSelectedSlots: number[];
     if (selectedTimeSlots.length === 0) {
       newSelectedSlots = [slot];
@@ -152,13 +153,14 @@ const BookieTimeline = () => {
         (slot: number) => !availableTimeSlots.includes(slot)
       )
     ) {
+      setSelected(slot, false);
       showNotification({
         message: "Attempting to add an invalid set of slot(s)",
         icon: <IconCircleX />,
         color: 'red',
         autoClose: 5000,
       });
-      return selectedTimeSlots;
+      return
     }
     setSelectedTimeSlots(newSelectedSlots);
     handleSelected();
@@ -171,10 +173,9 @@ const BookieTimeline = () => {
       color: 'green',
       autoClose: 5000,
     });
-    return newSelectedSlots;
   }
 
-  function handleClearedSlot(slot: number): number[] {
+  const handleClearedSlot = (slot: number) => {
     let newSelectedSlots: number[] = selectedTimeSlots.length > 0 ?
       selectedTimeSlots.splice(0, selectedTimeSlots.indexOf(slot)) : [];
 
@@ -190,7 +191,6 @@ const BookieTimeline = () => {
       color: 'green',
       autoClose: 5000,
     });
-    return newSelectedSlots;
   }
 
   useEffect(
@@ -230,6 +230,7 @@ const BookieTimeline = () => {
                     variant={"transparent"}
                     onClick={
                       () => {
+                        setSelected(state.slot, !state.selected);
                         handleClearedSlot(state.slot);
                       }
                     }
@@ -242,6 +243,7 @@ const BookieTimeline = () => {
                       variant={'transparent'}
                       onClick={
                         () => {
+                          setSelected(state.slot, true);
                           handleSelectedSlot(state.slot);
                         }
                       }
