@@ -349,10 +349,10 @@
 									"pm.test(\"Status code is 404\", function () {",
 									"    pm.response.to.have.status(404);",
 									"});",
-									"pm.test(\"Attempting to retrieve non-existent user\", function () {",
+									"pm.test(\"Attempting to retrieve non-existent room\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.code).to.eql(404);",
-									"    pm.expect(jsonData.message).to.eql(\"Requesting user does not exist\");",
+									"    pm.expect(jsonData.message).to.eql(\"Room does not exist\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -363,17 +363,17 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{bookie_url}}/rooms/:user",
+							"raw": "{{bookie_url}}/rooms/:room",
 							"host": [
 								"{{bookie_url}}"
 							],
 							"path": [
 								"rooms",
-								":user"
+								":room"
 							],
 							"variable": [
 								{
-									"key": "user",
+									"key": "room",
 									"value": "non-existent"
 								}
 							]
@@ -2297,7 +2297,7 @@
 							"script": {
 								"exec": [
 									"var today = new Date();",
-									"today.setMinutes(today.getMinutes() + 20);",
+									"today.setHours(today.getHours() + 3);",
 									"pm.environment.set('current_time', today.toISOString());"
 								],
 								"type": "text/javascript"

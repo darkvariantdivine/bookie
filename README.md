@@ -18,23 +18,24 @@ Bookie was developed with the following technology stack:
 - Frontend
   1. NodeJS 18
   2. Typescript
-  3. ReactJS
-  4. NextJS 13
-  5. Mantine 5
-  6. Mantine React Table
+  3. ReactJS (UI framework)
+  4. NextJS 13 (UI server backbone)
+  5. React Query (Data fetching and caching)
+  6. Mantine 5 (Styling framework)
+  7. Mantine React Table (Styling component)
 - Backend
   1. Python 3.10
-  2. FastAPI
+  2. FastAPI (REST Backend)
 - Testing & Development
-  1. Postman (APIs)
+  1. Postman + Newman (REST APIs)
   2. Jest (Unit testing and component testing)
-  3. OpenAPI 3.0 documentation
+  3. OpenAPI 3.0 documentation (Documentation)
   4. Playwright ^ (End-to-end testing)
 - Deployment
-  1. MongoDB
-  3. Nginx as reverse proxy
-  4. Docker
-  5. Docker-compose
+  1. MongoDB (Database)
+  3. Nginx (Reverse proxy)
+  4. Docker (Containerisation)
+  5. Docker-compose (Orchestrator)
 
 ## Principles
 
@@ -123,6 +124,12 @@ Start NextJS server to view UI
 npm run dev
 ```
 
+Run tests
+```shell
+npm run tests-unit  # Jest tests
+npm run tests-postman  # Postman tests
+```
+
 ---
 
 **Note:**
@@ -145,7 +152,9 @@ pyenv install 3.10
 Install Python dependencies
 
 ```shell
-pip3 install poetry
+python3 -m venv venv  # Creates a new virtual environment
+source venv/bin/activate  
+pip3 install poetry  # Installs packages to virtual environment
 poetry install
 ```
 
@@ -175,7 +184,7 @@ npm run docker-build
 
 Setup deployment environment
 ```shell
-npm run gen-certs
+npm run docker-setup
 ```
 
 Start containers

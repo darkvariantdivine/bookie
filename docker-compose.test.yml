@@ -1,0 +1,137 @@
+version: '3'
+
+x-logging:
+  &logging-params
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "100M"
+      max-file: "1"
+
+x-network:
+  &network-params
+  networks:
+    - bookie
+  extra_hosts:
+    - "host.docker.internal:172.17.0.1"
+
+services:
+  bookie_api:
+    image: "bookie/api:${TAG:-latest}"
+    container_name: bookie_api
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "80"
+      DATABASE_HOST: "mongodb://bookie_mongo:27017"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 100m
+    depends_on:
+      - bookie_mongo
+    expose:
+      - "80"
+      - "443"
+    ports:
+      - "20000:80"
+    restart: unless-stopped
+    volumes:
+      - "logs:/home/python/bookie/logs:z"
+    <<: *logging-params
+    <<: *network-params
+
+  bookie_ui:
+    image: "bookie/ui:${TAG:-latest}"
+    container_name: bookie_ui
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 100m
+    environment:
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_SLOT_INTERVAL: 0.25
+      NEXT_PUBLIC_SERVER: "https://${HOST_SERVER:-localhost}/api/${VERSION:-v1.0}"
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - bookie_api
+    restart: unless-stopped
+    <<: *logging-params
+    <<: *network-params
+
+  bookie_mongo:
+    image: "bookie/mongo:${TAG:-latest}"
+    container_name: bookie_mongo
+    volumes:
+      - "mongo:/data/db"
+    environment:
+      MONGO_INITDB_DATABASE: admin
+    networks:
+      - bookie
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 100m
+    <<: *logging-params
+    <<: *network-params
+
+  bookie_nginx:
+    image: "bookie/nginx:${TAG:-latest}"
+    container_name: bookie_nginx
+    volumes:
+      - "ssl:/etc/nginx/ssl:Z"
+      - "nginx:/home/nginx/cache:Z"
+    depends_on:
+      - bookie_ui
+    restart: unless-stopped
+    expose:
+      - "80"
+      - "443"
+    ports:
+      - "80:80"
+      - "443:443"
+    <<: *logging-params
+    <<: *network-params
+
+networks:
+  bookie: # For Bookie subnet
+    driver: bridge
+    name: bookie
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.18.0.0/16"
+
+volumes:
+  logs: # For application logs
+    name: logs
+    driver_opts:
+      type: none
+      device: ${PWD:-.}/logs
+      o: bind
+
+  ssl: # For SSL certificates
+    name: ssl
+    driver_opts:
+      type: none
+      device: ${PWD:-.}/ssl
+      o: bind
+
+  mongo: # For database
+    name: mongo
+
+  nginx: # For Nginx cache
+    name: nginx
