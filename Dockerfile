@@ -40,13 +40,10 @@ WORKDIR /home/node/bookie
 USER node
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV PORT $PORT
-ENV HOST $HOST
 
-COPY --from=builder /bookie/package*.json ./
 COPY --from=builder /bookie/public ./public
 COPY --from=builder --chown=node:node /bookie/.next/standalone ./
 COPY --from=builder --chown=node:node /bookie/.next/static ./.next/static
 
 # Serve UI
-CMD [ "pm2-runtime", "npm", "--", "start", "--hostname=${HOST}", "--port=${POST}"]
+CMD ["pm2-runtime", "server.js"]
