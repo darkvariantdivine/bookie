@@ -195,3 +195,14 @@ Reset environment
 ```shell
 npm run docker-reset
 ```
+
+## Usage
+
+Bookie requires users to log in before creating bookings. The following users are 
+provided by default:
+1. test1@bookie.org
+2. test2@bookie.org
+3. admin1@bookie.org
+
+All the passwords are Hello_world1
+
