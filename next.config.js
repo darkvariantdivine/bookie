@@ -24,6 +24,10 @@ const nextConfig = {
 
     return config;
   },
+  env: {
+    NEXT_PUBLIC_SLOT_INTERVAL: process.env.NEXT_PUBLIC_SLOT_INTERVAL,
+    NEXT_PUBLIC_SERVER: process.env.NEXT_PUBLIC_SERVER
+  }
 }
 
 module.exports = nextConfig

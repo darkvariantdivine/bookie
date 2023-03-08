@@ -48,6 +48,9 @@ services:
     build:
       context: "."
       target: "ui"
+      args:
+        NEXT_PUBLIC_SLOT_INTERVAL: 0.25
+        NEXT_PUBLIC_SERVER: "https://${HOST_SERVER:-localhost}/api/${VERSION:-v1.0}"
     image: "bookie/ui:${TAG:-latest}"
     container_name: bookie_ui
     deploy:
@@ -57,7 +60,9 @@ services:
         reservations:
           memory: 100m
     environment:
-      HOST: 0.0.0.0
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_SLOT_INTERVAL: 0.25
+      NEXT_PUBLIC_SERVER: "https://${HOST_SERVER:-localhost}/api/${VERSION:-v1.0}"
     expose:
       - "3000"
     depends_on:
@@ -100,6 +105,7 @@ services:
     container_name: bookie_nginx
     volumes:
       - "ssl:/etc/nginx/ssl:Z"
+      - "nginx:/home/nginx/cache:Z"
     depends_on:
       - bookie_ui
     restart: unless-stopped
@@ -138,3 +144,6 @@ volumes:
 
   mongo: # For database
     name: mongo
+
+  nginx: # For Nginx cache
+    name: nginx

@@ -2,6 +2,8 @@
 # Build Nginx component
 FROM nginx:1.22-alpine AS nginx
 
+RUN mkdir -p /home/nginx/cache
+
 # Copying essential dependencies
 COPY nginx/nginx.conf /etc/nginx
 COPY nginx/conf.d /etc/nginx/conf.d
