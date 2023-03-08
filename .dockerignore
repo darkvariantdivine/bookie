@@ -9,5 +9,4 @@ venv
 tests
 mocks
 docs
-ssl
 logs

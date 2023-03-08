@@ -19,6 +19,7 @@ COPY app ./app
 COPY components ./components
 COPY contexts ./contexts
 COPY libs ./libs
+COPY hooks ./hooks
 COPY public ./public
 
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -28,17 +29,19 @@ RUN npm run build
 
 # Prepare production component
 FROM ui_base as ui
+ARG PORT
+ARG HOST
 
 # Configure production environment
 RUN mkdir -p /home/node/bookie && \
-    npm install -g pm2
+    npm install -g pm2 next
 WORKDIR /home/node/bookie
 
 USER node
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
-
-EXPOSE 3000
+ENV PORT $PORT
+ENV HOST $HOST
 
 COPY --from=builder /bookie/package*.json ./
 COPY --from=builder /bookie/public ./public
@@ -46,4 +49,4 @@ COPY --from=builder --chown=node:node /bookie/.next/standalone ./
 COPY --from=builder --chown=node:node /bookie/.next/static ./.next/static
 
 # Serve UI
-CMD [ "pm2-runtime", "npm", "--", "start" ]
+CMD [ "pm2-runtime", "npm", "--", "start", "--hostname=${HOST}", "--port=${POST}"]
