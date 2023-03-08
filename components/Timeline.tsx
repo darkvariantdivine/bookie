@@ -194,7 +194,7 @@ const BookieTimeline = () => {
   }
 
   useEffect(
-    () => {handleSelected();},
+    () => handleSelected(),
     [JSON.stringify(selectedTimeSlots)]
   )
 

@@ -83,7 +83,7 @@ const SelectTimeSlots = (
   const router = useRouter();
   const {
     setBookings,
-    selectedDate, setDate,
+    selectedDate,
     setCurrentBookings,
     setTimeSlots,
     setAvailableTimeSlots,
@@ -100,8 +100,6 @@ const SelectTimeSlots = (
     ).then((response: AxiosResponse) => response.data),
     onSuccess: async (_, variables: CreateBookingProps) => {
       console.log(`Successfully created booking ${JSON.stringify(variables.booking)}`);
-      setDate(dayjs());
-      setSelectedTimeSlots([]);
       showNotification({
         message: "Booking submitted, clearing all selected slots",
         icon: <IconCircleCheck />,
@@ -114,6 +112,12 @@ const SelectTimeSlots = (
       handleApiError(error);
     }
   })
+
+  const resetSelection = () => {
+    setSelectedTimeSlots([]);
+    form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString());
+    form.setFieldValue('duration', 0);
+  }
 
   const handleTimeSlotChanges = (newBookings: IBooking[]) => {
     let newTimeSlots: number[] = getCurrentTimeSlots(selectedDate, TIMESLOTS);
@@ -131,7 +135,7 @@ const SelectTimeSlots = (
         color: 'green',
         autoClose: 5000,
       });
-      setSelectedTimeSlots([]);
+      resetSelection();
     }
   }
 
@@ -174,7 +178,8 @@ const SelectTimeSlots = (
         color: 'red',
         autoClose: 5000,
       });
-    } else if (errors.duration) {
+    }
+    if (errors.duration) {
       showNotification({
         icon: <IconX />,
         message: errors.duration,
@@ -182,31 +187,22 @@ const SelectTimeSlots = (
         autoClose: 5000,
       });
     }
+    resetSelection();
   }
 
   const handleSubmit = (values: typeof form.values, event: FormEvent) => {
     console.log(`Submitting booking with values ${JSON.stringify(values)}`);
     event.preventDefault();
     createBooking({booking: values, token: token!});
-    form.reset();
+    showNotification({
+      message: `Created booking from ${dayjs(values.start).format('llll')} 
+               to ${dayjs(values.start).hour(values.duration).format('llll')}`,
+      icon: <IconCircleCheck />,
+      color: 'green',
+      autoClose: 5000,
+    });
+    resetSelection();
   }
-
-  useEffect(
-    () => {
-      console.log(`Selected Date changed to ${selectedDate.format('llll')}`);
-      console.log("Updating timeslots and setting forms");
-      showNotification({
-        message: "Selected date has changed, clearing all selected slots",
-        icon: <IconCircleCheck />,
-        color: 'green',
-        autoClose: 5000,
-      });
-      setSelectedTimeSlots([]);
-      form.setFieldValue('start', selectedDate.utc().toISOString());
-      queryClient.invalidateQueries(['bookings']);
-    },
-    [selectedDate]
-  );
 
   useEffect(
     () => {
@@ -220,10 +216,25 @@ const SelectTimeSlots = (
 
   useEffect(
     () => {
+      console.log(`Selected Date changed to ${selectedDate.format('llll')}`);
+      console.log("Updating timeslots and setting forms");
+      showNotification({
+        message: "Selected date has changed, clearing all selected slots",
+        icon: <IconCircleCheck />,
+        color: 'green',
+        autoClose: 5000,
+      });
+      resetSelection();
+      queryClient.invalidateQueries(['bookings']);
+    },
+    [selectedDate]
+  );
+
+  useEffect(
+    () => {
       if (selectedTimeSlots.length === 0) {
         console.log("Selected time slots have been cleared, updating form");
-        form.setFieldValue('duration', 0);
-        form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString());
+        resetSelection();
       } else {
         let duration: number = selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL;
         let date: dayjs.Dayjs = selectedDate.hour(selectedTimeSlots[0], 'hour').minute(0).second(0);
@@ -263,7 +274,7 @@ const SelectTimeSlots = (
                   color: 'green',
                   autoClose: 5000,
                 });
-                setSelectedTimeSlots([]);
+                resetSelection();
               }
             }
           >

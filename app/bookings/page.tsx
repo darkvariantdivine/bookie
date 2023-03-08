@@ -5,11 +5,12 @@ import {
   Text,
   Avatar,
   createStyles,
-  Button
+  Button, Tooltip
 } from "@mantine/core";
 import {
+  IconCircleCheck,
   IconCircleX,
-  IconClock
+  IconClock, IconX
 } from "@tabler/icons";
 import React, {
   useContext,
@@ -31,10 +32,6 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import {
-  QueryClient,
-  useQueryClient
-} from "@tanstack/react-query";
 
 import {
   IBooking,
@@ -55,6 +52,7 @@ import {
   useUpdateBooking
 } from "@/hooks/bookings";
 import {UserContext} from "@/contexts/UserContext";
+import {showNotification} from "@mantine/notifications";
 
 dayjs.extend(utc);
 dayjs.extend(localizedFormat);
@@ -102,7 +100,7 @@ const ModifyStartDate = (
 
   useEffect(
     () => {
-      setDate(dayjs(userBooking.start))
+      setDate(dayjs(userBooking.start));
     },
     []
   );
@@ -130,15 +128,15 @@ const ModifyDuration = (
 
   function updateDuration(newDuration: [Date, Date]) {
     let first: Date = dayjs(selectedDate)
-    .hour(newDuration[0]!.getHours())
-    .minute(newDuration[0]!.getMinutes())
-    .second(0)
-    .toDate();
+      .hour(newDuration[0]!.getHours())
+      .minute(newDuration[0]!.getMinutes())
+      .second(0)
+      .toDate();
     let second: Date = dayjs(selectedDate)
-    .hour(newDuration[1]!.getHours())
-    .minute(newDuration[1]!.getMinutes())
-    .second(0)
-    .toDate();
+      .hour(newDuration[1]!.getHours())
+      .minute(newDuration[1]!.getMinutes())
+      .second(0)
+      .toDate();
 
     setDuration([first, second]);
   }
@@ -147,7 +145,7 @@ const ModifyDuration = (
     () => {
       let date: dayjs.Dayjs = !selectedDate.isSame(dayjs(userBooking.start), 'minute') ?
         dayjs(selectedDate) :
-        dayjs(userBooking.start)
+        dayjs(userBooking.start);
       setDate(date);
       updateDuration([
         dayjs(date).toDate(),
@@ -192,7 +190,6 @@ const UserBookingsPage = (): React.ReactElement => {
   const [userBookings, setUserBookings] = useState<IUserBooking[]>([]);
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
 
-  const queryClient: QueryClient = useQueryClient();
   const { isLoading, data: roomsMap } = useRoomsMap();
 
   const transformUserBookings = (toTransform: IBooking[]): IUserBooking[] => {
@@ -216,9 +213,9 @@ const UserBookingsPage = (): React.ReactElement => {
 
   const handleBookingChanges = (newBookings: IBooking[]) => {
     if (!user) {
-      console.log("User has been logged out, redirecting to home page");
+      console.log("User has logged out, redirecting to home page");
       router.push("/");
-      return [];
+      return;
     }
 
     let userBookings: IBooking[] = getUserBookings(user.id, newBookings);
@@ -227,7 +224,6 @@ const UserBookingsPage = (): React.ReactElement => {
 
     let newUserBookings: IUserBooking[] = transformUserBookings(userBookings);
     setUserBookings(newUserBookings);
-    return newUserBookings;
   }
 
   const handleBookingCancellation = (
@@ -237,6 +233,12 @@ const UserBookingsPage = (): React.ReactElement => {
     setUserBookings(userBookings.filter((booking: IUserBooking) => !(booking.id in rowSelection)));
 
     deleteBookings({bookings: Object.keys(rowSelection), token});
+    showNotification({
+      message: `Cancelling selected bookings`,
+      icon: <IconCircleCheck />,
+      color: 'green',
+      autoClose: 5000,
+    });
     setRowSelection({});
   }
 
@@ -248,24 +250,35 @@ const UserBookingsPage = (): React.ReactElement => {
       let first: dayjs.Dayjs = dayjs(selectedDate)
         .hour(duration[0].getHours() + firstRounded['hours'])
         .minute(firstRounded['minutes'])
-        .utc();
       let second: dayjs.Dayjs = dayjs(selectedDate)
         .hour(duration[1].getHours() + secondRounded['hours'])
         .minute(secondRounded['minutes'])
-        .utc();
 
       let updates: {[k: string]: string | number} = {
-        start: first.toISOString(),
-        duration: second.diff(first, 'minute') / 60
+        start: first.utc().toISOString(),
+        duration: second.utc().diff(first.utc(), 'minute') / 60
       }
       console.log(`Updating values ${JSON.stringify(updates)}`);
 
       updateBooking({booking_id: row.original.id, updates, token});
+      showNotification({
+        message: `Updating booking with start 
+                 ${first.format('llll')} and end ${second.format('llll')}`,
+        icon: <IconCircleCheck />,
+        color: 'green',
+        autoClose: 5000,
+      });
       exitEditingMode();
     }
 
   const handleEditCancel = ({ row }: { row: MRT_Row<IUserBooking>}) => {
     let start: dayjs.Dayjs = dayjs(row.original.start);
+    showNotification({
+      message: `Dropping edits, updates will be ignored`,
+      icon: <IconCircleCheck />,
+      color: 'green',
+      autoClose: 5000,
+    });
     setDate(start);
     setDuration([start.toDate(), start.add(row.original.duration, 'hour').toDate()])
   }
@@ -358,25 +371,30 @@ const UserBookingsPage = (): React.ReactElement => {
         enableMultiRowSelection
 
         renderTopToolbarCustomActions={() => (
-          <Button
-            onClick={
-              () => openConfirmModal({
-                title: 'Cancel Booking',
-                children: (
-                  <Text size="sm">
-                    Confirm to cancel the selected bookings
-                  </Text>
-                ),
-                labels: { confirm: 'Confirm', cancel: 'Cancel' },
-                closeOnConfirm: true,
-                closeOnCancel: true,
-                onConfirm: async () => await handleBookingCancellation(rowSelection)
-              })
-            }
-            leftIcon={<IconCircleX />}
+          <Tooltip
+            label={"Select bookings to cancel"}
           >
-            Cancel Bookings
-          </Button>
+            <Button
+              disabled={!rowSelection}
+              onClick={
+                () => openConfirmModal({
+                  title: 'Cancel Booking',
+                  children: (
+                    <Text size="sm">
+                      Confirm to cancel the selected bookings
+                    </Text>
+                  ),
+                  labels: { confirm: 'Confirm', cancel: 'Cancel' },
+                  closeOnConfirm: true,
+                  closeOnCancel: true,
+                  onConfirm: () => handleBookingCancellation(rowSelection)
+                })
+              }
+              leftIcon={<IconCircleX />}
+            >
+              Cancel Bookings
+            </Button>
+          </Tooltip>
         )}
         onRowSelectionChange={setRowSelection}
         state={{ rowSelection }}

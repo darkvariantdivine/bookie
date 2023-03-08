@@ -49,12 +49,12 @@ export const useUpdateBooking = (): UseMutationResult<null, AxiosError, UpdateBo
       updates,
       {headers: {Authorization: `Bearer ${token}`}}
     ).then(() => null),
-    onSuccess: (_, variables: UpdateBookingProps) => {
+    onSuccess: async (_, variables: UpdateBookingProps) => {
       console.log(
         `Successfully updated booking ${variables.booking_id} 
         with data ${JSON.stringify(variables.updates)}`
       );
-      return queryClient.invalidateQueries(['bookings']);
+      await queryClient.invalidateQueries(['bookings']);
     },
     onError: (error: AxiosError) => handleApiError(error)
   })
@@ -76,10 +76,9 @@ export const useDeleteBookings = (): UseMutationResult<null, AxiosError, DeleteB
         paramsSerializer: {indexes: null}
       }
     ).then(() => null),
-
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       console.log(`Successfully deleted bookings ${JSON.stringify(variables.bookings)}`);
-      return queryClient.invalidateQueries(['bookings']);
+      await queryClient.invalidateQueries(['bookings']);
     },
     onError: (error: AxiosError) => handleApiError(error)
   })
