@@ -32,12 +32,9 @@ Bookie was developed with the following technology stack:
   4. Playwright ^ (End-to-end testing)
 - Deployment
   1. MongoDB
-  3. Nginx as reverse proxy ^
-  4. Docker ^
-  5. Docker-compose ^
-
-^ = still in development
-
+  3. Nginx as reverse proxy
+  4. Docker
+  5. Docker-compose
 
 ## Principles
 
@@ -159,9 +156,9 @@ poetry build
 python3 -m bookie
 ```
 
-## Deployment (Work in Progress)
+## Deployment
 
-This section captures how to setup and deploy the Bookie environment locally.
+This section captures how to setup and deploy Bookie in a production-ready manner.
 
 Install Docker, instructions can be found at this 
 [link](https://docs.docker.com/get-docker/)
