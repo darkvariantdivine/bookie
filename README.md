@@ -37,6 +37,8 @@ Bookie was developed with the following technology stack:
   4. Docker (Containerisation)
   5. Docker-compose (Orchestrator)
 
+^ = work in progress
+
 ## Principles
 
 The tech stack was chosen in accordance with the following principles:
@@ -140,9 +142,6 @@ You will need to start the Backend server before the Frontend works
 
 ### Backend
 
-Install MongoDB, instructions can be found at this 
-[link](https://www.mongodb.com/docs/manual/administration/install-community/)
-
 Install Python 3.10 with pyenv
 
 ```shell
@@ -158,12 +157,45 @@ pip3 install poetry  # Installs packages to virtual environment
 poetry install
 ```
 
+#### Run with MongoDB
+
+Install MongoDB, instructions can be found at this
+[link](https://www.mongodb.com/docs/manual/administration/install-community/)
+
 Build and run the backend server
 
 ```shell
 poetry build
 python3 -m bookie
 ```
+
+#### Run with MongoDB in Docker
+
+Pull and run MongoDB docker
+```shell
+docker pull mongo:4.4
+docker run -d -p 27017:27017 --name bookie_mongo mongo:4.4
+python3 -m bookie
+```
+
+---
+
+**Note:**
+
+You will need to stop any running MongoDB instance before running the command
+above with:
+
+```shell
+sudo systemctl stop mongod
+```
+
+To restart the MongoDB instance:
+
+```shell
+sudo systemctl start mongod
+```
+
+---
 
 ## Deployment
 
@@ -212,3 +244,11 @@ provided by default:
 
 All the passwords are Hello_world1
 
+## Improvements
+
+1. Rewrite backend in NodeJS to align programming language
+2. Using pagination to retrieve and display rooms and bookings
+3. More complex REST API filters to search for bookings and rooms
+4. Additional admin pages for creating, updating and deleting rooms and users
+5. When data model is confirmed, migrate to PostgreSQL from MongoDB to capture
+   relationships between data models
