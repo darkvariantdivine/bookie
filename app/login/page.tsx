@@ -114,7 +114,10 @@ const SignInMenu = (): React.ReactElement => {
       }
     ),
     onSuccess: (data: {user: IUser, token: string}, variables: IUserAuth) => {
-      console.log(`Successfully logged in user ${variables.username}, with details ${data.user}`);
+      console.log(
+        `Successfully logged in user ${variables.username}, 
+        with details ${JSON.stringify(data.user)}`
+      );
       sessionStorage.setItem('USER', JSON.stringify(data.user));
       sessionStorage.setItem('TOKEN', data['token'] as string);
       queryClient.setQueryData(['user'], data.user);

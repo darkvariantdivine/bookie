@@ -252,3 +252,4 @@ All the passwords are Hello_world1
 4. Additional admin pages for creating, updating and deleting rooms and users
 5. When data model is confirmed, migrate to PostgreSQL from MongoDB to capture
    relationships between data models
+6. Improving unit tests and adding end-to-end tests
