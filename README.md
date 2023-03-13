@@ -175,6 +175,12 @@ Pull and run MongoDB docker
 ```shell
 docker pull mongo:4.4
 docker run -d -p 27017:27017 --name bookie_mongo mongo:4.4
+```
+
+Build and run the backend server
+
+```shell
+poetry build
 python3 -m bookie
 ```
 
