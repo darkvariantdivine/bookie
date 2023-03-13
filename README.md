@@ -162,6 +162,12 @@ poetry install
 Install MongoDB, instructions can be found at this
 [link](https://www.mongodb.com/docs/manual/administration/install-community/)
 
+Load MongoDB with default data
+
+```shell
+mongo mongo/setup/bookie.js
+```
+
 Build and run the backend server
 
 ```shell
@@ -177,12 +183,40 @@ docker pull mongo:4.4
 docker run -d -p 27017:27017 --name bookie_mongo mongo:4.4
 ```
 
+Load MongoDB with default data
+
+```shell
+docker cp mongo/setup/bookie.js .
+docker exec -it bookie_mongo /bin/sh
+
+# In docker environment
+mongo mongo/setup/bookie.js
+```
+
 Build and run the backend server
 
 ```shell
 poetry build
 python3 -m bookie
 ```
+
+---
+
+**Note:**
+
+If you intend to run MongoDB on a separate cluster/host or with a customised port,
+you can customise the database host and database that is used via the following 
+environment parameters below:
+
+```shell
+DATABASE=my_custom_mongo_database python3 -m bookie
+DATABASE_HOST=my_custom_mongo_host_with_custom_port:3237 python3 -m bookie
+```
+
+You will need to update the load script found in mongo/setup/bookie.js to load
+data into your customised database.
+
+---
 
 ---
 
