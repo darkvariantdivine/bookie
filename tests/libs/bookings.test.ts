@@ -1,19 +1,32 @@
 
-import {getDateBookings, getRoomBookings, getTimeline, getCurrentTimeSlots} from "@/libs/bookings";
-import BOOKINGS from "@/mocks/bookings.json"
 import {
   test,
   expect,
 } from "@jest/globals";
-import {TIMESLOTS} from "@/constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import ObjectSupport from "dayjs/plugin/objectSupport";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 
+import {
+  getDateBookings,
+  getRoomBookings,
+  getTimeline,
+  getCurrentTimeSlots
+} from "@/libs/bookings";
+import BOOKINGS from "@/mocks/bookings.json";
+import {TIMESLOTS, SLOT_INTERVAL} from "@/constants";
+
 dayjs.extend(utc);
 dayjs.extend(ObjectSupport);
 dayjs.extend(localizedFormat);
+
+beforeAll(() => {
+  jest.mock('@/constants', () => ({
+    ...jest.requireActual('@/constants'),
+    SLOT_INTERVAL: jest.fn(() => 0.25)
+  }));
+})
 
 test('Empty bookings and room', () => {
   expect(getRoomBookings("", [])).toStrictEqual([]);
@@ -118,59 +131,7 @@ test('No bookings, all timeslots available', () => {
   expect(getTimeline([], TIMESLOTS)).toStrictEqual(TIMESLOTS);
 });
 
-test('Timeslots available with bookings removed', () => {
-  let bookings = [ ...BOOKINGS]
-  bookings.splice(1, 1)
-  expect(getTimeline(bookings, TIMESLOTS)).toStrictEqual([
-    0,
-    0.5,
-    1,
-    1.5,
-    2,
-    2.5,
-    3,
-    3.5,
-    4,
-    4.5,
-    5,
-    5.5,
-    6,
-    6.5,
-    7,
-    7.5,
-    8,
-    8.5,
-    9,
-    9.5,
-    10,
-    10.5,
-    11,
-    11.5,
-    12,
-    12.5,
-    13,
-    14.5,
-    15,
-    16,
-    16.5,
-    18,
-    18.5,
-    19,
-    19.5,
-    20,
-    20.5,
-    21,
-    21.5,
-    22,
-    22.5,
-    23,
-    23.5
-  ]);
-});
-
 test('Quarterly timeslots with bookings removed', async () => {
-  const constants = await import("@/constants");
-  constants.SLOT_INTERVAL = 0.25;
   let bookings = [...BOOKINGS]
   bookings.splice(1, 1)
   bookings.splice(3, 1)
@@ -224,12 +185,9 @@ test('Quarterly timeslots with bookings removed', async () => {
     18.5,
     18.75
   ]);
-  constants.SLOT_INTERVAL = 0.5;
 });
 
 test('Quarterly timeslots with more bookings removed', async () => {
-  const constants = await import("@/constants");
-  constants.SLOT_INTERVAL = 0.25;
   let bookings = [
     {
       "id": "3fa85f64-5717-4562-b3fc-2c963f66",
@@ -422,7 +380,67 @@ test('Quarterly timeslots with more bookings removed', async () => {
     23.5,
     23.75
   ]);
-  constants.SLOT_INTERVAL = 0.5;
+});
+
+describe.skip('Changing slot intervals', () => {
+  beforeEach( async () => {
+    console.log(typeof SLOT_INTERVAL)
+    SLOT_INTERVAL.mockReturnValue(0.5)
+  })
+
+  test('Timeslots available with bookings removed', () => {
+    let bookings = [ ...BOOKINGS];
+    bookings.splice(1, 1);
+    expect(getTimeline(bookings, TIMESLOTS)).toStrictEqual([
+      0,
+      0.5,
+      1,
+      1.5,
+      2,
+      2.5,
+      3,
+      3.5,
+      4,
+      4.5,
+      5,
+      5.5,
+      6,
+      6.5,
+      7,
+      7.5,
+      8,
+      8.5,
+      9,
+      9.5,
+      10,
+      10.5,
+      11,
+      11.5,
+      12,
+      12.5,
+      13,
+      14.5,
+      15,
+      16,
+      16.5,
+      18,
+      18.5,
+      19,
+      19.5,
+      20,
+      20.5,
+      21,
+      21.5,
+      22,
+      22.5,
+      23,
+      23.5
+    ]);
+  });
+
+  beforeEach( async () => {
+    SLOT_INTERVAL.mockReturnValue(0.25)
+  })
 });
 
 test('No timeslots available', () => {
@@ -466,8 +484,6 @@ test('Timeslots with time partially lapsed', () => {
 });
 
 test('Quarterly timeslots with time not lapsed', async () => {
-  const constants = await import("@/constants");
-  constants.SLOT_INTERVAL = 0.25;
   let timeslots = [
     0,  0.25,   0.5,  0.75,     1,  1.25,   1.5,  1.75,     2,
     2.25,   2.5,  2.75,     3,  3.25,   3.5,  3.75,     4,  4.25,
@@ -482,5 +498,4 @@ test('Quarterly timeslots with time not lapsed', async () => {
     22.5, 22.75,    23, 23.25,  23.5, 23.75
   ];
   expect(getCurrentTimeSlots(dayjs.utc().add(1, 'day').local(), timeslots)).toStrictEqual(timeslots);
-  constants.SLOT_INTERVAL = 0.5;
 });

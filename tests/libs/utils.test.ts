@@ -8,8 +8,9 @@ import {roundInterval} from "@/libs/utils";
 
 describe("Tests for rounding to an interval", () => {
   beforeAll(async () => {
-    const constants = await import("@/constants");
-    constants.SLOT_INTERVAL = 0.25;
+    jest.mock("@/constants", () => ({
+      SLOT_INTERVAL: 0.25
+    }));
   })
 
   test("Round value down", async () => {
@@ -32,9 +33,4 @@ describe("Tests for rounding to an interval", () => {
     expect(roundInterval(95)).toEqual({minutes: 30.0, hours: 1.0});
     expect(roundInterval(135)).toEqual({minutes: 15.0, hours: 2.0});
   });
-
-  afterAll(async () => {
-    const constants = await import("@/constants");
-    constants.SLOT_INTERVAL = 0.5;
-  })
 });

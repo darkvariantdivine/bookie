@@ -48,9 +48,9 @@ const PASSWORD_REQS: { req: RegExp, label: string }[] = [
   {req: /[$&+,:;=?@#|'<>.^*()%!-]/, label: "Includes special character"},
 ];
 
-const SLOT_INTERVAL: number = process.env.NEXT_PUBLIC_SLOT_INTERVAL ?
+let SLOT_INTERVAL: number = process.env.NEXT_PUBLIC_SLOT_INTERVAL ?
   Number(process.env.NEXT_PUBLIC_SLOT_INTERVAL) :
-  0.5;
+  0.25;
 
 const HOST: string = process.env.NEXT_PUBLIC_SERVER ?
   process.env.NEXT_PUBLIC_SERVER :

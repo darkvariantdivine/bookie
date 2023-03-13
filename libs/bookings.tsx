@@ -1,7 +1,10 @@
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import {IBooking, SLOT_INTERVAL} from "@/constants";
+import {
+  IBooking,
+  SLOT_INTERVAL
+} from "@/constants";
 
 dayjs.extend(utc);
 
@@ -57,6 +60,7 @@ const getTimeSlotsFromDuration = (
 const getTimeline = (
   bookings: IBooking[], timeSlots: number[]
 ): number[] => {
+  console.log(SLOT_INTERVAL)
   // Assumes all bookings here are for the same room
   // and on the same day
   let takenTimeslots: number[] = bookings.flatMap(
