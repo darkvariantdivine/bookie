@@ -348,6 +348,8 @@ const UserBookingsPage = (): React.ReactElement => {
     []
   );
 
+  if (isLoading) return <Loading />
+
   return (
     <main>
       <NavBar />
