@@ -10,7 +10,7 @@ import {
 import {
   IconCircleCheck,
   IconCircleX,
-  IconClock, IconX
+  IconClock
 } from "@tabler/icons";
 import React, {
   useContext,
@@ -283,9 +283,7 @@ const UserBookingsPage = (): React.ReactElement => {
     setDuration([start.toDate(), start.add(row.original.duration, 'hour').toDate()])
   }
 
-  useBookings(handleBookingChanges);
-
-  if (isLoading) return <Loading />
+  useBookings({ handleBookingChanges, enabled: !!roomsMap});
 
   const columns = useMemo<MRT_ColumnDef<IUserBooking>[]>(
     () => [

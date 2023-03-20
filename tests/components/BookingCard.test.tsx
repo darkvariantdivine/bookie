@@ -3,9 +3,8 @@ import {
   describe, it, expect
 } from "@jest/globals";
 import {
-  fireEvent,
   render,
-  screen, waitFor
+  screen
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import {UserContext} from "@/contexts/UserContext";

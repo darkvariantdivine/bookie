@@ -15,12 +15,21 @@ import {IBooking} from "@/constants";
 import {API} from "@/libs/rest";
 import handleApiError from "@/hooks/errors";
 
+interface UseBookingProps {
+  handleBookingChanges?: (bookings: IBooking[]) => void;
+  refetchInterval?: number
+  enabled?: boolean
+}
+
 export const useBookings = (
-  handleBookingChanges?: (bookings: IBooking[]) => void,
-  refetchInterval: number = 30000
+  {
+    handleBookingChanges = undefined,
+    refetchInterval = 30000,
+    enabled = true
+  }: UseBookingProps
 ): UseQueryResult<IBooking[], AxiosError> => {
   return useQuery<IBooking[], AxiosError>(
-    ['bookings'],
+    ['bookings', enabled],
     () => API.get(`/bookings`).then(
       (response: AxiosResponse) => response.data),
     {
@@ -30,7 +39,8 @@ export const useBookings = (
       },
       onError: (error: AxiosError) => handleApiError(error),
       refetchInterval: refetchInterval,
-      refetchIntervalInBackground: true
+      refetchIntervalInBackground: true,
+      enabled: enabled
     }
   )
 }

@@ -60,7 +60,6 @@ const getTimeSlotsFromDuration = (
 const getTimeline = (
   bookings: IBooking[], timeSlots: number[]
 ): number[] => {
-  console.log(SLOT_INTERVAL)
   // Assumes all bookings here are for the same room
   // and on the same day
   let takenTimeslots: number[] = bookings.flatMap(

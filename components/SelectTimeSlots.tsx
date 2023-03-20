@@ -148,7 +148,7 @@ const SelectTimeSlots = (
     handleTimeSlotChanges(roomBookings);
   }
 
-  const {isLoading} = useBookings(handleBookingChanges);
+  const {isLoading} = useBookings({handleBookingChanges});
   const form = useForm<IBooking>({
     initialValues: {
       user: user ? user.id : 'default',

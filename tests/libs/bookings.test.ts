@@ -384,7 +384,6 @@ test('Quarterly timeslots with more bookings removed', async () => {
 
 describe.skip('Changing slot intervals', () => {
   beforeEach( async () => {
-    console.log(typeof SLOT_INTERVAL)
     SLOT_INTERVAL.mockReturnValue(0.5)
   })
 
