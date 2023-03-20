@@ -115,7 +115,7 @@ const SelectTimeSlots = (
 
   const resetSelection = () => {
     setSelectedTimeSlots([]);
-    form.setFieldValue('start', selectedDate.hour(0).minute(0).utc().toISOString());
+    form.setFieldValue('start', selectedDate.hour(0).minute(0).millisecond(0).utc().toISOString());
     form.setFieldValue('duration', 0);
   }
 
@@ -237,7 +237,11 @@ const SelectTimeSlots = (
         resetSelection();
       } else {
         let duration: number = selectedTimeSlots[selectedTimeSlots.length - 1] - selectedTimeSlots[0] + SLOT_INTERVAL;
-        let date: dayjs.Dayjs = selectedDate.hour(selectedTimeSlots[0], 'hour').minute(0).second(0);
+        let date: dayjs.Dayjs = selectedDate
+          .hour(Math.trunc(selectedTimeSlots[0]), 'hour')
+          .minute((selectedTimeSlots[0] % 1) * 60)
+          .second(0)
+          .millisecond(0);
         console.log(
           `Selected time slots have been updated to 
           ${date.format('llll')} with duration ${duration} hours, updating form`
